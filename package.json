@@ -1,0 +1,13 @@
+{
+  "name": "label-peak-studio-monorepo",
+  "version": "1.0.0",
+  "description": "LabelPeak monorepo",
+  "scripts": {
+    "dev:client": "cd apps/client && npm run dev",
+    "build:client": "cd apps/client && npm run build",
+    "lint:client": "cd apps/client && npm run lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
