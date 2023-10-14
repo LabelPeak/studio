@@ -1,6 +1,16 @@
-import { defineConfig } from "unocss";
+import { defineConfig, presetIcons, presetUno, presetWebFonts } from "unocss";
 
 export default defineConfig({
+  presets: [
+    presetUno(),
+    presetIcons({}),
+    presetWebFonts({
+      provider: "bunny",
+      fonts: {
+        sans: "Roboto"
+      }
+    })
+  ],
   theme: {
     colors: {
       nord: {
