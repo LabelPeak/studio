@@ -1,6 +1,8 @@
 import { DashboardPage } from "@/pages/dashboard";
 import Layout from "@/pages/layout";
 import { LoginPage } from "@/pages/login";
+import { ProjectPage } from "@/pages/project";
+import { UserPage } from "@/pages/user";
 import { createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -15,6 +17,14 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <DashboardPage />
+      },
+      {
+        path: "project",
+        element: <ProjectPage />
+      },
+      {
+        path: "user",
+        element: <UserPage />
       }
     ]
   }
