@@ -1,8 +1,24 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { ProductName } from "@/configs/constants";
+import { Spin } from "antd";
+import UserIdentifier from "./UserIdentifier";
+import UserService from "@/services/user";
 import classnames from "classnames";
+import { useRequest } from "ahooks";
+import useUser from "@/hooks/useUser";
 
 export default function Layout() {
+  const { username, setUser } = useUser();
+  const { loading: logining } = useRequest(
+    UserService.getProfile, {
+      onSuccess: (res) => {
+        if (res.data) {
+          const { username } = res.data;
+          setUser({ username });
+        }
+      }
+    });
+
   const featureList = [
     { name: "Dashboard", url: "/dashboard", icon: "i-mdi-view-dashboard" },
     { name: "Projects", url: "/project", icon: "i-mdi-folder" },
@@ -23,12 +39,12 @@ export default function Layout() {
         </div>
         <div className="flex-auto" />
         <div className="flex items-center">
-          <div className="avatar w-8 h-8 bg-gray b-rd-4"></div>
+          <UserIdentifier name={ username || "" }/>
         </div>
       </header>
       <section className="flex flex-auto">
-        <aside className="p-3 b-r-1 b-r-solid b-color-nord-snow-0">
-          { featureList.map(item => (
+        <aside className="p-3 b-r-1 b-r-solid b-color-nord-snow-0 min-w-12">
+          { !logining ? featureList.map(item => (
             <Link
               className={
                 classnames(
@@ -42,10 +58,15 @@ export default function Layout() {
             >
               <div className={classnames([item.icon, "text-6"])} />
             </Link>
-          ))}
+          )): null}
         </aside>
         <main className="flex-auto">
-          <Outlet />
+          { logining ?
+            <div className="flex justify-center items-center h-full">
+              <Spin size="large"/>
+            </div>
+            : <Outlet />
+          }
         </main>
       </section>
     </section>
