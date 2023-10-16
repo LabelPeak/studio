@@ -1,5 +1,5 @@
 import { Button, Form, Input } from "antd";
-import AuthService from "@/services/Auth";
+import AuthService from "@/services/auth";
 import { type IntlShape } from "react-intl";
 import useAuth from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
