@@ -9,5 +9,13 @@ export default defineConfig({
     alias: {
       "@": "/src"
     }
-  }
+  },
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://mock.apifox.cn/m1/3414599-0-default",
+        changeOrigin: true
+      },
+    },
+  },
 });
