@@ -60,7 +60,7 @@ export default function Layout() {
             </Link>
           )): null}
         </aside>
-        <main className="flex-auto">
+        <main className="flex-auto bg-nord-snow-2">
           { logining ?
             <div className="flex justify-center items-center h-full">
               <Spin size="large"/>
