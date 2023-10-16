@@ -6,6 +6,9 @@
 
 项目采用 Monorepo 结构，使用 pnpm 作为包管理器。
 
+> [!WARNING]
+> 现阶段开发，接口使用 vite 代理请求到 Apifox cloud mock 数据，在 UI 开发周期结束后会关闭代理。如需修改数据，请至 Apifox 项目中的高级 Mock 中修改样例。具体配置在 `apps/client/vite.config.ts` 中查看。
+
 ```sh
 # 需配置 github ssh key 才能正常拉取子仓库代码
 git clone git@github.com:LabelPeak/studio.git
