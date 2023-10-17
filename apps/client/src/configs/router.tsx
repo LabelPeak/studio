@@ -4,6 +4,7 @@ import { LoginPage } from "@/pages/login";
 import { ProjectPage } from "@/pages/project";
 import { UserPage } from "@/pages/user";
 import { createBrowserRouter } from "react-router-dom";
+import {ProjectDetailPage} from "@/pages/project/ProjectDetailPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: "project",
         element: <ProjectPage />
+      },
+      {
+        path: "project/:id",
+        element: <ProjectDetailPage />
       },
       {
         path: "user",
