@@ -6,5 +6,6 @@ export default {
   "confirm-password-prompt" : "Confirm password",
   "welcome": "Welcome back to",
   "new-visit": "New to {brand}?",
-  "have-account": "Already have account?"
+  "have-account": "Already have account?",
+  "settings": "Settings"
 };
