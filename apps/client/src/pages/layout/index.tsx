@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
+import LoadingLayer from "@/components/LoadingLayer";
 import { ProductName } from "@/configs/constants";
-import { Spin } from "antd";
 import UserIdentifier from "./UserIdentifier";
 import UserService from "@/services/user";
 import classnames from "classnames";
@@ -61,12 +61,7 @@ export default function Layout() {
           )): null}
         </aside>
         <main className="flex-auto bg-nord-snow-2">
-          { logining ?
-            <div className="flex justify-center items-center h-full">
-              <Spin size="large"/>
-            </div>
-            : <Outlet />
-          }
+          { logining ?  <LoadingLayer /> : <Outlet /> }
         </main>
       </section>
     </section>
