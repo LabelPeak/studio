@@ -18,6 +18,10 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
+        index: true,
+        element: <DashboardPage />
+      },
+      {
         path: "dashboard",
         element: <DashboardPage />
       },
@@ -33,6 +37,10 @@ const router = createBrowserRouter([
         path: "project/:id/settings",
         element: <ProjectSettingPage />,
         children: [
+          {
+            index: true,
+            element: <ProjectSettingGeneral />
+          },
           {
             path: "general",
             element: <ProjectSettingGeneral />
