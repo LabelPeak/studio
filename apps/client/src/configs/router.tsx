@@ -3,7 +3,10 @@ import Layout from "@/pages/layout";
 import { LoginPage } from "@/pages/login";
 import { ProjectDetailPage } from "@/pages/project/[id]/index";
 import { ProjectPage } from "@/pages/project";
+import ProjectSettingAccess from "@/pages/project/[id]/settings/access";
 import ProjectSettingGeneral from "@/pages/project/[id]/settings/general";
+import ProjectSettingLabeling from "@/pages/project/[id]/settings/labeling";
+import ProjectSettingMember from "@/pages/project/[id]/settings/member";
 import ProjectSettingPage from "@/pages/project/[id]/settings";
 import { UserPage } from "@/pages/user";
 import { createBrowserRouter } from "react-router-dom";
@@ -44,6 +47,18 @@ const router = createBrowserRouter([
           {
             path: "general",
             element: <ProjectSettingGeneral />
+          },
+          {
+            path: "labeling",
+            element: <ProjectSettingLabeling />
+          },
+          {
+            path: "member",
+            element: <ProjectSettingMember />
+          },
+          {
+            path: "access",
+            element: <ProjectSettingAccess />
           }
         ]
       },

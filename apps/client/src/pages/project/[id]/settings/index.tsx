@@ -5,17 +5,15 @@ import { Project } from "@/interfaces/project";
 import ProjectHeader from "../ProjectHeader";
 import ProjectService from "@/services/project";
 import ProjectSettingContext from "./ProjectSettingContext";
+import { useIntl } from "react-intl";
 import { useRequest } from "ahooks";
 import { useState } from "react";
-
-const menuItems: MenuProps["items"] = [
-  { key: "general", label: "项目管理" }
-];
 
 export default function ProjectSettingPage() {
   const navigate = useNavigate();
   const [project, setProject] = useState<Project>();
   const { id: projectId } = useParams<{ id: string }>();
+  const intl = useIntl();
   const { loading: loadingProject } = useRequest(ProjectService.getProjectDetail, {
     defaultParams: [+(projectId || "0")],
     onSuccess: (res) => {
@@ -24,6 +22,13 @@ export default function ProjectSettingPage() {
       }
     }
   });
+
+  const menuItems: MenuProps["items"] = [
+    { key: "general", label: intl.formatMessage({ id: "project-setting-general" }) },
+    { key: "labeling", label: intl.formatMessage({ id: "project-setting-labeling" }) },
+    { key: "member", label: intl.formatMessage({ id: "project-setting-member" }) },
+    { key: "access", label: intl.formatMessage({ id: "project-setting-access" }) }
+  ];
 
   function handleClickTab(e: any) {
     navigate(e.key);

@@ -7,5 +7,11 @@ export default {
   "welcome": "Welcome back to",
   "new-visit": "New to {brand}?",
   "have-account": "Already have account?",
-  "settings": "Settings"
+  "settings": "Settings",
+  "save": "Save",
+  "project-name": "Project Name",
+  "project-setting-general": "General Setting",
+  "project-setting-labeling": "Labeling Management",
+  "project-setting-member": "Member Management",
+  "project-setting-access": "Access Control"
 };
