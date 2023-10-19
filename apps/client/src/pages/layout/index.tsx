@@ -1,11 +1,18 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
+import LoadingLayer from "@/components/LoadingLayer";
 import { ProductName } from "@/configs/constants";
-import { Spin } from "antd";
 import UserIdentifier from "./UserIdentifier";
 import UserService from "@/services/user";
 import classnames from "classnames";
+import { useMemo } from "react";
 import { useRequest } from "ahooks";
 import useUser from "@/hooks/useUser";
+
+const featureList = [
+  { name: "Dashboard", url: "/dashboard", icon: "i-mdi-view-dashboard" },
+  { name: "Projects", url: "/project", icon: "i-mdi-folder" },
+  { name: "User", url: "/user", icon: "i-mdi-account-circle" },
+];
 
 export default function Layout() {
   const { username, setUser } = useUser();
@@ -19,13 +26,11 @@ export default function Layout() {
       }
     });
 
-  const featureList = [
-    { name: "Dashboard", url: "/dashboard", icon: "i-mdi-view-dashboard" },
-    { name: "Projects", url: "/project", icon: "i-mdi-folder" },
-    { name: "User", url: "/user", icon: "i-mdi-account-circle" },
-  ];
-
   const location = useLocation();
+  const currentTab = useMemo(() => {
+    const target = featureList.find(item => location.pathname.startsWith(item.url));
+    return target?.name || featureList[0].name;
+  }, [location]);
 
   return (
     <section id="layout" className="h-[100vh] flex flex-col min-w-3xl">
@@ -35,7 +40,7 @@ export default function Layout() {
           <span className="font-600 c-nord-polar-2 text-4"> { ProductName } </span>
         </Link>
         <div className="px-4 b-l-1 b-l-solid b-color-nord-snow-0 flex items-center">
-          { location.pathname }
+          { currentTab }
         </div>
         <div className="flex-auto" />
         <div className="flex items-center">
@@ -49,7 +54,7 @@ export default function Layout() {
               className={
                 classnames(
                   "block p-3 r-2 b-rd-2 mb-1 c-nord-frost-3",
-                  location.pathname === item.url
+                  currentTab === item.name
                     ? "mb bg-nord-frost-3 bg-op-30" : "hover:bg-nord-snow-2 "
                 )}
               key={item.name}
@@ -61,12 +66,7 @@ export default function Layout() {
           )): null}
         </aside>
         <main className="flex-auto bg-nord-snow-2">
-          { logining ?
-            <div className="flex justify-center items-center h-full">
-              <Spin size="large"/>
-            </div>
-            : <Outlet />
-          }
+          { logining ?  <LoadingLayer /> : <Outlet /> }
         </main>
       </section>
     </section>

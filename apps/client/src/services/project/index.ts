@@ -5,8 +5,13 @@ function getMyParticipateProjects() {
   return requestWithAuth<Project[]>("/api/project");
 }
 
+function getProjectDetail(projectId: number) {
+  return requestWithAuth<Project>("/api/project/" + projectId.toString());
+}
+
 const ProjectService = {
-  getMyParticipateProjects
+  getMyParticipateProjects,
+  getProjectDetail
 };
 
 export default ProjectService;

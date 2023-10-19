@@ -1,3 +1,4 @@
+import { Dataset } from "./dataset";
 import { User } from "./user";
 
 export enum Access {
@@ -13,4 +14,5 @@ export interface Project {
   createAt: string;
   creator: User;
   labels: string[];
+  dataset: Dataset;
 }
