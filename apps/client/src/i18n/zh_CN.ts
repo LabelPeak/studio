@@ -10,8 +10,15 @@ export default {
   "settings": "设置",
   "save": "保存",
   "project-name": "项目名称",
+
   "project-setting-general": "项目管理",
   "project-setting-labeling": "标签管理",
   "project-setting-member": "成员管理",
-  "project-setting-access": "访问控制"
+  "project-setting-access": "访问控制",
+
+  "base-permissions": "基本权限",
+  "base-permissions-intro": "基本权限适用于项目的所有成员，但不包括管理员。",
+  "hidden": "不可见",
+  "write": "可写",
+  "readonly": "只读",
 };

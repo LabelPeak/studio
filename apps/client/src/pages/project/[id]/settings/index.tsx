@@ -47,7 +47,7 @@ export default function ProjectSettingPage() {
             onClick={handleClickTab}
           />
         </div>
-        <div className="flex-auto">
+        <div className="flex-auto text-5">
           <ProjectSettingContext.Provider value={{ project }}>
             <Outlet />
           </ProjectSettingContext.Provider>
