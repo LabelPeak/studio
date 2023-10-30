@@ -10,6 +10,8 @@ interface UserState extends Nullable<User> {
 const useUser = create<UserState>((set) => ({
   id: null,
   username: null,
+  realname: null,
+  isAdmin: null,
   setUser: (value) => set({ ...value }),
   reset: () => set({ id: null, username: null })
 }));

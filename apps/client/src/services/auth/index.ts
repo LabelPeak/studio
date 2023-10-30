@@ -6,7 +6,7 @@ interface ILoginProps {
 }
 
 function login(props: ILoginProps) {
-  return request<{ token: string }>("/api/user/login", {
+  return request<{ token: string }>("/api/auth/login", {
     method: "POST",
     body: JSON.stringify(props)
   });
