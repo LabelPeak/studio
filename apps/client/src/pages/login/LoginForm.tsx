@@ -1,4 +1,4 @@
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 import AuthService from "@/services/auth";
 import { type IntlShape } from "react-intl";
 import useAuth from "@/hooks/useAuth";
@@ -16,6 +16,9 @@ export default function LoginForm(props: IProps) {
   async function handleLogin(e: {username: string, password: string}) {
     const { username, password } = e;
     const res = await AuthService.login({ username, password });
+    if (res.code !== 200) {
+      message.error("登录失败: " + res.msg?.slice(0, 30) || "未知原因");
+    }
     if (res.data) {
       const { token } = res.data;
       setAuthConfig({ token });

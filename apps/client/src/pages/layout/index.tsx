@@ -1,10 +1,12 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
 import LoadingLayer from "@/components/LoadingLayer";
 import { ProductName } from "@/configs/constants";
 import UserIdentifier from "./UserIdentifier";
 import UserService from "@/services/user";
 import classnames from "classnames";
-import { useMemo } from "react";
+import { message } from "antd";
+import useAuth from "@/hooks/useAuth";
 import { useRequest } from "ahooks";
 import useUser from "@/hooks/useUser";
 
@@ -15,16 +17,34 @@ const featureList = [
 ];
 
 export default function Layout() {
-  const { username, setUser } = useUser();
-  const { loading: logining } = useRequest(
-    UserService.getProfile, {
-      onSuccess: (res) => {
-        if (res.data) {
-          const { username } = res.data;
-          setUser({ username });
-        }
+  const { username, setUser, reset: resetUser } = useUser();
+  const { reset: resetAuth } = useAuth();
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const navigate = useNavigate();
+
+  const { loading: logining } = useRequest(UserService.getProfile, {
+    pollingInterval: 30 * 1000,
+    onSuccess: (res) => {
+      if (res.code === 200 && res.data) {
+        const { username } = res.data;
+        setUser({ username });
+        setIsFirstLoad(false);
+      } else {
+        throw new Error(res.msg);
       }
-    });
+    },
+    onError: (e) => {
+      handleLoginExpired();
+      console.log(e);
+    },
+  });
+
+  function handleLoginExpired() {
+    resetUser();
+    resetAuth();
+    navigate("/login");
+    message.warning("登录信息过期，请重新登录");
+  }
 
   const location = useLocation();
   const currentTab = useMemo(() => {
@@ -66,7 +86,7 @@ export default function Layout() {
           )): null}
         </aside>
         <main className="flex-auto bg-nord-snow-2">
-          { logining ?  <LoadingLayer /> : <Outlet /> }
+          { logining && isFirstLoad ?  <LoadingLayer /> : <Outlet /> }
         </main>
       </section>
     </section>
