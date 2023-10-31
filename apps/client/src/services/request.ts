@@ -1,7 +1,7 @@
 interface CustomResponse<T> {
-  statusCode: number;
+  code: number;
   data?: T;
-  message?: string;
+  msg?: string;
 }
 
 export async function request<T>(
@@ -33,7 +33,7 @@ export function requestWithAuth<T>(
       ...(options || {}),
       headers: {
         ...(options || {})?.headers,
-        Authorization: `Bearer ${token}`
+        Authorization: token
       }
     });
   }
