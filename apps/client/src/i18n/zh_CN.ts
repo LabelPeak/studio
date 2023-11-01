@@ -21,4 +21,9 @@ export default {
   "hidden": "不可见",
   "write": "可写",
   "readonly": "只读",
+
+  "info-extract": "信息抽取",
+  "text-classify": "文本分类",
+  "image-text": "图像文本",
+  "image-classify": "图片分类"
 };

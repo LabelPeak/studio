@@ -1,6 +1,8 @@
 export enum DataType {
-  Picture = "picture",
-  Text = "text",
+  InfoExtract = "info-extract",
+  TextClassify = "text-classify",
+  ImageText = "image-text",
+  ImageClassify = "image-classify"
 }
 
 export interface Dataset {

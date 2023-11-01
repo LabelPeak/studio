@@ -1,6 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { type ReactNode, memo, useMemo } from "react";
 import { Project } from "@/interfaces/project";
+import { Tag } from "antd";
+import { useIntl } from "react-intl";
 
 interface IProps {
   project?: Project;
@@ -11,6 +13,7 @@ function ProjectHeader(props: IProps) {
   const { project, extra } = props;
   const navigate = useNavigate();
   const location = useLocation();
+  const intl = useIntl();
   const backPathname = useMemo(() => {
     const temp = location.pathname.split("/");
     temp.pop();
@@ -28,6 +31,9 @@ function ProjectHeader(props: IProps) {
       </Link>
       <div className="px-4 flex items-center">
         <span className="font-bold">{project?.name}</span>
+      </div>
+      <div className="px-4 flex items-center">
+        <Tag>{ intl.formatMessage({ id: project?.dataset.type }) }</Tag>
       </div>
       <div className="flex-auto" />
       <div className="flex items-center px-4">
