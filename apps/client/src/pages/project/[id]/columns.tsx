@@ -7,7 +7,8 @@ function generateColumns(props: { projectLocation: string }) {
   const columns: ColumnsType<DataItem> = [
     {
       title: "编号",
-      dataIndex: "id"
+      dataIndex: "id",
+      width: 100
     },
     {
       title: "来源",

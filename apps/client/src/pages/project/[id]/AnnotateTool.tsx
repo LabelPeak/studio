@@ -5,7 +5,7 @@ interface IProps {}
 
 interface AnnotateTool {}
 
-const AnnotateTool = forwardRef<AnnotateTool ,IProps>((props, ref) => {
+const AnnotateTool = forwardRef<AnnotateTool ,IProps>((_, ref) => {
   useImperativeHandle(ref, () => {
     return {};
   }, []);
