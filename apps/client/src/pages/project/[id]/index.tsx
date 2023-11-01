@@ -71,7 +71,13 @@ export function ProjectDetailPage() {
             })}
           />
         </div>
-        { annotatingItem && <AnnotateTool /> }
+        { (annotatingItem && project) &&
+          <AnnotateTool
+            dataItem={annotatingItem}
+            annotatingType={project.dataset.type}
+            presets={project.presets}
+          />
+        }
       </div>
     </section>
   );

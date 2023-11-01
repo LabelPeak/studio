@@ -25,5 +25,11 @@ export default {
   "info-extract": "InfoExtract",
   "text-classify": "TextClassify",
   "image-text": "ImageText",
-  "image-classify": "ImageClassify"
+  "image-classify": "ImageClassify",
+
+  "operation-undo": "Undo",
+  "operation-redo": "Redo",
+  "operation-reset": "Reset",
+  "operation-delete": "Delete DataItem",
+  "operation-update": "Update",
 };

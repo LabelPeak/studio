@@ -25,5 +25,11 @@ export default {
   "info-extract": "信息抽取",
   "text-classify": "文本分类",
   "image-text": "图像文本",
-  "image-classify": "图片分类"
+  "image-classify": "图片分类",
+
+  "operation-undo": "撤销操作",
+  "operation-redo": "重现操作",
+  "operation-reset": "重置修改",
+  "operation-delete": "删除数据项及标注",
+  "operation-update": "更新标注",
 };

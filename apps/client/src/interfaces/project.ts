@@ -13,6 +13,6 @@ export interface Project {
   access: Access;
   createAt: string;
   creator: User;
-  presets: string[];
+  presets: string;
   dataset: Dataset;
 }
