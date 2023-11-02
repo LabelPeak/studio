@@ -13,7 +13,12 @@ const useUser = create<UserState>((set) => ({
   realname: null,
   isAdmin: null,
   setUser: (value) => set({ ...value }),
-  reset: () => set({ id: null, username: null })
+  reset: () => set({
+    id: null,
+    username: null,
+    realname: null,
+    isAdmin: null
+  })
 }));
 
 export default useUser;

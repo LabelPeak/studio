@@ -16,6 +16,7 @@ export function ProjectDetailPage() {
   const { id: projectId } = useParams<{ id: string }>();
   const [project, setProject] = useState<Project>();
   const [dataItems, setDataItems] = useState<DataItem[]>([]);
+  const [annotatingItem, setAnnotatingItem] = useState<DataItem | null>(null);
   const intl = useIntl();
   const columns = useMemo(() => {
     return generateColumns({
@@ -56,8 +57,8 @@ export function ProjectDetailPage() {
           </Button>
         }
       />
-      <div className="flex flex-auto">
-        <div id="table-section" className="flex-auto">
+      <div className="flex flex-auto of-hidden">
+        <div id="table-section" className="flex-auto of-auto">
           <Table<DataItem>
             loading={loadingDataItems}
             dataSource={dataItems}
@@ -65,9 +66,18 @@ export function ProjectDetailPage() {
             columns={columns}
             pagination={false}
             rowSelection={{ type: "checkbox" }}
+            onRow={(record) => ({
+              onClick: () => setAnnotatingItem(record)
+            })}
           />
         </div>
-        <AnnotateTool />
+        { (annotatingItem && project) &&
+          <AnnotateTool
+            dataItem={annotatingItem}
+            annotatingType={project.dataset.type}
+            presets={project.presets}
+          />
+        }
       </div>
     </section>
   );

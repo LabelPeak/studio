@@ -21,4 +21,19 @@ export default {
   "hidden": "不可见",
   "write": "可写",
   "readonly": "只读",
+
+  "info-extract": "信息抽取",
+  "text-classify": "文本分类",
+  "image-text": "图像文本",
+  "image-classify": "图片分类",
+
+  "operation-undo": "撤销操作",
+  "operation-redo": "重现操作",
+  "operation-reset": "重置修改",
+  "operation-delete": "删除数据项及标注",
+  "operation-update": "更新标注",
+
+  "role-admin": "管理员",
+  "role-annotator": "标注员",
+  "role-checker": "审核员"
 };

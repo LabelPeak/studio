@@ -17,7 +17,7 @@ const featureList = [
 ];
 
 export default function Layout() {
-  const { username, setUser, reset: resetUser } = useUser();
+  const { realname, setUser, reset: resetUser } = useUser();
   const { reset: resetAuth } = useAuth();
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const navigate = useNavigate();
@@ -26,8 +26,7 @@ export default function Layout() {
     pollingInterval: 30 * 1000,
     onSuccess: (res) => {
       if (res.code === 200 && res.data) {
-        const { username } = res.data;
-        setUser({ username });
+        setUser(res.data);
         setIsFirstLoad(false);
       } else {
         throw new Error(res.msg);
@@ -54,7 +53,7 @@ export default function Layout() {
 
   return (
     <section id="layout" className="h-[100vh] flex flex-col min-w-3xl">
-      <header className="h-12 b-b-1 b-color-nord-snow-0 b-b-solid px-4 flex">
+      <header className="h-12 b-b-1 b-color-nord-snow-0 b-b-solid px-4 flex flex-shrink-0">
         <Link to="/dashboard" className="decoration-none flex items-center m-r-4">
           <img src="/favicon.png" className="w-6 h-6 m-r-2" />
           <span className="font-600 c-nord-polar-2 text-4"> { ProductName } </span>
@@ -64,12 +63,12 @@ export default function Layout() {
         </div>
         <div className="flex-auto" />
         <div className="flex items-center">
-          <UserIdentifier name={ username || "" }/>
+          <UserIdentifier name={ realname || "" }/>
         </div>
       </header>
-      <section className="flex flex-auto">
+      <section className="flex flex-auto of-hidden">
         <aside className="p-3 b-r-1 b-r-solid b-color-nord-snow-0 min-w-12">
-          { !logining ? featureList.map(item => (
+          { !(logining && isFirstLoad) ? featureList.map(item => (
             <Link
               className={
                 classnames(
@@ -85,7 +84,7 @@ export default function Layout() {
             </Link>
           )): null}
         </aside>
-        <main className="flex-auto bg-nord-snow-2">
+        <main className="flex-auto bg-nord-snow-2 of-hidden">
           { logining && isFirstLoad ?  <LoadingLayer /> : <Outlet /> }
         </main>
       </section>
