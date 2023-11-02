@@ -17,7 +17,7 @@ const featureList = [
 ];
 
 export default function Layout() {
-  const { username, setUser, reset: resetUser } = useUser();
+  const { realname, setUser, reset: resetUser } = useUser();
   const { reset: resetAuth } = useAuth();
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const navigate = useNavigate();
@@ -26,8 +26,7 @@ export default function Layout() {
     pollingInterval: 30 * 1000,
     onSuccess: (res) => {
       if (res.code === 200 && res.data) {
-        const { username } = res.data;
-        setUser({ username });
+        setUser(res.data);
         setIsFirstLoad(false);
       } else {
         throw new Error(res.msg);
@@ -64,7 +63,7 @@ export default function Layout() {
         </div>
         <div className="flex-auto" />
         <div className="flex items-center">
-          <UserIdentifier name={ username || "" }/>
+          <UserIdentifier name={ realname || "" }/>
         </div>
       </header>
       <section className="flex flex-auto of-hidden">
