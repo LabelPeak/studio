@@ -32,4 +32,8 @@ export default {
   "operation-reset": "重置修改",
   "operation-delete": "删除数据项及标注",
   "operation-update": "更新标注",
+
+  "role-admin": "管理员",
+  "role-annotator": "标注员",
+  "role-checker": "审核员"
 };

@@ -7,6 +7,12 @@ export enum Access {
   Write = "write",
 }
 
+export enum Role {
+  admin = "admin",
+  annotator = "annotator",
+  checker = "checker"
+}
+
 export interface Project {
   id: number;
   name: string;
@@ -15,4 +21,5 @@ export interface Project {
   creator: User;
   presets: string;
   dataset: Dataset;
+  role: Role
 }

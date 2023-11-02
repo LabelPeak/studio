@@ -32,4 +32,8 @@ export default {
   "operation-reset": "Reset",
   "operation-delete": "Delete DataItem",
   "operation-update": "Update",
+
+  "role-admin": "管理员",
+  "role-annotator": "标注员",
+  "role-checker": "审核员"
 };

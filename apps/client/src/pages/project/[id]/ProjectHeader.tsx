@@ -1,13 +1,21 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { type ReactNode, memo, useMemo } from "react";
 import { Project } from "@/interfaces/project";
+import { Role } from "@/interfaces/project";
 import { Tag } from "antd";
 import { useIntl } from "react-intl";
-
 interface IProps {
   project?: Project;
   extra?: ReactNode;
 }
+
+const RoleTagColorMapper: {
+  [key in Role]: string;
+} = {
+  "admin": "blue",
+  "annotator": "volcano",
+  "checker": "green",
+};
 
 function ProjectHeader(props: IProps) {
   const { project, extra } = props;
@@ -32,8 +40,13 @@ function ProjectHeader(props: IProps) {
       <div className="px-4 flex items-center">
         <span className="font-bold">{project?.name}</span>
       </div>
-      <div className="px-4 flex items-center">
+      <div className="px-2 flex items-center">
         <Tag>{ intl.formatMessage({ id: project?.dataset.type }) }</Tag>
+      </div>
+      <div className="px-2 flex items-center">
+        <Tag bordered={false} color={RoleTagColorMapper[project!.role]}>
+          { intl.formatMessage({ id: "role-" + project?.role }) }
+        </Tag>
       </div>
       <div className="flex-auto" />
       <div className="flex items-center px-4">
