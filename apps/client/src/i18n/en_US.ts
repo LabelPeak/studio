@@ -36,6 +36,7 @@ export default {
   "role-admin": "Admin",
   "role-annotator": "Annotator",
   "role-checker": "Checker",
+  "role-super-admin": "SuperAdmin",
 
   "import": "Import file",
   "file-type-support": "FileType Support",

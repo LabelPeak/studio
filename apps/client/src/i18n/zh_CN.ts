@@ -36,6 +36,7 @@ export default {
   "role-admin": "管理员",
   "role-annotator": "标注员",
   "role-checker": "审核员",
+  "role-super-admin": "超级管理员",
 
   "import": "导入文件",
   "file-type-support": "支持的文件类型",
