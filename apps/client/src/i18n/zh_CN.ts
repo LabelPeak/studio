@@ -35,5 +35,12 @@ export default {
 
   "role-admin": "管理员",
   "role-annotator": "标注员",
-  "role-checker": "审核员"
+  "role-checker": "审核员",
+
+  "import": "导入文件",
+  "file-type-support": "支持的文件类型",
+  "dataset-type": "数据集类型",
+  "import-operation": "单击或拖动文件到此区域进行上传",
+  "import-desc": "支持单次上传或批量上传，严禁上传公司数据或其他被禁文件。",
+  "import-count": "已上传文件 {count} 个"
 };

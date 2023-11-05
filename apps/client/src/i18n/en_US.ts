@@ -33,7 +33,14 @@ export default {
   "operation-delete": "Delete DataItem",
   "operation-update": "Update",
 
-  "role-admin": "管理员",
-  "role-annotator": "标注员",
-  "role-checker": "审核员"
+  "role-admin": "Admin",
+  "role-annotator": "Annotator",
+  "role-checker": "Checker",
+
+  "import": "Import file",
+  "file-type-support": "FileType Support",
+  "dataset-type": "Dataset Type",
+  "import-operation": "Click or drag file to this area to upload",
+  "import-desc": "Support for a single or bulk upload. Strictly prohibited from uploading company data or other banned files.",
+  "import-count": "{count} files uploaded"
 };
