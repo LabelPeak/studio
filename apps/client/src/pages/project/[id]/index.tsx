@@ -1,14 +1,17 @@
-import { Button, Table } from "antd";
+import { Button, Space, Table } from "antd";
 import { Link, useParams } from "react-router-dom";
 import { useMemo, useState } from "react";
+import Access from "@/components/Access";
 import AnnotateTool from "./AnnotateTool";
 import { DataItem } from "@/interfaces/dataset";
 import DatasetService from "@/services/dataset";
+import ImportDataItemsForm from "./ImportDataItemsForm";
 import LoadingLayer from "@/components/LoadingLayer";
 import { Project } from "@/interfaces/project";
 import ProjectHeader from "./ProjectHeader";
 import ProjectService from "@/services/project";
 import generateColumns from "./columns";
+import { useAccess } from "@/hooks/useAccess";
 import { useIntl } from "react-intl";
 import { useRequest } from "ahooks";
 
@@ -18,6 +21,9 @@ export function ProjectDetailPage() {
   const [dataItems, setDataItems] = useState<DataItem[]>([]);
   const [annotatingItem, setAnnotatingItem] = useState<DataItem | null>(null);
   const intl = useIntl();
+  const access = useAccess({ role: project?.role });
+  const [openImportForm, setOpenImportForm] = useState(false);
+
   const columns = useMemo(() => {
     return generateColumns({
       projectLocation: project?.dataset.location || ""
@@ -44,17 +50,35 @@ export function ProjectDetailPage() {
     }
   });
 
+  function handleImportFile() {
+    setOpenImportForm(true);
+  }
+
+  function handleFinishImportFile(count: number) {
+    setOpenImportForm(false);
+    if (count > 0 && project) {
+      loadDataItems({ page: 1, size: 10, datasetId: project.dataset.id });
+    }
+  }
+
   if (loadingProject) return <LoadingLayer />;
   else return (
     <section className="bg-white h-full flex flex-col" id="project-detail-page">
       <ProjectHeader
         project={project}
         extra={
-          <Button>
-            <Link to="settings">
-              {intl.formatMessage({ id: "settings" })}
-            </Link>
-          </Button>
+          <Space>
+            <Access accessible={access.canSeeAdmin}>
+              <Button type="primary" onClick={handleImportFile}>
+                {intl.formatMessage({id: "import" })}
+              </Button>
+            </Access>
+            <Button>
+              <Link to="settings">
+                {intl.formatMessage({ id: "settings" })}
+              </Link>
+            </Button>
+          </Space>
         }
       />
       <div className="flex flex-auto of-hidden">
@@ -79,6 +103,12 @@ export function ProjectDetailPage() {
           />
         }
       </div>
+      { project &&
+       <ImportDataItemsForm
+         isOpen={openImportForm}
+         project={project}
+         handleClose={handleFinishImportFile}
+       /> }
     </section>
   );
 }
