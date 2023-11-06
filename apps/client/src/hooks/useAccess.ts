@@ -7,6 +7,7 @@ interface IProps {
 
 export interface IAccess {
   canSeeSuperAdmin: boolean;
+  canSeeStaff: boolean;
   canSeeAdmin: boolean;
   canSeeChecker: boolean;
   canSeeAnnotator: boolean;
@@ -24,6 +25,7 @@ export function useAccess(props?: IProps): IAccess {
 
   return {
     canSeeSuperAdmin: user.superadmin || false,
+    canSeeStaff: user.superadmin === false,
     canSeeAdmin: role === Role.admin,
     canSeeChecker: role === Role.checker,
     canSeeAnnotator: role === Role.annotator,

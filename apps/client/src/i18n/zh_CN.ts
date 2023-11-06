@@ -1,15 +1,18 @@
 export default {
   "login": "登录",
   "register": "注册",
-  "username-prompt": "用户名",
-  "password-prompt" : "密码",
-  "confirm-password-prompt" : "确认密码",
   "welcome": "欢迎使用",
   "new-visit": "第一次使用 {brand}？",
   "have-account": "已经有账号？",
   "settings": "设置",
   "save": "保存",
   "project-name": "项目名称",
+
+  "username-prompt": "用户名",
+  "password-prompt" : "密码",
+  "confirm-password-prompt" : "确认密码",
+  "realname-prompt": "姓名",
+  "id-prompt": "ID",
 
   "project-setting-general": "项目管理",
   "project-setting-labeling": "标签管理",
@@ -43,5 +46,18 @@ export default {
   "dataset-type": "数据集类型",
   "import-operation": "单击或拖动文件到此区域进行上传",
   "import-desc": "支持单次上传或批量上传，严禁上传公司数据或其他被禁文件。",
-  "import-count": "已上传文件 {count} 个"
+  "import-count": "已上传文件 {count} 个",
+
+  "page-title-staffs": "职员管理",
+
+  "submit": "提交",
+  "cancel": "取消",
+  "close": "关闭",
+  "reset": "重置",
+  "result": "结果",
+
+  "new-staff-account": "新建员工信息",
+  "new-staff-username-save-tip": "请保存好用户名和密码，用户名无法修改。",
+  "new-staff-auto-generate-tip": "账号部分信息需要系统自动生成",
+  "new-staff-operation-tip": "请填写表单并点击提交按钮来获取创建结果",
 };

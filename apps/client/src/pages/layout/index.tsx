@@ -1,3 +1,4 @@
+import { IAccess, useAccess } from "@/hooks/useAccess";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 import LoadingLayer from "@/components/LoadingLayer";
@@ -10,9 +11,15 @@ import useAuth from "@/hooks/useAuth";
 import { useRequest } from "ahooks";
 import useUser from "@/hooks/useUser";
 
-const featureList = [
-  { name: "Dashboard", url: "/dashboard", icon: "i-mdi-view-dashboard" },
-  { name: "Projects", url: "/project", icon: "i-mdi-folder" },
+const featureList: Array<{
+  name: string;
+  url: string;
+  icon: string;
+  access?: keyof IAccess;
+}> = [
+  { name: "Projects", url: "/project", icon: "i-mdi-folder", access: "canSeeStaff" },
+  { name: "Dashboard", url: "/dashboard", icon: "i-mdi-view-dashboard", access: "canSeeSuperAdmin" },
+  { name: "Staffs", url: "/staff", icon: "i-mdi-account-group", access: "canSeeSuperAdmin" },
   { name: "User", url: "/user", icon: "i-mdi-account-circle" },
 ];
 
@@ -20,6 +27,7 @@ export default function Layout() {
   const { realname, setUser, reset: resetUser } = useUser();
   const { reset: resetAuth } = useAuth();
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const access = useAccess();
   const navigate = useNavigate();
 
   const { loading: logining } = useRequest(UserService.getProfile, {
@@ -32,9 +40,8 @@ export default function Layout() {
         throw new Error(res.msg);
       }
     },
-    onError: (e) => {
+    onError: () => {
       handleLoginExpired();
-      console.log(e);
     },
   });
 
@@ -47,9 +54,14 @@ export default function Layout() {
 
   const location = useLocation();
   const currentTab = useMemo(() => {
-    const target = featureList.find(item => location.pathname.startsWith(item.url));
-    return target?.name || featureList[0].name;
-  }, [location]);
+    const matchedTarget = featureList.find(item =>
+      location.pathname.startsWith(item.url)
+    );
+    const fallbackTarget = featureList.find(item =>
+      (!item.access || access[item.access])
+    );
+    return matchedTarget?.name || fallbackTarget?.name;
+  }, [location, access]);
 
   return (
     <section id="layout" className="h-[100vh] flex flex-col min-w-3xl">
@@ -68,21 +80,23 @@ export default function Layout() {
       </header>
       <section className="flex flex-auto of-hidden">
         <aside className="p-3 b-r-1 b-r-solid b-color-nord-snow-0 min-w-12">
-          { !(logining && isFirstLoad) ? featureList.map(item => (
-            <Link
-              className={
-                classnames(
-                  "block p-3 r-2 b-rd-2 mb-1 c-nord-frost-3",
-                  currentTab === item.name
-                    ? "mb bg-nord-frost-3 bg-op-30" : "hover:bg-nord-snow-2 "
-                )}
-              key={item.name}
-              to={item.url}
-              title={item.name}
-            >
-              <div className={classnames([item.icon, "text-6"])} />
-            </Link>
-          )): null}
+          { !(logining && isFirstLoad) ? featureList
+            .filter(item => (item.access === undefined) || access[item.access])
+            .map(item => (
+              <Link
+                className={
+                  classnames(
+                    "block p-3 r-2 b-rd-2 mb-1 c-nord-frost-3",
+                    currentTab === item.name
+                      ? "mb bg-nord-frost-3 bg-op-30" : "hover:bg-nord-snow-2 "
+                  )}
+                key={item.name}
+                to={item.url}
+                title={item.name}
+              >
+                <div className={classnames([item.icon, "text-6"])} />
+              </Link>
+            )): null}
         </aside>
         <main className="flex-auto bg-nord-snow-2 of-hidden">
           { logining && isFirstLoad ?  <LoadingLayer /> : <Outlet /> }
