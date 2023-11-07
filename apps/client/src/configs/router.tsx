@@ -10,6 +10,7 @@ import ProjectSettingMember from "@/pages/project/[id]/settings/member";
 import ProjectSettingPage from "@/pages/project/[id]/settings";
 import StaffPage from "@/pages/staff";
 import { UserPage } from "@/pages/user";
+import WelcomePage from "@/components/WelcomePage";
 import { createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -23,7 +24,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <DashboardPage />
+        element: <WelcomePage />
       },
       {
         path: "dashboard",

@@ -57,11 +57,8 @@ export default function Layout() {
     const matchedTarget = featureList.find(item =>
       location.pathname.startsWith(item.url)
     );
-    const fallbackTarget = featureList.find(item =>
-      (!item.access || access[item.access])
-    );
-    return matchedTarget?.name || fallbackTarget?.name;
-  }, [location, access]);
+    return matchedTarget?.name || "";
+  }, [location]);
 
   return (
     <section id="layout" className="h-[100vh] flex flex-col min-w-3xl">

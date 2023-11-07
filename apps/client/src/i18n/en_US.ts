@@ -14,6 +14,9 @@ export default {
   "realname-prompt": "Name",
   "id-prompt": "ID",
 
+  "welcome-page-hello": "Welcome to {brand}",
+  "welcome-page-tip": "Start your work after selecting a tab from left menu!",
+
   "project-setting-general": "General Setting",
   "project-setting-labeling": "Labeling Management",
   "project-setting-member": "Member Management",

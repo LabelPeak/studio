@@ -14,6 +14,9 @@ export default {
   "realname-prompt": "姓名",
   "id-prompt": "ID",
 
+  "welcome-page-hello": "欢迎使用 {brand}",
+  "welcome-page-tip": "从左侧菜单中选择一个选项卡后开始工作!",
+
   "project-setting-general": "项目管理",
   "project-setting-labeling": "标签管理",
   "project-setting-member": "成员管理",
