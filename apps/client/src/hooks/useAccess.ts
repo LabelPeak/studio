@@ -7,6 +7,7 @@ interface IProps {
 
 export interface IAccess {
   canSeeSuperAdmin: boolean;
+  canSeeStaff: boolean;
   canSeeAdmin: boolean;
   canSeeChecker: boolean;
   canSeeAnnotator: boolean;
@@ -14,17 +15,17 @@ export interface IAccess {
 
 /**
  * Access status combining project role
- * and user isAdmin
+ * and superadmin
  *
  * Default role: annotator
  */
-export function useAccess(props: IProps): IAccess {
-  const { role } = props;
-
+export function useAccess(props?: IProps): IAccess {
+  const { role } = props || {};
   const user = useUser();
 
   return {
-    canSeeSuperAdmin: user.isAdmin || false,
+    canSeeSuperAdmin: user.superadmin || false,
+    canSeeStaff: user.superadmin === false,
     canSeeAdmin: role === Role.admin,
     canSeeChecker: role === Role.checker,
     canSeeAnnotator: role === Role.annotator,

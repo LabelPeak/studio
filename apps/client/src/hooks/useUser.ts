@@ -11,13 +11,13 @@ const useUser = create<UserState>((set) => ({
   id: null,
   username: null,
   realname: null,
-  isAdmin: null,
+  superadmin: null,
   setUser: (value) => set({ ...value }),
   reset: () => set({
     id: null,
     username: null,
     realname: null,
-    isAdmin: null
+    superadmin: null
   })
 }));
 

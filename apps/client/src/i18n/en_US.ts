@@ -1,15 +1,18 @@
 export default {
   "login" : "Login",
   "register": "Register",
-  "username-prompt": "Username",
-  "password-prompt" : "Password",
-  "confirm-password-prompt" : "Confirm password",
   "welcome": "Welcome back to",
   "new-visit": "New to {brand}?",
   "have-account": "Already have account?",
   "settings": "Settings",
   "save": "Save",
   "project-name": "Project Name",
+
+  "username-prompt": "Username",
+  "password-prompt" : "Password",
+  "confirm-password-prompt" : "Confirm password",
+  "realname-prompt": "Name",
+  "id-prompt": "ID",
 
   "project-setting-general": "General Setting",
   "project-setting-labeling": "Labeling Management",
@@ -36,11 +39,26 @@ export default {
   "role-admin": "Admin",
   "role-annotator": "Annotator",
   "role-checker": "Checker",
+  "role-super-admin": "SuperAdmin",
 
   "import": "Import file",
   "file-type-support": "FileType Support",
   "dataset-type": "Dataset Type",
   "import-operation": "Click or drag file to this area to upload",
   "import-desc": "Support for a single or bulk upload. Strictly prohibited from uploading company data or other banned files.",
-  "import-count": "{count} files uploaded"
+  "import-count": "{count} files uploaded",
+
+  "page-title-staffs": "Staffs",
+
+  "submit": "Submit",
+  "cancel": "Cancel",
+  "close": "Close",
+  "result": "Result",
+
+  "new-staff-account": "New Staff account",
+  "new-staff-username-save-tip": "Please save the username and password, the username cannot be changed.",
+  "new-staff-auto-generate-tip": "Some fields will be auto generate by system",
+  "new-staff-operation-tip": "Please fill the form and click submit to get create result",
+  "update-staff-account": "Update Staff account",
+
 };
