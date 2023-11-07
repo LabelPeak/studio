@@ -22,7 +22,7 @@ export default function LoginForm(props: IProps) {
     if (res.data) {
       const { token } = res.data;
       setAuthConfig({ token });
-      navigate("/dashboard");
+      navigate("/");
     }
   }
 
