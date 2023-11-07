@@ -60,4 +60,5 @@ export default {
   "new-staff-username-save-tip": "请保存好用户名和密码，用户名无法修改。",
   "new-staff-auto-generate-tip": "账号部分信息需要系统自动生成",
   "new-staff-operation-tip": "请填写表单并点击提交按钮来获取创建结果",
+  "update-staff-account": "更新员工账号",
 };

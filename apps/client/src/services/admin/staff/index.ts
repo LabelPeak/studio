@@ -16,6 +16,13 @@ function createStaff(props: { realname: string }) {
   });
 }
 
+function updateStaff(props: { id: number, realname: string, password: string }) {
+  return requestWithAuth<null>(`/api/admin/staff/${props.id}`, {
+    method: "PATCH",
+    body: JSON.stringify(props)
+  });
+}
+
 function deleteStaff(props: { id: number }) {
   return requestWithAuth<void>(`/api/admin/staff/${props.id}`, {
     method: "DELETE"
@@ -25,6 +32,7 @@ function deleteStaff(props: { id: number }) {
 const AdminService = {
   findAllStaff,
   createStaff,
+  updateStaff,
   deleteStaff
 };
 

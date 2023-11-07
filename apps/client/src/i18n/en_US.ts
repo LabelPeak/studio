@@ -59,5 +59,6 @@ export default {
   "new-staff-username-save-tip": "Please save the username and password, the username cannot be changed.",
   "new-staff-auto-generate-tip": "Some fields will be auto generate by system",
   "new-staff-operation-tip": "Please fill the form and click submit to get create result",
+  "update-staff-account": "Update Staff account",
 
 };

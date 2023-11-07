@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import AdminService from "@/services/admin/staff";
 import { ColumnsType } from "antd/es/table";
 import CreateStaffFormDrawer from "./CreateStaffFormDrawer";
+import UpdateStaffFormDrawer from "./UpdateStaffFormDrawer";
 import { User } from "@/interfaces/user";
 import { useIntl } from "react-intl";
 import { useRequest } from "ahooks";
@@ -12,6 +13,7 @@ export default function StaffPage() {
   const [totalStaffs, setTotalStaffs] = useState(0);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const [staffToUpdate, setStaffToUpdate] = useState<User>();
   const intl = useIntl();
   const paginationRef = useRef({ page: 1, size: 10 });
 
@@ -28,6 +30,16 @@ export default function StaffPage() {
   function handleChangePage(pagination: any) {
     paginationRef.current.page = pagination.current;
     findAllStaff(paginationRef.current);
+  }
+
+  function handleUpdateStaff(staff: User) {
+    setShowUpdateForm(true);
+    setStaffToUpdate(staff);
+  }
+
+  function handleUpdateFormClose(shouldUpdate: boolean) {
+    if (shouldUpdate) findAllStaff(paginationRef.current);
+    setShowUpdateForm(false);
   }
 
   async function handleDeleteStaff(staff: User) {
@@ -58,7 +70,11 @@ export default function StaffPage() {
     {
       key: "operate",
       render: (_, record) => <Space>
-        <Button type="link">修改</Button>
+        <Button
+          type="link"
+          onClick={() => handleUpdateStaff(record)}>
+            修改
+        </Button>
         <Popconfirm
           title="确认删除"
           onConfirm={() => handleDeleteStaff(record)}
@@ -95,6 +111,11 @@ export default function StaffPage() {
       <CreateStaffFormDrawer
         open={showCreateForm}
         onClose={() => setShowCreateForm(false)}
+      />
+      <UpdateStaffFormDrawer
+        open={showUpdateForm}
+        defaultValue={staffToUpdate}
+        onClose={handleUpdateFormClose}
       />
     </section>
   );
