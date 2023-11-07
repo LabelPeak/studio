@@ -8,8 +8,8 @@ export default function ProjectSettingAccess() {
   const { project } = useContext(ProjectSettingContext);
   const basePermissionsOptions = [
     {
-      value: "readonly",
-      label: intl.formatMessage({ id: "readonly" })
+      value: "read",
+      label: intl.formatMessage({ id: "read" })
     },
     {
       value: "write",

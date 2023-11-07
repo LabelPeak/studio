@@ -1,7 +1,8 @@
+import { Role } from "@/interfaces/project";
 import { User } from "@/interfaces/user";
 import { requestWithAuth } from "@/services/request";
 
-function findAllStaff(props: {
+function findAll(props: {
   page: number, size: number
 }) {
   return requestWithAuth<{ list: Array<User>, total: number }>(
@@ -9,31 +10,43 @@ function findAllStaff(props: {
   );
 }
 
-function createStaff(props: { realname: string }) {
+function findAllInProject(props: {
+  project: number, page: number, size: number
+}) {
+  return requestWithAuth<{
+     list: Array<User & { role: Role }>;
+     total: number;
+    }>(
+      `/api/admin/staff?project=${props.project}&page=${props.page}&size=${props.size}`
+    );
+}
+
+function create(props: { realname: string }) {
   return requestWithAuth<User & { password: string }>("/api/admin/staff", {
     method: "POST",
     body: JSON.stringify(props)
   });
 }
 
-function updateStaff(props: { id: number, realname: string, password: string }) {
+function update(props: { id: number, realname: string, password: string }) {
   return requestWithAuth<null>(`/api/admin/staff/${props.id}`, {
     method: "PATCH",
     body: JSON.stringify(props)
   });
 }
 
-function deleteStaff(props: { id: number }) {
+function remove(props: { id: number }) {
   return requestWithAuth<void>(`/api/admin/staff/${props.id}`, {
     method: "DELETE"
   });
 }
 
-const AdminService = {
-  findAllStaff,
-  createStaff,
-  updateStaff,
-  deleteStaff
+const innerStaffApi = {
+  findAll,
+  findAllInProject,
+  create,
+  update,
+  remove
 };
 
-export default AdminService;
+export default innerStaffApi;

@@ -1,6 +1,6 @@
 import { Button, Col, Drawer, Form, Input, Row, Space, message } from "antd";
 import { useEffect, useRef } from "react";
-import AdminService from "@/services/admin/staff";
+import AdminService from "@/services/admin";
 import type { FormInstance } from "antd/es/form";
 import { User } from "@/interfaces/user";
 import { useIntl } from "react-intl";
@@ -22,7 +22,7 @@ export default function UpdateStaffFormDrawer(props: IProps) {
     const password = formRef.current!.getFieldValue("password");
 
     if (realname || password) {
-      const res = await AdminService.updateStaff({ id, realname, password });
+      const res = await AdminService.staff.update({ id, realname, password });
       if (res.code == 200) {
         message.success("更新成功");
         handleClose(true);

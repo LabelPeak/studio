@@ -26,7 +26,7 @@ export default function ProjectCard(props: IProps) {
       <div className="footer pt-4 px-4 b-t-solid b-width-1 b-t-nord-snow-0 flex items-end">
         <div className="c-nord-polar-3 op-60"> { project.createAt } </div>
         <div className="flex-auto" />
-        <Avatar name={project.creator?.realname || ""} size="small" />
+        <Avatar name={project.admin?.realname || ""} size="small" />
       </div>
     </div>
   );
