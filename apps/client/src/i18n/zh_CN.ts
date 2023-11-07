@@ -23,7 +23,7 @@ export default {
   "base-permissions-intro": "基本权限适用于项目的所有成员，但不包括管理员。",
   "hidden": "不可见",
   "write": "可写",
-  "readonly": "只读",
+  "read": "只读",
 
   "info-extract": "信息抽取",
   "text-classify": "文本分类",
@@ -49,16 +49,23 @@ export default {
   "import-count": "已上传文件 {count} 个",
 
   "page-title-staffs": "职员管理",
+  "page-title-projects": "项目管理",
 
   "submit": "提交",
   "cancel": "取消",
   "close": "关闭",
   "reset": "重置",
   "result": "结果",
+  "delete": "删除",
 
   "new-staff-account": "新建员工信息",
   "new-staff-username-save-tip": "请保存好用户名和密码，用户名无法修改。",
   "new-staff-auto-generate-tip": "账号部分信息需要系统自动生成",
   "new-staff-operation-tip": "请填写表单并点击提交按钮来获取创建结果",
   "update-staff-account": "更新员工账号",
+
+  "dashboard-project-column-empty-prompt": "系统没有项目，请点击右上角的按钮进行创建。",
+  "dashboard-staff-column-empty-prompt": "本项目没有分配人员，请点击右上角按钮添加员工。",
+  "dashboard-staff-column-disable-prompt": "请在左侧栏中选择项目以管理员工。"
+
 };

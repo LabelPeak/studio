@@ -9,9 +9,16 @@ function getProjectDetail(projectId: number) {
   return requestWithAuth<Project>("/api/project/query/" + projectId.toString());
 }
 
+function remove(projectId: number) {
+  return requestWithAuth<Project>("/api/project/delete/" + projectId.toString(), {
+    method: "DELETE"
+  });
+}
+
 const ProjectService = {
   getMyParticipateProjects,
-  getProjectDetail
+  getProjectDetail,
+  remove
 };
 
 export default ProjectService;

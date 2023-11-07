@@ -18,7 +18,7 @@ export interface Project {
   name: string;
   access: Access;
   createAt: string;
-  creator: User;
+  admin: User;
   presets: string;
   dataset: Dataset;
   role: Role

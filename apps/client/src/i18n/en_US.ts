@@ -23,7 +23,7 @@ export default {
   "base-permissions-intro": "Base permissions to the project apply to all members and excludes administrators.",
   "hidden": "Hidden",
   "write": "Write",
-  "readonly": "Readonly",
+  "read": "Read",
 
   "info-extract": "InfoExtract",
   "text-classify": "TextClassify",
@@ -49,11 +49,13 @@ export default {
   "import-count": "{count} files uploaded",
 
   "page-title-staffs": "Staffs",
+  "page-title-projects": "Projects",
 
   "submit": "Submit",
   "cancel": "Cancel",
   "close": "Close",
   "result": "Result",
+  "delete": "Delete",
 
   "new-staff-account": "New Staff account",
   "new-staff-username-save-tip": "Please save the username and password, the username cannot be changed.",
@@ -61,4 +63,7 @@ export default {
   "new-staff-operation-tip": "Please fill the form and click submit to get create result",
   "update-staff-account": "Update Staff account",
 
+  "dashboard-project-column-empty-prompt": "There is no project, please click the button in the top right corner to create.",
+  "dashboard-staff-column-empty-prompt": "There is no staff assigned to this project, please clickhthe button in the top right corner to add an employee.",
+  "dashboard-staff-column-disable-prompt": "Please select project in left column to manage staffs."
 };

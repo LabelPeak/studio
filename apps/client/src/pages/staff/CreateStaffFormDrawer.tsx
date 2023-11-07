@@ -1,6 +1,6 @@
 import { Alert, Button, Col, Descriptions, Divider, Drawer, Form, Input, Row, Space, Typography } from "antd";
 import { useRef, useState } from "react";
-import AdminService from "@/services/admin/staff";
+import AdminService from "@/services/admin";
 import type { FormInstance } from "antd/es/form";
 import { User } from "@/interfaces/user";
 import { useIntl } from "react-intl";
@@ -19,7 +19,7 @@ export default function CreateStaffFormDrawer(props: IProps) {
   async function handSubmit() {
     const realname = formRef.current!.getFieldValue("realname");
     if (realname) {
-      const res = await AdminService.createStaff({ realname });
+      const res = await AdminService.staff.create({ realname });
       if (res.code == 200) {
         setResult(res.data);
       }
