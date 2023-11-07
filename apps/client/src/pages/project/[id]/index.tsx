@@ -2,7 +2,7 @@ import { Button, Space, Table } from "antd";
 import { Link, useParams } from "react-router-dom";
 import { useMemo, useState } from "react";
 import Access from "@/components/Access";
-import AnnotateTool from "./AnnotateTool";
+import AnnotateTool from "@/components/AnnotateTool";
 import { DataItem } from "@/interfaces/dataset";
 import DatasetService from "@/services/dataset";
 import ImportDataItemsForm from "./ImportDataItemsForm";
