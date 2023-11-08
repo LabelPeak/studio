@@ -6,7 +6,7 @@ interface IProps extends Label {
   onClick?: (value: Label) => void;
 }
 
-const tagColors = [
+export const LabelTagColors = [
   "#b4317d", "#ce2e2c", "#2657d1", "#c6712b", "#569c30",
   "#c34524", "#44959a", "#2438bc", "#88b236", "#c98b31",
   "#4d20a4"
@@ -26,7 +26,7 @@ export default function LabelTag(props: IProps) {
         ])
       }
       // @ts-ignore-color
-      style={{ "--color": tagColors[ index % tagColors.length] }}
+      style={{ "--color": LabelTagColors[ index % LabelTagColors.length] }}
       onClick={() => props.onClick?.({ index, name })}
     >
       <div

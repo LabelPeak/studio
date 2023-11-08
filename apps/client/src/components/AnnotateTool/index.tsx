@@ -1,5 +1,6 @@
 import { DataItem, DataType, Dataset } from "@/interfaces/dataset";
-import { ReactNode, forwardRef, useImperativeHandle, useRef } from "react";
+import { ReactNode, useRef } from "react";
+import { AnnotateModuleRef } from "./tool-proto";
 import AnnotateToolContext from "./context";
 import ImageClassifyModule from "./ImageClassifyModule";
 import { Project } from "@/interfaces/project";
@@ -13,27 +14,24 @@ interface IProps {
   presets: string;
 }
 
-interface AnnotateTool {}
-
-const AnnotateTool = forwardRef<AnnotateTool ,IProps>((props, ref) => {
+export default function AnnotateTool(props: IProps) {
   const { dataItem, annotatingType, project } = props;
-  const annotationDraft = useRef(dataItem.annotation);
+  const annotateModuleRef = useRef<AnnotateModuleRef>(null);
   const intl = useIntl();
 
   function getAnnotateModule(): ReactNode {
     if (annotatingType === DataType.ImageClassify) {
-      return <ImageClassifyModule dataItem={dataItem} />;
+      return <ImageClassifyModule ref={annotateModuleRef} dataItem={dataItem} />;
     } else {
       return null;
     }
   }
 
-  useImperativeHandle(ref, () => {
-    return {};
-  }, []);
-
   function handleUpdate() {
-    return annotationDraft;
+    const res = annotateModuleRef.current?.export();
+    if (res) {
+      console.log(JSON.parse(res));
+    }
   }
 
   return (
@@ -70,8 +68,4 @@ const AnnotateTool = forwardRef<AnnotateTool ,IProps>((props, ref) => {
       </div>
     </div>
   );
-});
-
-AnnotateTool.displayName = "AnnotateTool";
-
-export default AnnotateTool;
+}
