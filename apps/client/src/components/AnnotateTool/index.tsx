@@ -1,9 +1,13 @@
-import { DataItem, Dataset } from "@/interfaces/dataset";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { DataItem, DataType, Dataset } from "@/interfaces/dataset";
+import { ReactNode, forwardRef, useImperativeHandle, useRef } from "react";
+import AnnotateToolContext from "./context";
+import ImageClassifyModule from "./ImageClassifyModule";
+import { Project } from "@/interfaces/project";
 import classNames from "classnames";
 import { useIntl } from "react-intl";
 
 interface IProps {
+  project: Project;
   dataItem: DataItem;
   annotatingType: Dataset["type"];
   presets: string;
@@ -12,9 +16,17 @@ interface IProps {
 interface AnnotateTool {}
 
 const AnnotateTool = forwardRef<AnnotateTool ,IProps>((props, ref) => {
-  const { dataItem } = props;
+  const { dataItem, annotatingType, project } = props;
   const annotationDraft = useRef(dataItem.annotation);
   const intl = useIntl();
+
+  function getAnnotateModule(): ReactNode {
+    if (annotatingType === DataType.ImageClassify) {
+      return <ImageClassifyModule dataItem={dataItem} />;
+    } else {
+      return null;
+    }
+  }
 
   useImperativeHandle(ref, () => {
     return {};
@@ -28,8 +40,8 @@ const AnnotateTool = forwardRef<AnnotateTool ,IProps>((props, ref) => {
     <div
       id="annotate-section"
       className={classNames([
-        "flex-basis-[60%] b-l-solid b-color-nord-snow-0 b-l-1",
-        "flex flex-col"
+        "w-700px b-l-solid b-color-nord-snow-0 b-l-1",
+        "flex flex-col shrink-0"
       ])}
     >
       <div className="header b-b-1 b-b-solid b-color-nord-snow-0 flex h-[55px]">
@@ -46,6 +58,15 @@ const AnnotateTool = forwardRef<AnnotateTool ,IProps>((props, ref) => {
         >
           { intl.formatMessage({ id: "operation-update"})}
         </div>
+      </div>
+      <div className="flex-auto">
+        <AnnotateToolContext.Provider
+          value={{
+            dataset: project.dataset,
+            presets: project.presets
+          }}>
+          { getAnnotateModule() }
+        </AnnotateToolContext.Provider>
       </div>
     </div>
   );

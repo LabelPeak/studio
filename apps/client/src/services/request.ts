@@ -8,13 +8,15 @@ export async function request<T>(
   url: string,
   options?: RequestInit
 ) {
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    }
-  });
+  const res = await fetch(
+    import.meta.env.DEV ? url : import.meta.env.VITE_HOST + url,
+    {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+      }
+    });
   const data = await res.json() as CustomResponse<T>;
   return data;
 }

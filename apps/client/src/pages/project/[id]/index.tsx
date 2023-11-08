@@ -97,6 +97,7 @@ export function ProjectDetailPage() {
         </div>
         { (annotatingItem && project) &&
           <AnnotateTool
+            project={project}
             dataItem={annotatingItem}
             annotatingType={project.dataset.type}
             presets={project.presets}
