@@ -16,7 +16,7 @@ export default function LabelTag(props: IProps) {
   const { index, name, selected = false } = props;
 
   return (
-    <div
+    <span
       className={
         classNames([
           "py-1 px-2 b-rd-r-1 text-14px cursor-pointer bg-op-70 relative",
@@ -29,13 +29,13 @@ export default function LabelTag(props: IProps) {
       style={{ "--color": LabelTagColors[ index % LabelTagColors.length] }}
       onClick={() => props.onClick?.({ index, name })}
     >
-      <div
+      <span
         className={classNames([
           "w-full h-full absolute top-0 left-0 b-rd-r-1 bg-[var(--color)]",
           !selected && "op-10"
         ])}
       />
       <span className="relative z-10">{ name }</span>
-    </div>
+    </span>
   );
 }
