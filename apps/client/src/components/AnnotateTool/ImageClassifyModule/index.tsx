@@ -4,8 +4,10 @@ import { App, DragEvent, ImageEvent, Leafer, Rect } from "leafer-ui";
 import LabelTag, { LabelTagColors } from "@/components/LabelTag";
 import { forwardRef, useContext, useEffect, useId, useImperativeHandle, useMemo, useRef, useState } from "react";
 import AnnotateToolContext from "../context";
+import { DataItem } from "@/interfaces/dataset";
 import { IEventListenerId } from "@leafer/interface";
 import Shape from "./Shape";
+import { message } from "antd";
 import { nanoid } from "nanoid";
 
 interface EditorState {
@@ -47,8 +49,12 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   }, [presets]);
 
   useEffect(() => {
-    initialEditor();
-    initialImage(`${dataset?.location}/${dataItem.file}`);
+    try {
+      initialEditor();
+      initialCanvas(`${dataset?.location}/${dataItem.file}`, dataItem);
+    } catch (e: any) {
+      message.error(e.message);
+    }
   }, [dataItem]);
 
   useImperativeHandle(ref, () => ({
@@ -104,10 +110,11 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
     );
   }
 
-  function initialImage(url: string) {
+  function initialCanvas(url: string, dataItem: DataItem) {
     if (editorRef.current) {
       if (editorState.current.loadedImageRect) {
         editorState.current.loadedImageRect.destroy();
+        editorState.current.loadedImageMeta = undefined;
       }
       const image = new Rect({
         height: 400,
@@ -116,10 +123,46 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
       });
       image.once(ImageEvent.LOADED, (e) => {
         editorState.current.loadedImageMeta = { width: e.image.width, height: e.image.height };
+        initialAnnotation(dataItem);
       });
       editorState.current.loadedImageRect = image;
       editorState.current.imageLayer!.add(image);
     }
+  }
+
+  function initialAnnotation(dataItem: DataItem) {
+    editorState.current.annotationShapes.forEach(shape => shape.rect.destroy());
+    editorState.current.annotationShapes = [];
+    const imageMeta = editorState.current.loadedImageMeta;
+    if (!imageMeta) throw new Error("no image loaded!");
+    // TODO: Optimize by reducing parse times
+    const data = JSON.parse(dataItem.annotation) as ImageClassifyAnnotation[];
+    const isFitHeight = 640 / 400 > imageMeta.width / imageMeta.height;
+    const scale = isFitHeight ? 400 / imageMeta.height : 640 / imageMeta.width;
+    const imageScaledSize = {
+      height: isFitHeight ? 400 : imageMeta.height * scale,
+      width: isFitHeight ? imageMeta.width * scale : 640
+    };
+    data.forEach(annotation => {
+      const label = labels.find(item => item.name === annotation.value.labels[0]);
+      if (!label) throw new Error("invalid label #" + annotation.value.labels[0]);
+      const color = LabelTagColors[label.index % LabelTagColors.length];
+
+      const shape = new Shape({
+        x: isFitHeight
+          ? annotation.value.x / 100 * imageScaledSize.width + (640 - imageScaledSize.width) / 2
+          : 640 * annotation.value.x / 100,
+        y: isFitHeight
+          ? 400 * annotation.value.y / 100
+          : annotation.value.y / 100 * imageScaledSize.height + (400 - imageScaledSize.height) / 2,
+        height: imageScaledSize.height * annotation.value.height / 100,
+        width: imageScaledSize.width * annotation.value.width / 100,
+        fill: `${color}10`,
+        stroke: color
+      }, label);
+      editorState.current.annotationShapes.push(shape);
+      editorState.current.annotationLayer?.add(shape.rect);
+    });
   }
 
   function handleLabelClick(value: Label) {

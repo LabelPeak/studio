@@ -2,9 +2,11 @@ import { DataItem, DataType, Dataset } from "@/interfaces/dataset";
 import { ReactNode, useRef } from "react";
 import { AnnotateModuleRef } from "./tool-proto";
 import AnnotateToolContext from "./context";
+import DatasetService from "@/services/dataset";
 import ImageClassifyModule from "./ImageClassifyModule";
 import { Project } from "@/interfaces/project";
 import classNames from "classnames";
+import { message } from "antd";
 import { useIntl } from "react-intl";
 
 interface IProps {
@@ -27,10 +29,15 @@ export default function AnnotateTool(props: IProps) {
     }
   }
 
-  function handleUpdate() {
-    const res = annotateModuleRef.current?.export();
-    if (res) {
-      console.log(JSON.parse(res));
+  async function handleUpdate() {
+    const data = annotateModuleRef.current?.export();
+    if (data) {
+      const res = await DatasetService.updateAnnotation({ data, project: project.id, id: dataItem.id });
+      if (res.code === 200) {
+        message.success("更新成功");
+      } else {
+        message.error("更新失败: " + res.msg || "未知错误");
+      }
     }
   }
 
