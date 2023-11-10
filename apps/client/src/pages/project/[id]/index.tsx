@@ -1,8 +1,8 @@
-import { Button, Space, Table } from "antd";
+import AnnotateTool, { AnnotateToolRef } from "@/components/AnnotateTool";
+import { Button, Modal, Space, Table } from "antd";
 import { Link, useParams } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Access from "@/components/Access";
-import AnnotateTool from "./AnnotateTool";
 import { DataItem } from "@/interfaces/dataset";
 import DatasetService from "@/services/dataset";
 import ImportDataItemsForm from "./ImportDataItemsForm";
@@ -23,6 +23,7 @@ export function ProjectDetailPage() {
   const intl = useIntl();
   const access = useAccess({ role: project?.role });
   const [openImportForm, setOpenImportForm] = useState(false);
+  const annotateToolRef = useRef<AnnotateToolRef>(null);
 
   const columns = useMemo(() => {
     return generateColumns({
@@ -61,6 +62,25 @@ export function ProjectDetailPage() {
     }
   }
 
+  function handleClickDataItem(item: DataItem) {
+    if (annotateToolRef.current === null) {
+      setAnnotatingItem(item);
+    } else {
+      if (annotateToolRef.current.checkSafeSave()) {
+        setAnnotatingItem(item);
+      } else {
+        Modal.confirm({
+          title: "警告",
+          content: "修改内容后未保存，是否放弃修改？",
+          onOk: () => {
+            setAnnotatingItem(item);
+          }
+        });
+      }
+    }
+
+  }
+
   if (loadingProject) return <LoadingLayer />;
   else return (
     <section className="bg-white h-full flex flex-col" id="project-detail-page">
@@ -91,12 +111,14 @@ export function ProjectDetailPage() {
             pagination={false}
             rowSelection={{ type: "checkbox" }}
             onRow={(record) => ({
-              onClick: () => setAnnotatingItem(record)
+              onClick: () => handleClickDataItem(record)
             })}
           />
         </div>
         { (annotatingItem && project) &&
           <AnnotateTool
+            ref={annotateToolRef}
+            project={project}
             dataItem={annotatingItem}
             annotatingType={project.dataset.type}
             presets={project.presets}

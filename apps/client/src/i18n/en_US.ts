@@ -44,6 +44,9 @@ export default {
   "role-checker": "Checker",
   "role-super-admin": "SuperAdmin",
 
+  "annotations": "Annotations",
+  "presets": "Presets",
+
   "import": "Import file",
   "file-type-support": "FileType Support",
   "dataset-type": "Dataset Type",

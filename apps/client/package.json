@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "@iconify-json/mdi": "^1.1.54",
+    "@leafer-in/editor": "1.0.0-rc.6",
     "ahooks": "^3.7.8",
     "antd": "^5.10.0",
     "classnames": "^2.3.2",
     "date-fns": "^2.30.0",
+    "leafer-ui": "1.0.0-rc.6",
+    "nanoid": "^5.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intl": "^6.4.7",
@@ -23,6 +26,8 @@
   },
   "devDependencies": {
     "@j10c/eslint-config": "^0.2.0",
+    "@leafer-ui/interface": "1.0.0-rc.6",
+    "@leafer/interface": "1.0.0-rc.6",
     "@types/node": "^20.8.9",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",

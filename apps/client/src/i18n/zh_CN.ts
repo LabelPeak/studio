@@ -44,6 +44,9 @@ export default {
   "role-checker": "审核员",
   "role-super-admin": "超级管理员",
 
+  "annotations": "标注数据",
+  "presets": "标注预设",
+
   "import": "导入文件",
   "file-type-support": "支持的文件类型",
   "dataset-type": "数据集类型",

@@ -13,9 +13,19 @@ export function getDataItems(props:
   );
 }
 
+export function updateAnnotation(props:
+  { data: string, project: number, id: number }
+) {
+  return requestWithAuth<null>("/api/dataset/dataitem/annotate", {
+    method: "PUT",
+    body: JSON.stringify(props)
+  });
+}
+
 const DatasetService = {
   getDetail,
-  getDataItems
+  getDataItems,
+  updateAnnotation
 };
 
 export default DatasetService;
