@@ -15,10 +15,24 @@ function remove(projectId: number) {
   });
 }
 
+function update(
+  projectId: number,
+  data: Partial<{
+    access: string;
+    name: string;
+  }>
+) {
+  return requestWithAuth<Project>("/api/project/update/" + projectId.toString(), {
+    method: "PATCH",
+    body: JSON.stringify(data)
+  });
+}
+
 const ProjectService = {
   getMyParticipateProjects,
   getProjectDetail,
-  remove
+  remove,
+  update
 };
 
 export default ProjectService;

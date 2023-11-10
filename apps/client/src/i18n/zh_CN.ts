@@ -22,6 +22,8 @@ export default {
   "project-setting-member": "成员管理",
   "project-setting-access": "访问控制",
 
+  "project-profile": "项目简介",
+  "project-profile-intro": "项目的名称，开发周期设置",
   "base-permissions": "基本权限",
   "base-permissions-intro": "基本权限适用于项目的所有成员，但不包括管理员。",
   "hidden": "不可见",

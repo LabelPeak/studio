@@ -22,6 +22,8 @@ export default {
   "project-setting-member": "Member Management",
   "project-setting-access": "Access Control",
 
+  "project-profile": "Project Profile",
+  "project-profile-intro": "Name, Development status",
   "base-permissions": "Base Permissions",
   "base-permissions-intro": "Base permissions to the project apply to all members and excludes administrators.",
   "hidden": "Hidden",

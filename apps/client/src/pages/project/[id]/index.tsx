@@ -7,17 +7,17 @@ import { DataItem } from "@/interfaces/dataset";
 import DatasetService from "@/services/dataset";
 import ImportDataItemsForm from "./ImportDataItemsForm";
 import LoadingLayer from "@/components/LoadingLayer";
-import { Project } from "@/interfaces/project";
 import ProjectHeader from "./ProjectHeader";
 import ProjectService from "@/services/project";
 import generateColumns from "./columns";
 import { useAccess } from "@/hooks/useAccess";
 import { useIntl } from "react-intl";
 import { useRequest } from "ahooks";
+import useWorkingProject from "@/hooks/useWorkingProject";
 
 export function ProjectDetailPage() {
   const { id: projectId } = useParams<{ id: string }>();
-  const [project, setProject] = useState<Project>();
+  const { project, setProject } = useWorkingProject();
   const [dataItems, setDataItems] = useState<DataItem[]>([]);
   const [annotatingItem, setAnnotatingItem] = useState<DataItem | null>(null);
   const intl = useIntl();
