@@ -10,4 +10,5 @@ export interface AnnotateModuleRef {
   save: () => string;
   undo: () => void;
   redo: () => void;
+  reset: () => void;
 }

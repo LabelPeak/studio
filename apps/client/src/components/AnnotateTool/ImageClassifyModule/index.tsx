@@ -65,7 +65,8 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   useImperativeHandle(ref, () => ({
     save: handleSave,
     undo: () => {},
-    redo: () => {}
+    redo: () => {},
+    reset: handleRest
   }), []);
 
   function initialEditor() {
@@ -130,7 +131,8 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
       });
       image.once(ImageEvent.LOADED, (e) => {
         editorState.current.loadedImageMeta = { width: e.image.width, height: e.image.height };
-        initialAnnotation(dataItem);
+        const annotations = parseAnnotationFormData(dataItem.annotation);
+        initialAnnotation(annotations);
       });
       editorState.current.loadedImageRect = image;
       editorState.current.imageLayer!.add(image);
@@ -139,13 +141,12 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
 
   // !IMPORTANT
   // TODO: replace dataItem with annotate data object
-  function initialAnnotation(dataItem: DataItem) {
+  function initialAnnotation(annotations: ImageClassifyAnnotation[]) {
     editorState.current.annotationShapes.forEach(shape => shape.rect.destroy());
     editorState.current.annotationShapes = [];
     const imageMeta = editorState.current.loadedImageMeta;
     if (!imageMeta) throw new Error("no image loaded!");
     // TODO: Optimize by reducing parse times
-    const annotations = parseAnnotationFormData(dataItem.annotation);
     setAnnotationObjectList(annotations);
     const isFitHeight = 640 / 400 > imageMeta.width / imageMeta.height;
     const scale = isFitHeight ? 400 / imageMeta.height : 640 / imageMeta.width;
@@ -225,6 +226,13 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   function handleSave(): string {
     const value = transformAnnotationFormShape(editorState.current.annotationShapes);
     return JSON.stringify(value);
+  }
+
+  function handleRest() {
+    if (originAnnotation.current) {
+      setAnnotationObjectList(originAnnotation.current);
+      initialAnnotation(originAnnotation.current);
+    }
   }
 
   return (
