@@ -1,12 +1,12 @@
 import { Project, Role } from "@/interfaces/project";
 import { useRef, useState } from "react";
-import AdminService from "@/services/admin";
 import LoadingLayer from "@/components/LoadingLayer";
 import ProjectColumnPlaceholder from "./ProjectColumnPlaceHolder";
 import ProjectItem from "./ProjectItem";
 import ProjectService from "@/services/project";
 import StaffColumnPlaceholder from "./StaffColumnPlaceholder";
 import StaffItem from "./StaffItem";
+import StaffService from "@/services/staff";
 import { User } from "@/interfaces/user";
 import { message } from "antd";
 import { useIntl } from "react-intl";
@@ -25,7 +25,7 @@ export function DashboardPage() {
   const {
     loading: loadingProjects,
     run: findAllProjects
-  } = useRequest(AdminService.project.findAll, {
+  } = useRequest(ProjectService.findAll, {
     defaultParams: [{ ...projectPaginationRef.current }],
     onSuccess: (res) => {
       if (res.data !== undefined && res.code === 200) {
@@ -38,7 +38,7 @@ export function DashboardPage() {
   const {
     loading: loadingStaffs,
     run: findAllStaffsInProject
-  } = useRequest(AdminService.staff.findAllInProject, {
+  } = useRequest(StaffService.findAllInProject, {
     manual: true,
     onSuccess: (res) => {
       if (res.data !== undefined && res.code === 200) {

@@ -9,6 +9,18 @@ function getProjectDetail(projectId: number) {
   return requestWithAuth<Project>("/api/project/query/" + projectId.toString());
 }
 
+function findAll(props: {
+  page: number,
+  size: number
+}) {
+  return requestWithAuth<{
+    list: Project[];
+    total: number;
+  }>(
+    `/api/project/all?page=${props.page}&size=${props.size}`
+  );
+}
+
 function remove(projectId: number) {
   return requestWithAuth<Project>("/api/project/delete/" + projectId.toString(), {
     method: "DELETE"
@@ -31,6 +43,7 @@ function update(
 const ProjectService = {
   getMyParticipateProjects,
   getProjectDetail,
+  findAll,
   remove,
   update
 };

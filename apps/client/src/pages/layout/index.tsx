@@ -3,8 +3,8 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 import LoadingLayer from "@/components/LoadingLayer";
 import { ProductName } from "@/configs/constants";
+import StaffService from "@/services/staff";
 import UserIdentifier from "./UserIdentifier";
-import UserService from "@/services/user";
 import classnames from "classnames";
 import { message } from "antd";
 import useAuth from "@/hooks/useAuth";
@@ -30,7 +30,7 @@ export default function Layout() {
   const access = useAccess();
   const navigate = useNavigate();
 
-  const { loading: logining } = useRequest(UserService.getProfile, {
+  const { loading: logining } = useRequest(StaffService.getProfile, {
     pollingInterval: 30 * 1000,
     onSuccess: (res) => {
       if (res.code === 200 && res.data) {
