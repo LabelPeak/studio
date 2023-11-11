@@ -6,12 +6,17 @@ export default {
   "have-account": "已经有账号？",
   "settings": "设置",
   "save": "保存",
+  "search": "搜索",
+  "remove": "移除",
   "project-name": "项目名称",
 
   "username-prompt": "用户名",
   "password-prompt" : "密码",
   "confirm-password-prompt" : "确认密码",
   "realname-prompt": "姓名",
+  "role-prompt": "职权",
+  "staffs-search-prompt": "输入姓名或者用户名进行模糊搜索",
+  "operation-prompt": "操作",
   "id-prompt": "ID",
 
   "welcome-page-hello": "欢迎使用 {brand}",
@@ -26,6 +31,8 @@ export default {
   "project-profile-intro": "项目的名称，开发周期设置",
   "base-permissions": "基本权限",
   "base-permissions-intro": "基本权限适用于项目的所有成员，但不包括管理员。",
+  "project-assign-staff": "添加员工到项目",
+
   "hidden": "不可见",
   "write": "可写",
   "read": "只读",

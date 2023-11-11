@@ -6,12 +6,17 @@ export default {
   "have-account": "Already have account?",
   "settings": "Settings",
   "save": "Save",
+  "search": "Search",
+  "remove": "Remove",
   "project-name": "Project Name",
 
   "username-prompt": "Username",
   "password-prompt" : "Password",
   "confirm-password-prompt" : "Confirm password",
   "realname-prompt": "Name",
+  "role-prompt": "Role",
+  "staffs-search-prompt": "Enter a name or username to perform a fuzzy search",
+  "operation-prompt": "Operation",
   "id-prompt": "ID",
 
   "welcome-page-hello": "Welcome to {brand}",
@@ -26,6 +31,8 @@ export default {
   "project-profile-intro": "Name, Development status",
   "base-permissions": "Base Permissions",
   "base-permissions-intro": "Base permissions to the project apply to all members and excludes administrators.",
+  "project-assign-staff": "Assign Staff",
+
   "hidden": "Hidden",
   "write": "Write",
   "read": "Read",

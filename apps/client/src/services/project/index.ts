@@ -1,4 +1,4 @@
-import { Project } from "@/interfaces/project";
+import { Project, Role } from "@/interfaces/project";
 import { requestWithAuth } from "../request";
 
 function getMyParticipateProjects() {
@@ -40,12 +40,24 @@ function update(
   });
 }
 
+function assignStaff(props: {
+  user: number;
+  project: number;
+  role: Role;
+}) {
+  return requestWithAuth<null>("/api/project/assign", {
+    method: "POST",
+    body: JSON.stringify(props)
+  });
+}
+
 const ProjectService = {
   getMyParticipateProjects,
   getProjectDetail,
   findAll,
   remove,
-  update
+  update,
+  assignStaff
 };
 
 export default ProjectService;

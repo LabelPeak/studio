@@ -45,13 +45,22 @@ function remove(props: { id: number }) {
   });
 }
 
+function search(props: { token: string; page: number; size: number }) {
+  return requestWithAuth<{ list: User[], total: number }>(
+    `/api/staff/search?token=${props.token}&page=${props.page}&size=${props.size}`, {
+      method: "GET"
+    }
+  );
+}
+
 const StaffService = {
   getProfile,
   findAll,
   findAllInProject,
   create,
   update,
-  remove
+  remove,
+  search
 };
 
 export default StaffService;
