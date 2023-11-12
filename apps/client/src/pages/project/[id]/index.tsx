@@ -1,5 +1,5 @@
 import AnnotateTool, { AnnotateToolRef } from "@/components/AnnotateTool";
-import { Button, Modal, Space, Table } from "antd";
+import { Button, Modal, Space, Table, message } from "antd";
 import { Link, useParams } from "react-router-dom";
 import { useMemo, useRef, useState } from "react";
 import Access from "@/components/Access";
@@ -24,6 +24,8 @@ export function ProjectDetailPage() {
   const access = useAccess({ role: project?.role });
   const [openImportForm, setOpenImportForm] = useState(false);
   const annotateToolRef = useRef<AnnotateToolRef>(null);
+  const [isMultiSelect, setIsMultiSelect] = useState(false);
+  const selectedDataItems = useRef<DataItem[]>([]);
 
   const columns = useMemo(() => {
     return generateColumns({
@@ -78,7 +80,28 @@ export function ProjectDetailPage() {
         });
       }
     }
+  }
 
+  function handleSelectRows(_: any, rows: DataItem[]) {
+    selectedDataItems.current = rows;
+    if (rows.length === 0) setIsMultiSelect(false);
+    else {
+      setIsMultiSelect(true);
+    }
+  }
+
+  async function handleBatchedDelete() {
+    if (!project || selectedDataItems.current.length === 0) return;
+    const res = await DatasetService.deleteDataItems({
+      project: project.id,
+      dataitems: selectedDataItems.current.map(item => item.id)
+    });
+    if (res.code === 200 && res.data) {
+      message.success(`成功删除 ${res.data} 条数据项`);
+      loadDataItems({ datasetId: project.dataset.id, page: 1, size: 10 });
+    } else {
+      message.error("删除失败: " + res.msg || "未知错误");
+    }
   }
 
   if (loadingProject) return <LoadingLayer />;
@@ -88,6 +111,11 @@ export function ProjectDetailPage() {
         project={project}
         extra={
           <Space>
+            <Access accessible={access.canSeeAdmin && isMultiSelect}>
+              <Button danger onClick={handleBatchedDelete}>
+                {intl.formatMessage({ id: "batched-delete" })}
+              </Button>
+            </Access>
             <Access accessible={access.canSeeAdmin}>
               <Button type="primary" onClick={handleImportFile}>
                 {intl.formatMessage({id: "import" })}
@@ -111,7 +139,7 @@ export function ProjectDetailPage() {
             rowKey="id"
             columns={columns}
             pagination={false}
-            rowSelection={{ type: "checkbox" }}
+            rowSelection={{ type: "checkbox", onChange: handleSelectRows }}
             onRow={(record) => ({
               onClick: () => handleClickDataItem(record)
             })}
