@@ -19,6 +19,7 @@ interface EditorState {
   annotatingEvents: IEventListenerId[];
   annotationShapes: Shape[];
   mode: "annotate" | "filter";
+  size: { height: number, width: number }
 }
 
 export interface ImageClassifyAnnotation extends Annotation<{
@@ -40,7 +41,8 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   const editorState = useRef<EditorState>({
     annotatingEvents: [],
     annotationShapes: [],
-    mode: "annotate"
+    mode: "annotate",
+    size: { height: 320, width: 512 }
   });
   const [selectedLabels, setSelectedLabels] = useState<Label[]>([]);
   const annotatingLabel = useRef<Label | null>(null);
@@ -119,37 +121,40 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   }
 
   function initialCanvas(url: string, dataItem: DataItem) {
+    const state = editorState.current;
     if (editorRef.current) {
-      if (editorState.current.loadedImageRect) {
-        editorState.current.loadedImageRect.destroy();
-        editorState.current.loadedImageMeta = undefined;
+      if (state.loadedImageRect) {
+        initialAnnotation([]);
+        state.loadedImageRect.destroy();
+        state.loadedImageMeta = undefined;
       }
       const image = new Rect({
-        height: 400,
-        width: 640,
+        height: state.size.height,
+        width: state.size.width,
         fill: { type: "image", url, mode: "fit" }
       });
       image.once(ImageEvent.LOADED, (e) => {
-        editorState.current.loadedImageMeta = { width: e.image.width, height: e.image.height };
+        state.loadedImageMeta = { width: e.image.width, height: e.image.height };
         const annotations = parseAnnotationFormData(dataItem.annotation);
         initialAnnotation(annotations);
       });
-      editorState.current.loadedImageRect = image;
-      editorState.current.imageLayer!.add(image);
+      state.loadedImageRect = image;
+      state.imageLayer!.add(image);
     }
   }
 
   function initialAnnotation(annotations: ImageClassifyAnnotation[]) {
-    editorState.current.annotationShapes.forEach(shape => shape.rect.destroy());
-    editorState.current.annotationShapes = [];
+    const state = editorState.current;
+    state.annotationShapes.forEach(shape => shape.rect.destroy());
+    state.annotationShapes = [];
     const imageMeta = editorState.current.loadedImageMeta;
-    if (!imageMeta) throw new Error("no image loaded!");
+    if (!imageMeta) return;
     setAnnotationObjectList(annotations);
-    const isFitHeight = 640 / 400 > imageMeta.width / imageMeta.height;
-    const scale = isFitHeight ? 400 / imageMeta.height : 640 / imageMeta.width;
+    const isFitHeight = state.size.width / state.size.height > imageMeta.width / imageMeta.height;
+    const scale = isFitHeight ? state.size.height / imageMeta.height : state.size.width / imageMeta.width;
     const imageScaledSize = {
-      height: isFitHeight ? 400 : imageMeta.height * scale,
-      width: isFitHeight ? imageMeta.width * scale : 640
+      height: isFitHeight ? state.size.height : imageMeta.height * scale,
+      width: isFitHeight ? imageMeta.width * scale : state.size.width
     };
     annotations.forEach(annotation => {
       const label = labels.find(item => item.name === annotation.value.labels[0]);
@@ -158,18 +163,18 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
 
       const shape = new Shape({
         x: isFitHeight
-          ? annotation.value.x / 100 * imageScaledSize.width + (640 - imageScaledSize.width) / 2
-          : 640 * annotation.value.x / 100,
+          ? annotation.value.x / 100 * imageScaledSize.width + (state.size.width - imageScaledSize.width) / 2
+          : state.size.width * annotation.value.x / 100,
         y: isFitHeight
-          ? 400 * annotation.value.y / 100
-          : annotation.value.y / 100 * imageScaledSize.height + (400 - imageScaledSize.height) / 2,
+          ? state.size.height * annotation.value.y / 100
+          : annotation.value.y / 100 * imageScaledSize.height + (state.size.height - imageScaledSize.height) / 2,
         height: imageScaledSize.height * annotation.value.height / 100,
         width: imageScaledSize.width * annotation.value.width / 100,
         fill: `${color}10`,
         stroke: color
       }, label);
-      editorState.current.annotationShapes.push(shape);
-      editorState.current.annotationLayer?.add(shape.rect);
+      state.annotationShapes.push(shape);
+      state.annotationLayer?.add(shape.rect);
     });
   }
 
@@ -196,13 +201,14 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   }
 
   function transformAnnotationFormShape(shapes: Shape[]): ImageClassifyAnnotation[] {
+    const state = editorState.current;
     const image = editorState.current.loadedImageMeta;
     if (!image) throw new Error("no image loaded");
-    const isFitHeight = 640 / 400 > image.width / image.height;
-    const scale = isFitHeight ? 400 / image.height : 640 / image.width;
+    const isFitHeight = state.size.width / state.size.height > image.width / image.height;
+    const scale = isFitHeight ? state.size.height / image.height : state.size.width / image.width;
     const bounds = isFitHeight
-      ? { x: 640 / 2 - image.width * scale / 2, y: 0, width: image.width * scale, height: 400 }
-      : { x: 0, y: 400 / 2 - image.height * scale / 2, width: image.width * scale, height: 400 };
+      ? { x: state.size.width / 2 - image.width * scale / 2, y: 0, width: image.width * scale, height: state.size.height }
+      : { x: 0, y: state.size.height / 2 - image.height * scale / 2, width: image.width * scale, height: state.size.height };
     const value: Array<ImageClassifyAnnotation> =
       shapes.map(item => {
         return {
@@ -239,7 +245,10 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   return (
     <section id="image-classify-module" className="h-full flex flex-col of-hidden">
       <div className="p-30px b-b-1 b-b-solid b-color-nord-snow-0">
-        <div id={editorId} className="h-400px"></div>
+        <div
+          id={editorId}
+          style={{ ...editorState.current.size }}
+        />
       </div>
       <div className="flex-auto flex of-hidden">
         <section id="presets" className="w-40% px-2 box-border">

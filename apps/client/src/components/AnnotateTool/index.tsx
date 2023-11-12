@@ -59,7 +59,7 @@ const AnnotateTool = forwardRef<AnnotateToolRef, IProps>((props, ref) => {
     <div
       id="annotate-section"
       className={classNames([
-        "w-700px b-l-solid b-color-nord-snow-0 b-l-1",
+        "b-l-solid b-color-nord-snow-0 b-l-1",
         "flex flex-col shrink-0 of-hidden"
       ])}
     >

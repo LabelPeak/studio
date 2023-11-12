@@ -8,6 +8,7 @@ interface IProps {
   onUpdate: () => void;
   controller: RefObject<AnnotateModuleRef>;
   dataItem: DataItem;
+  // editorOptions: { size: { width: number, height: number } }
 }
 
 export default function ModuleMiddleware(props: IProps) {
