@@ -21,6 +21,18 @@ function findAll(props: {
   );
 }
 
+function create(props:
+  { name: string, access: string, type: string, admin: number }
+) {
+  return requestWithAuth<Project>(
+    "/api/project/create", {
+      method: "POST",
+      body: JSON.stringify(props)
+    }
+  );
+
+}
+
 function remove(projectId: number) {
   return requestWithAuth<Project>("/api/project/delete/" + projectId.toString(), {
     method: "DELETE"
@@ -56,6 +68,7 @@ const ProjectService = {
   getMyParticipateProjects,
   getProjectDetail,
   findAll,
+  create,
   remove,
   update,
   assignStaff
