@@ -5,12 +5,10 @@ export default {
   "new-visit": "第一次使用 {brand}？",
   "have-account": "已经有账号？",
   "settings": "设置",
-  "save": "保存",
-  "search": "搜索",
-  "remove": "移除",
-  "add": "添加",
-  "project-name": "项目名称",
 
+  "project-name": "项目名称",
+  "project-access-prompt": "可访问性",
+  "project-datatype-prompt": "数据集类型",
   "username-prompt": "用户名",
   "password-prompt" : "密码",
   "confirm-password-prompt" : "确认密码",
@@ -50,7 +48,7 @@ export default {
   "operation-delete": "删除数据项及标注",
   "operation-update": "更新标注",
 
-  "role-admin": "管理员",
+  "role-admin": "项目管理员",
   "role-annotator": "标注员",
   "role-checker": "审核员",
   "role-super-admin": "超级管理员",
@@ -67,7 +65,13 @@ export default {
 
   "page-title-staffs": "职员管理",
   "page-title-projects": "项目管理",
+  "project-create": "创建项目",
 
+  "save": "保存",
+  "search": "搜索",
+  "remove": "移除",
+  "create": "创建",
+  "add": "添加",
   "submit": "提交",
   "cancel": "取消",
   "close": "关闭",
@@ -84,5 +88,4 @@ export default {
   "dashboard-project-column-empty-prompt": "系统没有项目，请点击右上角的按钮进行创建。",
   "dashboard-staff-column-empty-prompt": "本项目没有分配人员，请点击右上角按钮添加员工。",
   "dashboard-staff-column-disable-prompt": "请在左侧栏中选择项目以管理员工。"
-
 };

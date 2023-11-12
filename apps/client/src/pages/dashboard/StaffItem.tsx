@@ -25,7 +25,8 @@ export default function StaffItem(props: IProps) {
       onClick={handleClick}>
       <div className="flex items-center">
         <Avatar name={staff.realname!} />
-        <div className="ml-2">{ staff.username }</div>
+        <div className="ml-2">{ staff.realname }</div>
+        <div className="ml-2 text-14px c-nord-polar-3">{ staff.username }</div>
         <div className="flex-auto" />
         <RoleTag role={ staff.role } />
       </div>

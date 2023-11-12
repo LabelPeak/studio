@@ -1,5 +1,6 @@
 import { Project, Role } from "@/interfaces/project";
 import { useRef, useState } from "react";
+import CreateProjectDrawer from "./CreateProjectFormDrawer";
 import LoadingLayer from "@/components/LoadingLayer";
 import ProjectColumnPlaceholder from "./ProjectColumnPlaceHolder";
 import ProjectItem from "./ProjectItem";
@@ -21,6 +22,7 @@ export function DashboardPage() {
   const [staffs, setStaffs] = useState<Array<User & { role: Role }>>([]);
   const [, setTotalStaffs] = useState(0);
   const [selectedProject, setSelectedProject] = useState<Project>();
+  const [openCreateProjectForm, setOpenCreateProjectForm] = useState(false);
 
   const {
     loading: loadingProjects,
@@ -48,6 +50,10 @@ export function DashboardPage() {
     }
   });
 
+  function handleClickCreateProject() {
+    setOpenCreateProjectForm(true);
+  }
+
   function handleClickProject(project: Project) {
     setSelectedProject(project);
     staffPaginationRef.current.page = 1;
@@ -73,16 +79,24 @@ export function DashboardPage() {
     console.log(staff);
   }
 
+  function handleCreateProjectFormClose() {
+    setOpenCreateProjectForm(false);
+  }
+
   return (
     <section
       id="dashboard-page"
       className="h-full flex bg-white"
     >
-      <section className="w-xs b-r-1- b-r-solid b-color-nord-snow-0 flex flex-col">
+      <section className="w-xs b-r-1 b-r-solid b-color-nord-snow-0 flex flex-col">
         <div className="flex b-b-1 b-b-solid b-color-nord-snow-0 items-center p-4">
           <h1 className="m-0 text-4">{ intl.formatMessage({ id: "page-title-projects" })}</h1>
           <div className="flex-auto" />
-          <div className="i-mdi-folder-plus c-nord-frost-3 text-5 cursor-pointer" title="add-project" />
+          <div
+            className="i-mdi-folder-plus c-nord-frost-3 text-5 cursor-pointer"
+            title="add-project"
+            onClick={handleClickCreateProject}
+          />
         </div>
         <div className="flex-auto relative of-auto bg-nord-snow-2 bg-op-70">
           { loadingProjects
@@ -100,7 +114,7 @@ export function DashboardPage() {
               ))}
         </div>
       </section>
-      <section className="w-xs b-r-1- b-r-solid b-color-nord-snow-0 flex flex-col">
+      <section className="w-xs b-r-1 b-r-solid b-color-nord-snow-0 flex flex-col">
         <div className="flex b-b-1 b-b-solid b-color-nord-snow-0 items-center p-4">
           <h1 className="m-0 text-4">{ intl.formatMessage({ id: "page-title-staffs" })}</h1>
           <div className="flex-auto" />
@@ -123,7 +137,9 @@ export function DashboardPage() {
         </div>
       </section>
       <div className="flex-auto bg-nord-snow-2 bg-op-70">
+        { /* flow chart */ }
       </div>
+      <CreateProjectDrawer open={openCreateProjectForm} onClose={handleCreateProjectFormClose} />
     </section>
   );
 }
