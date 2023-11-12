@@ -1,17 +1,15 @@
 import { Menu, MenuProps } from "antd";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import LoadingLayer from "@/components/LoadingLayer";
-import { Project } from "@/interfaces/project";
 import ProjectHeader from "../ProjectHeader";
 import ProjectService from "@/services/project";
-import ProjectSettingContext from "./ProjectSettingContext";
 import { useIntl } from "react-intl";
 import { useRequest } from "ahooks";
-import { useState } from "react";
+import useWorkingProject from "@/hooks/useWorkingProject";
 
 export default function ProjectSettingPage() {
   const navigate = useNavigate();
-  const [project, setProject] = useState<Project>();
+  const { project, setProject } = useWorkingProject();
   const { id: projectId } = useParams<{ id: string }>();
   const intl = useIntl();
   const { loading: loadingProject } = useRequest(ProjectService.getProjectDetail, {
@@ -25,7 +23,7 @@ export default function ProjectSettingPage() {
 
   const menuItems: MenuProps["items"] = [
     { key: "general", label: intl.formatMessage({ id: "project-setting-general" }) },
-    { key: "labeling", label: intl.formatMessage({ id: "project-setting-labeling" }) },
+    { key: "preset", label: intl.formatMessage({ id: "project-setting-preset" }) },
     { key: "member", label: intl.formatMessage({ id: "project-setting-member" }) },
     { key: "access", label: intl.formatMessage({ id: "project-setting-access" }) }
   ];
@@ -48,9 +46,7 @@ export default function ProjectSettingPage() {
           />
         </div>
         <div className="flex-auto text-5">
-          <ProjectSettingContext.Provider value={{ project }}>
-            <Outlet />
-          </ProjectSettingContext.Provider>
+          <Outlet />
         </div>
       </div>
     </section>

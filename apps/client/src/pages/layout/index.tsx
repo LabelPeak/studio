@@ -3,8 +3,8 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 import LoadingLayer from "@/components/LoadingLayer";
 import { ProductName } from "@/configs/constants";
+import StaffService from "@/services/staff";
 import UserIdentifier from "./UserIdentifier";
-import UserService from "@/services/user";
 import classnames from "classnames";
 import { message } from "antd";
 import useAuth from "@/hooks/useAuth";
@@ -30,7 +30,7 @@ export default function Layout() {
   const access = useAccess();
   const navigate = useNavigate();
 
-  const { loading: logining } = useRequest(UserService.getProfile, {
+  const { loading: logining } = useRequest(StaffService.getProfile, {
     pollingInterval: 30 * 1000,
     onSuccess: (res) => {
       if (res.code === 200 && res.data) {
@@ -63,7 +63,7 @@ export default function Layout() {
   return (
     <section id="layout" className="h-[100vh] flex flex-col min-w-3xl">
       <header className="h-12 b-b-1 b-color-nord-snow-0 b-b-solid px-4 flex flex-shrink-0">
-        <Link to="/dashboard" className="decoration-none flex items-center m-r-4">
+        <Link to="/" className="decoration-none flex items-center m-r-4">
           <img src="/favicon.png" className="w-6 h-6 m-r-2" />
           <span className="font-600 c-nord-polar-2 text-4"> { ProductName } </span>
         </Link>

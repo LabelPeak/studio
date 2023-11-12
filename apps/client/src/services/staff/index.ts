@@ -1,12 +1,16 @@
 import { Role } from "@/interfaces/project";
 import { User } from "@/interfaces/user";
-import { requestWithAuth } from "@/services/request";
+import { requestWithAuth } from "../request";
+
+function getProfile() {
+  return requestWithAuth<User>("/api/staff");
+}
 
 function findAll(props: {
   page: number, size: number
 }) {
   return requestWithAuth<{ list: Array<User>, total: number }>(
-    `/api/admin/staff?page=${props.page}&size=${props.size}`
+    `/api/staff/all?page=${props.page}&size=${props.size}`
   );
 }
 
@@ -17,36 +21,46 @@ function findAllInProject(props: {
      list: Array<User & { role: Role }>;
      total: number;
     }>(
-      `/api/admin/staff?project=${props.project}&page=${props.page}&size=${props.size}`
+      `/api/staff/project/${props.project}?page=${props.page}&size=${props.size}`
     );
 }
 
 function create(props: { realname: string }) {
-  return requestWithAuth<User & { password: string }>("/api/admin/staff", {
+  return requestWithAuth<User & { password: string }>("/api/staff", {
     method: "POST",
     body: JSON.stringify(props)
   });
 }
 
 function update(props: { id: number, realname: string, password: string }) {
-  return requestWithAuth<null>(`/api/admin/staff/${props.id}`, {
+  return requestWithAuth<null>(`/api/staff/${props.id}`, {
     method: "PATCH",
     body: JSON.stringify(props)
   });
 }
 
 function remove(props: { id: number }) {
-  return requestWithAuth<void>(`/api/admin/staff/${props.id}`, {
+  return requestWithAuth<void>(`/api/staff/${props.id}`, {
     method: "DELETE"
   });
 }
 
-const innerStaffApi = {
+function search(props: { token: string; page: number; size: number }) {
+  return requestWithAuth<{ list: User[], total: number }>(
+    `/api/staff/search?token=${props.token}&page=${props.page}&size=${props.size}`, {
+      method: "GET"
+    }
+  );
+}
+
+const StaffService = {
+  getProfile,
   findAll,
   findAllInProject,
   create,
   update,
-  remove
+  remove,
+  search
 };
 
-export default innerStaffApi;
+export default StaffService;

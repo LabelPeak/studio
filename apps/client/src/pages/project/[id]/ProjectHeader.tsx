@@ -1,6 +1,6 @@
+import { Access, Project } from "@/interfaces/project";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { type ReactNode, memo, useMemo } from "react";
-import { Project } from "@/interfaces/project";
 import RoleTag from "@/components/RoleTag";
 import { Tag } from "antd";
 import { useIntl } from "react-intl";
@@ -30,12 +30,18 @@ function ProjectHeader(props: IProps) {
         <div className="i-mdi-arrow-left text-5 c-nord-polar-3" />
       </Link>
       <div className="px-4 flex items-center">
+        <span className="c-nord-polar-3 mr-2">#{project?.id}</span>
         <span className="font-bold">{project?.name}</span>
       </div>
-      <div className="px-2 flex items-center">
+      <div className="mr-2 flex items-center">
         <Tag>{ intl.formatMessage({ id: project?.dataset.type }) }</Tag>
       </div>
-      <div className="px-2 flex items-center">
+      <div className="mr-2 flex items-center">
+        <Tag color={ project?.access === Access.Write ? "success" : "error"}>
+          { intl.formatMessage({ id: project?.access }) }
+        </Tag>
+      </div>
+      <div className="mr-2 flex items-center">
         <RoleTag role={project!.role} />
       </div>
       <div className="flex-auto" />

@@ -1,8 +1,8 @@
 import { Button, Popconfirm, Space, Table, message } from "antd";
 import { useRef, useState } from "react";
-import AdminService from "@/services/admin";
 import { ColumnsType } from "antd/es/table";
 import CreateStaffFormDrawer from "./CreateStaffFormDrawer";
+import StaffService from "@/services/staff";
 import UpdateStaffFormDrawer from "./UpdateStaffFormDrawer";
 import { User } from "@/interfaces/user";
 import { useIntl } from "react-intl";
@@ -17,7 +17,7 @@ export default function StaffPage() {
   const intl = useIntl();
   const paginationRef = useRef({ page: 1, size: 10 });
 
-  const { loading, run: findAllStaff } = useRequest(AdminService.staff.findAll, {
+  const { loading, run: findAllStaff } = useRequest(StaffService.findAll, {
     defaultParams: [{ ...paginationRef.current }],
     onSuccess: (res) => {
       if (res.data !== undefined && res.code === 200) {
@@ -43,7 +43,7 @@ export default function StaffPage() {
   }
 
   async function handleDeleteStaff(staff: User) {
-    const res = await AdminService.staff.remove({ id: staff.id! });
+    const res = await StaffService.remove({ id: staff.id! });
     if (res.code == 200) {
       message.success("删除成功");
       findAllStaff(paginationRef.current);

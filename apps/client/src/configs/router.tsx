@@ -5,9 +5,9 @@ import { ProjectDetailPage } from "@/pages/project/[id]/index";
 import { ProjectPage } from "@/pages/project";
 import ProjectSettingAccess from "@/pages/project/[id]/settings/access";
 import ProjectSettingGeneral from "@/pages/project/[id]/settings/general";
-import ProjectSettingLabeling from "@/pages/project/[id]/settings/labeling";
 import ProjectSettingMember from "@/pages/project/[id]/settings/member";
 import ProjectSettingPage from "@/pages/project/[id]/settings";
+import ProjectSettingPreset from "@/pages/project/[id]/settings/preset";
 import StaffPage from "@/pages/staff";
 import { UserPage } from "@/pages/user";
 import WelcomePage from "@/components/WelcomePage";
@@ -51,8 +51,8 @@ const router = createBrowserRouter([
             element: <ProjectSettingGeneral />
           },
           {
-            path: "labeling",
-            element: <ProjectSettingLabeling />
+            path: "preset",
+            element: <ProjectSettingPreset />
           },
           {
             path: "member",
