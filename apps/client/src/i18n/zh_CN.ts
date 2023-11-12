@@ -8,6 +8,7 @@ export default {
   "save": "保存",
   "search": "搜索",
   "remove": "移除",
+  "add": "添加",
   "project-name": "项目名称",
 
   "username-prompt": "用户名",
@@ -23,7 +24,7 @@ export default {
   "welcome-page-tip": "从左侧菜单中选择一个选项卡后开始工作!",
 
   "project-setting-general": "项目管理",
-  "project-setting-labeling": "标签管理",
+  "project-setting-preset": "标签预设",
   "project-setting-member": "成员管理",
   "project-setting-access": "访问控制",
 
@@ -32,6 +33,7 @@ export default {
   "base-permissions": "基本权限",
   "base-permissions-intro": "基本权限适用于项目的所有成员，但不包括管理员。",
   "project-assign-staff": "添加员工到项目",
+  "project-preset-add": "添加预设标签",
 
   "hidden": "不可见",
   "write": "可写",

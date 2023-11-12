@@ -32,6 +32,7 @@ function update(
   data: Partial<{
     access: string;
     name: string;
+    presets: string;
   }>
 ) {
   return requestWithAuth<Project>("/api/project/update/" + projectId.toString(), {

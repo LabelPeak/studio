@@ -139,14 +139,11 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
     }
   }
 
-  // !IMPORTANT
-  // TODO: replace dataItem with annotate data object
   function initialAnnotation(annotations: ImageClassifyAnnotation[]) {
     editorState.current.annotationShapes.forEach(shape => shape.rect.destroy());
     editorState.current.annotationShapes = [];
     const imageMeta = editorState.current.loadedImageMeta;
     if (!imageMeta) throw new Error("no image loaded!");
-    // TODO: Optimize by reducing parse times
     setAnnotationObjectList(annotations);
     const isFitHeight = 640 / 400 > imageMeta.width / imageMeta.height;
     const scale = isFitHeight ? 400 / imageMeta.height : 640 / imageMeta.width;
@@ -220,7 +217,11 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   }
 
   function parseAnnotationFormData(data: string): ImageClassifyAnnotation[] {
-    return JSON.parse(data);
+    const temp: ImageClassifyAnnotation[] = JSON.parse(data);
+    return temp.filter(annotation => {
+      const label = labels.find(label => label.name === annotation.value.labels[0]);
+      return Boolean(label);
+    });
   }
 
   function handleSave(): string {

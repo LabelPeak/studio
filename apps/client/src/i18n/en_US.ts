@@ -8,6 +8,7 @@ export default {
   "save": "Save",
   "search": "Search",
   "remove": "Remove",
+  "add": "Add",
   "project-name": "Project Name",
 
   "username-prompt": "Username",
@@ -23,7 +24,7 @@ export default {
   "welcome-page-tip": "Start your work after selecting a tab from left menu!",
 
   "project-setting-general": "General Setting",
-  "project-setting-labeling": "Labeling Management",
+  "project-setting-preset": "Labeling Preset",
   "project-setting-member": "Member Management",
   "project-setting-access": "Access Control",
 
@@ -32,6 +33,7 @@ export default {
   "base-permissions": "Base Permissions",
   "base-permissions-intro": "Base permissions to the project apply to all members and excludes administrators.",
   "project-assign-staff": "Assign Staff",
+  "project-preset-add": "Add Label",
 
   "hidden": "Hidden",
   "write": "Write",

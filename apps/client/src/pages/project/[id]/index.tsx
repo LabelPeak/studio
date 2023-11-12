@@ -93,11 +93,13 @@ export function ProjectDetailPage() {
                 {intl.formatMessage({id: "import" })}
               </Button>
             </Access>
-            <Button>
-              <Link to="settings">
-                {intl.formatMessage({ id: "settings" })}
-              </Link>
-            </Button>
+            <Access accessible={access.canSeeAdmin}>
+              <Button>
+                <Link to="settings">
+                  {intl.formatMessage({ id: "settings" })}
+                </Link>
+              </Button>
+            </Access>
           </Space>
         }
       />

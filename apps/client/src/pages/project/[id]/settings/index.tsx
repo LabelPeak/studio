@@ -23,7 +23,7 @@ export default function ProjectSettingPage() {
 
   const menuItems: MenuProps["items"] = [
     { key: "general", label: intl.formatMessage({ id: "project-setting-general" }) },
-    { key: "labeling", label: intl.formatMessage({ id: "project-setting-labeling" }) },
+    { key: "preset", label: intl.formatMessage({ id: "project-setting-preset" }) },
     { key: "member", label: intl.formatMessage({ id: "project-setting-member" }) },
     { key: "access", label: intl.formatMessage({ id: "project-setting-access" }) }
   ];
