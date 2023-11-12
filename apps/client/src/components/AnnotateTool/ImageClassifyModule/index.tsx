@@ -244,7 +244,7 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
 
   return (
     <section id="image-classify-module" className="h-full flex flex-col of-hidden">
-      <div className="p-30px b-b-1 b-b-solid b-color-nord-snow-0">
+      <div className="p-30px b-b-1 b-b-solid b-color-nord-snow-0 flex justify-center">
         <div
           id={editorId}
           style={{ ...editorState.current.size }}
@@ -255,7 +255,7 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
           <h2 className="text-14px my-0 py-3 b-b-1 b-b-dashed b-color-nord-snow-0">
             { intl.formatMessage({ id: "presets" }) }
           </h2>
-          <div className="flex gap-2 mt-2">
+          <div className="flex gap-2 mt-2 flex-wrap">
             { labels.map(label => (
               <LabelTag
                 key={label.index}
