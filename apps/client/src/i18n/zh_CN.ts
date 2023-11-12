@@ -78,6 +78,7 @@ export default {
   "reset": "重置",
   "result": "结果",
   "delete": "删除",
+  "batched-delete": "批量删除",
 
   "new-staff-account": "新建员工信息",
   "new-staff-username-save-tip": "请保存好用户名和密码，用户名无法修改。",

@@ -77,6 +77,7 @@ export default {
   "close": "Close",
   "result": "Result",
   "delete": "Delete",
+  "batched-delete": "Delete Batch",
 
   "new-staff-account": "New Staff account",
   "new-staff-username-save-tip": "Please save the username and password, the username cannot be changed.",
