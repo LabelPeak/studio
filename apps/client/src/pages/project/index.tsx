@@ -18,7 +18,7 @@ export function ProjectPage() {
   return (
     <section id="project-page" className="bg-white m-4 p-6">
       <h1 className="mt-0 text-5">Projects</h1>
-      <section className="grid md:grid-cols-3 xl:grid-cols-4 gap-4">
+      <section className="grid md-grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {projects.map(project => (
           <ProjectCard key={project.id} project={project} />
         ))}
