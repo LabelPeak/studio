@@ -1,8 +1,8 @@
-import { Project, Role } from "@/interfaces/project";
+import { Project, ProjectWithAnnotateInfo, Role } from "@/interfaces/project";
 import { requestWithAuth } from "../request";
 
 function getMyParticipateProjects() {
-  return requestWithAuth<Project[]>("/api/project/mine");
+  return requestWithAuth<ProjectWithAnnotateInfo[]>("/api/project/mine");
 }
 
 function getProjectDetail(projectId: number) {

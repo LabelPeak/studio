@@ -7,6 +7,9 @@ export default {
   "settings": "设置",
 
   "project-name": "项目名称",
+  "project-createAt": "创建时间",
+  "project-annotate-progress": "标注进度",
+  "project-annotate-progress-none": "未上传数据文件",
   "project-access-prompt": "可访问性",
   "project-datatype-prompt": "数据集类型",
   "username-prompt": "用户名",
