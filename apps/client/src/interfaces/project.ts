@@ -23,3 +23,8 @@ export interface Project {
   dataset: Dataset;
   role: Role
 }
+
+export interface ProjectWithAnnotateInfo extends Project {
+  countAnnotations: number;
+  countDataItems: number;
+}

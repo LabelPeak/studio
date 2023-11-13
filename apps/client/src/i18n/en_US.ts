@@ -7,6 +7,9 @@ export default {
   "settings": "Settings",
 
   "project-name": "Project Name",
+  "project-createAt": "CreateAt",
+  "project-annotate-progress": "Progress",
+  "project-annotate-progress-none": "None data-item files",
   "project-access-prompt": "Access",
   "project-datatype-prompt": "DataType",
   "username-prompt": "Username",

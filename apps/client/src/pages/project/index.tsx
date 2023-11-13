@@ -1,11 +1,11 @@
-import { Project } from "@/interfaces/project";
 import ProjectCard from "./ProjectCard";
 import ProjectService from "@/services/project";
+import { ProjectWithAnnotateInfo } from "@/interfaces/project";
 import { useRequest } from "ahooks";
 import { useState } from "react";
 
 export function ProjectPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProjectWithAnnotateInfo[]>([]);
   // TODO: add skeleton screen for loading
   useRequest(ProjectService.getMyParticipateProjects, {
     onSuccess: ((res) => {
