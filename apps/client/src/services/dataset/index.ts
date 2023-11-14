@@ -14,10 +14,10 @@ function getDataItems(props:
 }
 
 function updateAnnotation(props:
-  { data: string, project: number, id: number }
+  { data: string, project: number, id: number, times: number }
 ) {
-  return requestWithAuth<null>("/api/dataset/dataitem/annotate", {
-    method: "PUT",
+  return requestWithAuth<null>(`/api/dataset/dataitem/annotate?times=${props.times}`, {
+    method: "PATCH",
     body: JSON.stringify(props)
   });
 }
