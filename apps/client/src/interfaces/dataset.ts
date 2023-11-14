@@ -22,4 +22,12 @@ export interface DataItem {
   dataset: number;
   /** 文件名称 */
   file: string;
+  /** 二次标注数据 */
+  reannotation: string;
+  /** 审核打回理由 */
+  feedback?: string;
+  /** 是否审核通过 */
+  approved?: boolean;
+  /** 修改时间 */
+  updateAt: string;
 }
