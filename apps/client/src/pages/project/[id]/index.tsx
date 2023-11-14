@@ -24,14 +24,16 @@ export function ProjectDetailPage() {
   const access = useAccess({ role: project?.role });
   const [openImportForm, setOpenImportForm] = useState(false);
   const annotateToolRef = useRef<AnnotateToolRef>(null);
+  const [isToolOpen, setIsToolOpen] = useState(false);
   const [isMultiSelect, setIsMultiSelect] = useState(false);
   const selectedDataItems = useRef<DataItem[]>([]);
 
   const columns = useMemo(() => {
     return generateColumns({
-      projectLocation: project?.dataset.location || ""
+      projectLocation: project?.dataset.location || "",
+      isToolOpen
     });
-  }, [project]);
+  }, [project, isToolOpen]);
 
   const { loading: loadingProject } = useRequest(ProjectService.getProjectDetail, {
     defaultParams: [+(projectId || "0")],
@@ -65,6 +67,7 @@ export function ProjectDetailPage() {
   }
 
   function handleClickDataItem(item: DataItem) {
+    setIsToolOpen(true);
     if (annotateToolRef.current === null) {
       setAnnotatingItem(item);
     } else {
@@ -72,6 +75,7 @@ export function ProjectDetailPage() {
         setAnnotatingItem(item);
       } else {
         Modal.confirm({
+          maskClosable: true,
           title: "警告",
           content: "修改内容后未保存，是否放弃修改？",
           onOk: () => {
@@ -145,7 +149,7 @@ export function ProjectDetailPage() {
             })}
           />
         </div>
-        { (annotatingItem && project) &&
+        { (isToolOpen && project && annotatingItem) &&
           <AnnotateTool
             ref={annotateToolRef}
             project={project}

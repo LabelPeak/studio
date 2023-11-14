@@ -46,7 +46,12 @@ const AnnotateTool = forwardRef<AnnotateToolRef, IProps>((props, ref) => {
   async function handleClickSave() {
     if (!annotateModuleRef.current) return;
     const data = annotateModuleRef.current.save();
-    const res = await DatasetService.updateAnnotation({ data, project: project.id, id: dataItem.id });
+    const res = await DatasetService.updateAnnotation({
+      data,
+      project: project.id,
+      id: dataItem.id,
+      times: 1
+    });
     if (res.code === 200) {
       message.success("更新成功");
       setIsSaveSaved(true);
