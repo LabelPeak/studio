@@ -10,35 +10,35 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@iconify-json/mdi": "^1.1.54",
+    "@iconify-json/mdi": "^1.1.66",
     "@leafer-in/editor": "1.0.0-rc.6",
-    "ahooks": "^3.7.8",
-    "antd": "^5.10.0",
-    "classnames": "^2.3.2",
+    "ahooks": "^3.7.11",
+    "antd": "^5.10.3",
+    "classnames": "^2.3.3",
     "date-fns": "^2.30.0",
     "leafer-ui": "1.0.0-rc.6",
-    "nanoid": "^5.0.3",
+    "nanoid": "^5.0.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intl": "^6.4.7",
     "react-router-dom": "^6.16.0",
-    "zustand": "^4.4.3"
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@j10c/eslint-config": "^0.2.0",
     "@leafer-ui/interface": "1.0.0-rc.6",
     "@leafer/interface": "1.0.0-rc.6",
-    "@types/node": "^20.8.9",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
+    "@types/node": "^20.8.10",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.45.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.3",
-    "typescript": "^5.0.2",
-    "unocss": "^0.58.6",
-    "vite": "^5.1.6"
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "typescript": "^5.0.4",
+    "unocss": "^0.58.9",
+    "vite": "^5.1.7"
   }
 }
