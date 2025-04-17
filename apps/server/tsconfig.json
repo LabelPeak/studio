@@ -11,9 +11,17 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "moduleResolution": "NodeNext",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "noEmit": true,
+    "allowImportingTsExtensions": true
   },
   "include": [
-    "src"
+    "src",
+    "drizzle.config.ts"
   ]
 }
