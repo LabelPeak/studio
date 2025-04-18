@@ -5,9 +5,20 @@
   "scripts": {
     "dev:client": "cd apps/client && npm run dev",
     "build:client": "cd apps/client && npm run build",
-    "lint:client": "cd apps/client && npm run lint"
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.30.1",
+    "@zjutjh/eslint-config": "^0.5.4",
+    "eslint": "^9.24.0",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-format": "^1.0.1",
+    "eslint-plugin-prettier": "^5.2.6",
+    "jiti": "^2.4.2",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3"
+  }
 }
