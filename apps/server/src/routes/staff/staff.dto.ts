@@ -1,39 +1,39 @@
 import { z } from "zod";
 
 const findOneByIdReqSchema = z.object({
-  id: z.number(),
+  id: z.number()
 });
 
 const findAllRequestReqSchema = z.object({
   page: z.number(),
-  size: z.number(),
+  size: z.number()
 });
 
 const findAllByProjectReqSchema = z.object({
   projectId: z.number(),
   page: z.number(),
-  size: z.number(),
-})
+  size: z.number()
+});
 
 const createSingleStaffReqSchema = z.object({
-  realname: z.string(),
-})
+  realname: z.string()
+});
 
 const updateStaffReqSchema = z.object({
   password: z.string(),
   realname: z.string(),
-  staffId: z.number(),
-})
+  staffId: z.number()
+});
 
 const deleteStaffReqSchema = z.object({
-  staffId: z.number(),
-})
+  staffId: z.number()
+});
 
 const searchStaffsReqSchema = z.object({
   token: z.string(),
   page: z.number(),
-  size: z.number(),
-})
+  size: z.number()
+});
 
 export const UserSchema = {
   findAllByProjectReqSchema,
@@ -43,8 +43,9 @@ export const UserSchema = {
   updateStaffReqSchema,
   deleteStaffReqSchema,
   searchStaffsReqSchema
-}
+};
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace UserDto {
   export type FindOneByIdReq = z.infer<typeof findOneByIdReqSchema>;
   export type FindAllReq = z.infer<typeof findAllRequestReqSchema>;

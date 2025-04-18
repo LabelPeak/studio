@@ -5,23 +5,16 @@
     "strict": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "moduleResolution": "NodeNext",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     },
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": [
-    "src",
-    "drizzle.config.ts"
-  ]
+  "include": ["src", "drizzle.config.ts"]
 }

@@ -6,11 +6,11 @@ export const userTable = pgTable("user", {
   password: varchar({ length: 80 }).notNull(),
   username: varchar({ length: 20 }).notNull(),
   realname: varchar({ length: 10 }).notNull(),
-  superadmin: integer(),
+  superadmin: integer()
 });
 
 export const userRelations = relations(userTable, ({ many }) => ({
-  projects: many(usersToProjects),
+  projects: many(usersToProjects)
 }));
 
 export const projectTable = pgTable("project", {
@@ -20,38 +20,40 @@ export const projectTable = pgTable("project", {
   presets: varchar({ length: 500 }).notNull(),
   access: varchar({ length: 10 }).notNull(),
   statusHistory: json().notNull(),
-  admin: integer().references(() => userTable.id),
-})
+  admin: integer().references(() => userTable.id)
+});
 
 export const projectRelations = relations(projectTable, ({ many }) => ({
   users: many(usersToProjects)
 }));
 
-export const usersToProjects = pgTable("user_project", {
-  role: char({ length: 10 }).notNull(),
-  user: integer().references(() => userTable.id),
-  project: integer().references(() => projectTable.id),
-}, (t) => [
-  primaryKey({ columns: [t.user, t.project] }),
-])
+export const usersToProjects = pgTable(
+  "user_project",
+  {
+    role: char({ length: 10 }).notNull(),
+    user: integer().references(() => userTable.id),
+    project: integer().references(() => projectTable.id)
+  },
+  (t) => [primaryKey({ columns: [t.user, t.project] })]
+);
 
 export const usersToProjectsRelations = relations(usersToProjects, ({ one }) => ({
   user: one(userTable, {
     fields: [usersToProjects.user],
-    references: [userTable.id],
+    references: [userTable.id]
   }),
   project: one(projectTable, {
     fields: [usersToProjects.project],
-    references: [projectTable.id],
-  }),
+    references: [projectTable.id]
+  })
 }));
 
 export const datasetTable = pgTable("dataset", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   type: char({ length: 16 }).notNull(),
   location: varchar({ length: 200 }).notNull(),
-  project: integer().references(() => projectTable.id),
-})
+  project: integer().references(() => projectTable.id)
+});
 
 export const dataItemTable = pgTable("dataitem", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -61,5 +63,5 @@ export const dataItemTable = pgTable("dataitem", {
   reannotation: json().notNull(),
   feedback: varchar({ length: 50 }).notNull(),
   approved: integer().notNull(),
-  updateAt: date().notNull(),
-})
+  updateAt: date().notNull()
+});
