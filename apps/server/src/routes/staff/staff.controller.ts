@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 
+import { superadminMiddleware } from "@/middlewares/auth.middleware.ts";
 import { BizException } from "@/utils/exception.ts";
 
 import { UserSchema } from "./staff.dto.ts";
@@ -8,11 +9,12 @@ import { userService } from "./staff.service.ts";
 const staffRouter = new Hono();
 
 staffRouter.get("/", async (c) => {
-  const res = await userService.findOneById(2);
+  const authPayload = c.get("authPayload");
+  const res = await userService.findOneById({}, authPayload);
   return c.json(res);
 });
 
-staffRouter.get("/all", async (c) => {
+staffRouter.get("/all", superadminMiddleware, async (c) => {
   const parsed = UserSchema.findAllRequestReqSchema.safeParse({
     page: Number(c.req.query("page")),
     size: Number(c.req.query("size"))
@@ -21,7 +23,7 @@ staffRouter.get("/all", async (c) => {
     throw new BizException("invalid_param");
   }
 
-  const res = await userService.findAll(parsed.data, 1);
+  const res = await userService.findAll(parsed.data);
   return c.json(res);
 });
 
@@ -35,11 +37,11 @@ staffRouter.get("/project/:id", async (c) => {
     throw new BizException("invalid_param");
   }
 
-  const res = await userService.findAllByProject(parsed.data, 1);
+  const res = await userService.findAllByProject(parsed.data);
   return c.json(res);
 });
 
-staffRouter.post("/", async (c) => {
+staffRouter.post("/", superadminMiddleware, async (c) => {
   const parsed = UserSchema.createSingleStaffReqSchema.safeParse(await c.req.json());
   if (parsed.success === false) {
     throw new BizException("invalid_param");
@@ -51,7 +53,8 @@ staffRouter.post("/", async (c) => {
 
 staffRouter.patch("/:id", async (c) => {
   const parsed = UserSchema.updateStaffReqSchema.safeParse({
-    staffId: Number(c.req.param("id"))
+    staffId: Number(c.req.param("id")),
+    ...(await c.req.json())
   });
   if (parsed.success === false) {
     throw new BizException("invalid_param");
@@ -61,7 +64,7 @@ staffRouter.patch("/:id", async (c) => {
   return c.json(res);
 });
 
-staffRouter.delete("/:id", async (c) => {
+staffRouter.delete("/:id", superadminMiddleware, async (c) => {
   const parsed = UserSchema.deleteStaffReqSchema.safeParse({
     staffId: Number(c.req.param("id"))
   });

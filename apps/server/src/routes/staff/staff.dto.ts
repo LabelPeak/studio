@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-const findOneByIdReqSchema = z.object({
-  id: z.number()
-});
+const findOneByIdReqSchema = z.object({});
 
 const findAllRequestReqSchema = z.object({
   page: z.number(),
