@@ -16,10 +16,12 @@ export const authMiddleware = createMiddleware(async (c, next) => {
   }
 
   if (payload.id) {
-    const staff = await userService.findOneById(payload.id);
+    const staff = await userService.findOneById({ id: payload.id });
     if (staff) {
-      c.set("operatorId", payload.id);
-      c.set("operatorIsSuperAdmin", staff.superadmin === 1 ? true : false);
+      c.set("authPayload", {
+        operatorId: payload.id,
+        operatorIsSuperAdmin: staff.superadmin === 1 ? true : false
+      });
       await next();
       return;
     }
