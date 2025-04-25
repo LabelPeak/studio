@@ -2,6 +2,7 @@ import { Hono } from "hono";
 
 import { superadminMiddleware } from "@/middlewares/auth.middleware.ts";
 import { BizException } from "@/utils/exception.ts";
+import { createResponse } from "@/utils/response.ts";
 
 import { UserSchema } from "./staff.dto.ts";
 import { userService } from "./staff.service.ts";
@@ -10,8 +11,8 @@ const staffRouter = new Hono();
 
 staffRouter.get("/", async (c) => {
   const authPayload = c.get("authPayload");
-  const res = await userService.findOneById({}, authPayload);
-  return c.json(res);
+  const res = await userService.findOneById({ id: authPayload.operatorId });
+  return c.json(createResponse(res));
 });
 
 staffRouter.get("/all", superadminMiddleware, async (c) => {
@@ -24,7 +25,7 @@ staffRouter.get("/all", superadminMiddleware, async (c) => {
   }
 
   const res = await userService.findAll(parsed.data);
-  return c.json(res);
+  return c.json(createResponse(res));
 });
 
 staffRouter.get("/project/:id", async (c) => {
@@ -38,7 +39,7 @@ staffRouter.get("/project/:id", async (c) => {
   }
 
   const res = await userService.findAllByProject(parsed.data);
-  return c.json(res);
+  return c.json(createResponse(res));
 });
 
 staffRouter.post("/", superadminMiddleware, async (c) => {
@@ -48,7 +49,7 @@ staffRouter.post("/", superadminMiddleware, async (c) => {
   }
 
   const res = await userService.createSingleStaff(parsed.data);
-  return c.json(res);
+  return c.json(createResponse(res));
 });
 
 staffRouter.patch("/:id", async (c) => {
@@ -61,7 +62,7 @@ staffRouter.patch("/:id", async (c) => {
   }
 
   const res = await userService.updateStaff(parsed.data);
-  return c.json(res);
+  return c.json(createResponse(res));
 });
 
 staffRouter.delete("/:id", superadminMiddleware, async (c) => {
@@ -72,7 +73,7 @@ staffRouter.delete("/:id", superadminMiddleware, async (c) => {
     throw new BizException("invalid_param");
   }
   const res = await userService.deleteStaffById(parsed.data);
-  return c.json(res);
+  return c.json(createResponse(res));
 });
 
 staffRouter.get("/search", async (c) => {
@@ -87,7 +88,7 @@ staffRouter.get("/search", async (c) => {
   }
 
   const res = await userService.searchStaffs(parsed.data);
-  return c.json(res);
+  return c.json(createResponse(res));
 });
 
 export { staffRouter };

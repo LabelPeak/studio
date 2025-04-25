@@ -9,6 +9,7 @@ import { logger } from "hono/logger";
 
 import { authMiddleware } from "./middlewares/auth.middleware.ts";
 import { authRouter } from "./routes/auth/auth.controller.ts";
+import { projectRouter } from "./routes/project/project.controller.ts";
 import { staffRouter } from "./routes/staff/staff.controller.ts";
 import { BizException } from "./utils/exception.ts";
 import { createResponse } from "./utils/response.ts";
@@ -24,6 +25,7 @@ app.use("/api/*", except("/api/auth/login", authMiddleware));
 // Routes
 app.route("/api/auth", authRouter);
 app.route("/api/staff", staffRouter);
+app.route("/api/project", projectRouter);
 
 // Error handling
 app.onError((err, c) => {

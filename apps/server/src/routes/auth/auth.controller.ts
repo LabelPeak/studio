@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 
 import { BizException } from "@/utils/exception.ts";
+import { createResponse } from "@/utils/response.ts";
 
 import { AuthSchema } from "./auth.dto.ts";
 import { authService } from "./auth.service.ts";
@@ -14,7 +15,7 @@ authRouter.post("/login", async (c) => {
   }
 
   const res = await authService.login(parsed.data);
-  return c.json(res);
+  return c.json(createResponse(res));
 });
 
 export { authRouter };

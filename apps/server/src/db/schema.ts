@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { char, date, integer, json, pgTable, primaryKey, varchar } from "drizzle-orm/pg-core";
+import { char, integer, json, pgTable, primaryKey, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const userTable = pgTable("user", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -16,11 +16,12 @@ export const userRelations = relations(userTable, ({ many }) => ({
 export const projectTable = pgTable("project", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 100 }).notNull(),
-  createAt: date().notNull(),
+  createAt: timestamp().notNull(),
   presets: varchar({ length: 500 }).notNull(),
   access: varchar({ length: 10 }).notNull(),
   statusHistory: json().notNull(),
   admin: integer().references(() => userTable.id)
+  // FIXME: dataset 和 role 字段少了
 });
 
 export const projectRelations = relations(projectTable, ({ many }) => ({
@@ -63,5 +64,5 @@ export const dataItemTable = pgTable("dataitem", {
   reannotation: json().notNull(),
   feedback: varchar({ length: 50 }).notNull(),
   approved: integer().notNull(),
-  updateAt: date().notNull()
+  updateAt: timestamp().notNull()
 });
