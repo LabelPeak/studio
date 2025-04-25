@@ -1,6 +1,5 @@
 import { hashSync } from "bcrypt-ts";
 import { count, eq, getTableColumns, ilike, or } from "drizzle-orm";
-import type { ContextVariableMap } from "hono";
 import { omit } from "remeda";
 
 import { db } from "@/db/connection.ts";
@@ -9,16 +8,12 @@ import { BizException } from "@/utils/exception.ts";
 
 import type { UserDto } from "./staff.dto.ts";
 
-async function findOneById(
-  _: UserDto.FindOneByIdReq,
-  authPayload: ContextVariableMap["authPayload"]
-) {
-  const { operatorId } = authPayload;
+async function findOneById(dto: UserDto.FindOneByIdReq) {
   const staff = await db.query.userTable.findFirst({
     columns: {
       password: false
     },
-    where: (_userTable) => eq(_userTable.id, operatorId)
+    where: (_userTable) => eq(_userTable.id, dto.id)
   });
 
   if (!staff) {
