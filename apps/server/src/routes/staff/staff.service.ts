@@ -38,7 +38,10 @@ async function findAllByProject(dto: UserDto.FindAllByProjectReq) {
   const columns = omit(getTableColumns(userTable), ["password"]);
 
   const list = await db
-    .select(columns)
+    .select({
+      ...columns,
+      role: usersToProjects.role
+    })
     .from(userTable)
     .leftJoin(usersToProjects, eq(usersToProjects.user, userTable.id))
     .where(eq(usersToProjects.project, dto.projectId))
