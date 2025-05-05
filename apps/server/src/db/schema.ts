@@ -33,7 +33,8 @@ export const projectTable = pgTable("project", {
   // FIXME: dataset 和 role 字段少了
 });
 
-export const projectRelations = relations(projectTable, ({ many }) => ({
+export const projectRelations = relations(projectTable, ({ many, one }) => ({
+  admin: one(userTable, { fields: [projectTable.admin], references: [userTable.id] }),
   users: many(usersToProjects)
 }));
 

@@ -23,7 +23,10 @@ async function findOneById(dto: ProjectDto.FindOneByIdReq) {
 async function findAll(dto: ProjectDto.FindAllReq) {
   const list = await db.query.projectTable.findMany({
     limit: dto.size,
-    offset: dto.page * dto.size
+    offset: (dto.page - 1) * dto.size,
+    with: {
+      admin: true
+    }
   });
 
   const total = await db.$count(projectTable);
