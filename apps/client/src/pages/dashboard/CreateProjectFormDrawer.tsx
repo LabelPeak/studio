@@ -1,27 +1,29 @@
-import { Button, Drawer, Form, FormInstance, Input, Select, message } from "antd";
-import { Access } from "@/interfaces/project";
-import { DataType } from "@/interfaces/dataset";
+import { Button, Drawer, Form, FormInstance, Input, message, Select } from "antd";
+import { useRef } from "react";
+import { useIntl } from "react-intl";
+
 import DebounceSelect from "@/components/DebounceSelect";
+import { DataType } from "@/interfaces/dataset";
+import { Access } from "@/interfaces/project";
 import ProjectService from "@/services/project";
 import StaffService from "@/services/staff";
-import { useIntl } from "react-intl";
-import { useRef } from "react";
 
 interface IProps {
   open: boolean;
   onClose: () => void;
+  onCreateSuccess: () => void;
 }
 
 export default function CreateProjectDrawer(props: IProps) {
-  const { open, onClose } = props;
+  const { open, onClose, onCreateSuccess } = props;
   const intl = useIntl();
   const formRef = useRef<FormInstance>(null);
 
   async function fetchStaffs(token: string) {
-    const res = await StaffService.search({ token, page: 1, size: 10});
-    const temp = (res.data?.list || []).map(item => ({
+    const res = await StaffService.search({ token, page: 1, size: 10 });
+    const temp = res.list.map((item) => ({
       label: `${item.realname} ${item.username}`,
-      value: item.id!
+      value: item.id ?? 0
     }));
     return temp;
   }
@@ -36,20 +38,19 @@ export default function CreateProjectDrawer(props: IProps) {
   async function handleSubmit() {
     try {
       const data = await formRef.current?.validateFields();
-      const res = await ProjectService.create({
+      await ProjectService.create({
         name: data.name,
         access: data.access,
         type: data.type,
         admin: data.admin.value
       });
-      if (res.code === 200) {
-        message.success("创建成功");
-        handleClose();
-      } else {
-        message.error("创建失败: " + res.msg || "未知错误");
+      message.success("创建成功");
+      onCreateSuccess();
+      handleClose();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        message.error("创建失败: " + e.message || "未知错误");
       }
-    } catch(e) {
-      console.log(e);
     }
   }
 
@@ -67,40 +68,53 @@ export default function CreateProjectDrawer(props: IProps) {
         initialValues={{
           access: "write",
           type: "info-extract"
-        }}>
-        <Form.Item label={intl.formatMessage({ id: "project-name" })} name="name" rules={[{ required: true }]}>
+        }}
+      >
+        <Form.Item
+          label={intl.formatMessage({ id: "project-name" })}
+          name="name"
+          rules={[{ required: true }]}
+        >
           <Input placeholder="输入项目名称" />
         </Form.Item>
-        <Form.Item label={intl.formatMessage({id: "project-access-prompt"})} name="access" required>
+        <Form.Item
+          label={intl.formatMessage({ id: "project-access-prompt" })}
+          name="access"
+          required
+        >
           <Select
-            options={
-              Object.values(Access)
-                .map(access => ({
-                  value: access,
-                  label: intl.formatMessage({ id: access })
-                }))
-            }
+            options={Object.values(Access).map((access) => ({
+              value: access,
+              label: intl.formatMessage({ id: access })
+            }))}
           />
         </Form.Item>
-        <Form.Item label={intl.formatMessage({id: "project-datatype-prompt"})} name="type" required>
+        <Form.Item
+          label={intl.formatMessage({ id: "project-datatype-prompt" })}
+          name="type"
+          required
+        >
           <Select
-            options={
-              Object.values(DataType)
-                .map(type => ({
-                  value: type,
-                  label: intl.formatMessage({ id: type })
-                }))
-            }
+            options={Object.values(DataType).map((type) => ({
+              value: type,
+              label: intl.formatMessage({ id: type })
+            }))}
           />
         </Form.Item>
-        <Form.Item label={intl.formatMessage({ id: "role-admin" })} name="admin" rules={[{ required: true }]}>
+        <Form.Item
+          label={intl.formatMessage({ id: "role-admin" })}
+          name="admin"
+          rules={[{ required: true }]}
+        >
           <DebounceSelect
             placeholder={intl.formatMessage({ id: "staffs-search-prompt" })}
             fetchOptions={fetchStaffs}
           />
         </Form.Item>
         <div className="flex justify-end">
-          <Button type="primary" htmlType="submit">{ intl.formatMessage({ id: "create" })}</Button>
+          <Button type="primary" htmlType="submit">
+            {intl.formatMessage({ id: "create" })}
+          </Button>
         </div>
       </Form>
     </Drawer>

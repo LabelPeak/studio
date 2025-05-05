@@ -1,52 +1,56 @@
-import { Project, Role } from "@/interfaces/project";
-import { useRef, useState } from "react";
-import CreateProjectDrawer from "./CreateProjectFormDrawer";
+import { useQuery } from "@tanstack/react-query";
+import { message } from "antd";
+import { useState } from "react";
+import { useIntl } from "react-intl";
+
 import LoadingLayer from "@/components/LoadingLayer";
+import { Project, Role } from "@/interfaces/project";
+import { User } from "@/interfaces/user";
+import ProjectService from "@/services/project";
+import StaffService from "@/services/staff";
+
+import CreateProjectDrawer from "./CreateProjectFormDrawer";
 import ProjectColumnPlaceholder from "./ProjectColumnPlaceHolder";
 import ProjectItem from "./ProjectItem";
-import ProjectService from "@/services/project";
 import StaffColumnPlaceholder from "./StaffColumnPlaceholder";
 import StaffItem from "./StaffItem";
-import StaffService from "@/services/staff";
-import { User } from "@/interfaces/user";
-import { message } from "antd";
-import { useIntl } from "react-intl";
-import { useRequest } from "ahooks";
 
 export function DashboardPage() {
   const intl = useIntl();
-  const projectPaginationRef = useRef({ page: 1, size: 10 });
-  const staffPaginationRef = useRef({ page: 1, size: 10 });
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [, setTotalProjects] = useState(0);
-  const [staffs, setStaffs] = useState<Array<User & { role: Role }>>([]);
-  const [, setTotalStaffs] = useState(0);
+  const [projectPage, setProjectPage] = useState(1);
+  const [staffPage, setStaffPage] = useState(1);
+
   const [selectedProject, setSelectedProject] = useState<Project>();
   const [openCreateProjectForm, setOpenCreateProjectForm] = useState(false);
 
   const {
-    loading: loadingProjects,
-    run: findAllProjects
-  } = useRequest(ProjectService.findAll, {
-    defaultParams: [{ ...projectPaginationRef.current }],
-    onSuccess: (res) => {
-      if (res.data !== undefined && res.code === 200) {
-        setProjects(res.data.list);
-        setTotalProjects(res.data.total);
-      }
+    data: projects = [],
+    isFetching: loadingProjects,
+    refetch: refreshProjects
+  } = useQuery({
+    queryKey: ["allProjects", projectPage] as const,
+    queryFn: async ({ queryKey }) => {
+      const res = await ProjectService.findAll({
+        page: queryKey[1],
+        size: 10
+      });
+      return res.list;
     }
   });
 
-  const {
-    loading: loadingStaffs,
-    run: findAllStaffsInProject
-  } = useRequest(StaffService.findAllInProject, {
-    manual: true,
-    onSuccess: (res) => {
-      if (res.data !== undefined && res.code === 200) {
-        setStaffs(res.data.list);
-        setTotalStaffs(res.data.total);
+  const { data: staffs = [], isFetching: loadingStaffs } = useQuery({
+    queryKey: ["staffsInProject", selectedProject?.id, staffPage] as const,
+    queryFn: async ({ queryKey }) => {
+      if (queryKey[1] === undefined) {
+        return [];
       }
+      const res = await StaffService.findAllInProject({
+        project: queryKey[1],
+        page: queryKey[2],
+        size: 10
+      });
+
+      return res.list;
     }
   });
 
@@ -56,22 +60,20 @@ export function DashboardPage() {
 
   function handleClickProject(project: Project) {
     setSelectedProject(project);
-    staffPaginationRef.current.page = 1;
-    findAllStaffsInProject({
-      project: project.id,
-      ...staffPaginationRef.current
-    });
+    setStaffPage(1);
   }
 
   async function handleDeleteProject(id: number) {
-    const res = await ProjectService.remove(id);
-    if (res.code === 200) {
+    try {
+      await ProjectService.remove(id);
       message.success("删除成功");
-      projectPaginationRef.current.page = 1;
-      findAllProjects(projectPaginationRef.current);
+      setProjectPage(1);
+      refreshProjects();
       setSelectedProject(undefined);
-    } else {
-      message.error("删除失败: " + res.msg || "未知错误");
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        message.error("删除失败: " + e.message || "未知错误");
+      }
     }
   }
 
@@ -84,13 +86,10 @@ export function DashboardPage() {
   }
 
   return (
-    <section
-      id="dashboard-page"
-      className="h-full flex bg-white"
-    >
+    <section id="dashboard-page" className="h-full flex bg-white">
       <section className="w-xs b-r-1 b-r-solid b-color-nord-snow-0 flex flex-col">
         <div className="flex b-b-1 b-b-solid b-color-nord-snow-0 items-center p-4">
-          <h1 className="m-0 text-4">{ intl.formatMessage({ id: "page-title-projects" })}</h1>
+          <h1 className="m-0 text-4">{intl.formatMessage({ id: "page-title-projects" })}</h1>
           <div className="flex-auto" />
           <div
             className="i-mdi-folder-plus c-nord-frost-3 text-5 cursor-pointer"
@@ -99,11 +98,12 @@ export function DashboardPage() {
           />
         </div>
         <div className="flex-auto relative of-auto bg-nord-snow-2 bg-op-70">
-          { loadingProjects
-            ? <LoadingLayer />
-            : projects.length === 0
-              ? <ProjectColumnPlaceholder type="empty" />
-              : projects.map(project => (
+          {loadingProjects ? <LoadingLayer /> : null}
+          {!loadingProjects && projects.length === 0 ? (
+            <ProjectColumnPlaceholder type="empty" />
+          ) : null}
+          {!loadingProjects
+            ? projects.map((project) => (
                 <ProjectItem
                   key={project.id}
                   project={project}
@@ -111,35 +111,37 @@ export function DashboardPage() {
                   onDelete={handleDeleteProject}
                   selectedId={selectedProject?.id}
                 />
-              ))}
+              ))
+            : null}
         </div>
       </section>
       <section className="w-xs b-r-1 b-r-solid b-color-nord-snow-0 flex flex-col">
         <div className="flex b-b-1 b-b-solid b-color-nord-snow-0 items-center p-4">
-          <h1 className="m-0 text-4">{ intl.formatMessage({ id: "page-title-staffs" })}</h1>
+          <h1 className="m-0 text-4">{intl.formatMessage({ id: "page-title-staffs" })}</h1>
           <div className="flex-auto" />
-          <div className="i-mdi-account-plus c-nord-frost-3 text-5 cursor-pointer" title="assign-staff" />
+          <div
+            className="i-mdi-account-plus c-nord-frost-3 text-5 cursor-pointer"
+            title="assign-staff"
+          />
         </div>
         <div className="flex-auto relative bg-nord-snow-2 bg-op-70">
-          { selectedProject
-            ? loadingStaffs
-              ? <LoadingLayer />
-              : staffs.length === 0
-                ? <StaffColumnPlaceholder type="empty" />
-                : staffs.map(staff => (
-                  <StaffItem
-                    key={staff.id} onClick={handleClickStaff}
-                    staff={staff}
-                  />
-                ))
-            : <StaffColumnPlaceholder type="disable" />
-          }
+          {!selectedProject ? <StaffColumnPlaceholder type="disable" /> : null}
+          {selectedProject && loadingStaffs ? <LoadingLayer /> : null}
+          {selectedProject && !loadingStaffs && staffs.length === 0 ? (
+            <StaffColumnPlaceholder type="empty" />
+          ) : (
+            staffs.map((staff) => (
+              <StaffItem key={staff.id} onClick={handleClickStaff} staff={staff} />
+            ))
+          )}
         </div>
       </section>
-      <div className="flex-auto bg-nord-snow-2 bg-op-70">
-        { /* flow chart */ }
-      </div>
-      <CreateProjectDrawer open={openCreateProjectForm} onClose={handleCreateProjectFormClose} />
+      <div className="flex-auto bg-nord-snow-2 bg-op-70">{/* flow chart */}</div>
+      <CreateProjectDrawer
+        open={openCreateProjectForm}
+        onClose={handleCreateProjectFormClose}
+        onCreateSuccess={refreshProjects}
+      />
     </section>
   );
 }
