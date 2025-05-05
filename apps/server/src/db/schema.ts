@@ -41,8 +41,8 @@ export const usersToProjects = pgTable(
   "user_project",
   {
     role: varchar({ length: 10 }).notNull(),
-    user: integer().references(() => userTable.id),
-    project: integer().references(() => projectTable.id)
+    user: integer().references(() => userTable.id, { onDelete: "cascade" }),
+    project: integer().references(() => projectTable.id, { onDelete: "cascade" })
   },
   (t) => [primaryKey({ columns: [t.user, t.project] })]
 );
@@ -62,7 +62,7 @@ export const datasetTable = pgTable("dataset", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   type: varchar({ length: 16 }).notNull(),
   location: varchar({ length: 200 }).notNull(),
-  project: integer().references(() => projectTable.id)
+  project: integer().references(() => projectTable.id, { onDelete: "cascade" })
 });
 
 export const dataItemTable = pgTable("dataitem", {
