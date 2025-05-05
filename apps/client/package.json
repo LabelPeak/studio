@@ -11,6 +11,7 @@
   "dependencies": {
     "@iconify-json/mdi": "^1.2.3",
     "@leafer-in/editor": "1.0.0-rc.6",
+    "@tanstack/react-query": "^5.75.2",
     "ahooks": "^3.8.4",
     "antd": "^5.24.8",
     "classnames": "^2.5.1",
