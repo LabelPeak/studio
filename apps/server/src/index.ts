@@ -12,7 +12,10 @@ import { authRouter } from "./routes/auth/auth.controller.ts";
 import { projectRouter } from "./routes/project/project.controller.ts";
 import { staffRouter } from "./routes/staff/staff.controller.ts";
 import { BizException } from "./utils/exception.ts";
+import { initFirstAdmin } from "./utils/init.ts";
 import { createResponse } from "./utils/response.ts";
+
+initFirstAdmin();
 
 const app = new Hono();
 
