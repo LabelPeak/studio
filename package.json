@@ -1,24 +1,31 @@
 {
+  "private": true,
   "name": "label-peak-studio-monorepo",
-  "version": "1.0.0",
   "description": "LabelPeak monorepo",
   "scripts": {
     "dev:client": "cd apps/client && npm run dev",
     "build:client": "cd apps/client && npm run build",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "postinstall": "simple-git-hooks"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@10.10.0",
+  "simple-git-hooks": {
+    "pre-commit": "pnpx lint-staged"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.30.1",
-    "@zjutjh/eslint-config": "^0.5.4",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@zjutjh/eslint-config": "^0.7.0",
     "eslint": "^9.25.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-format": "^1.0.1",
     "eslint-plugin-prettier": "^5.2.6",
     "jiti": "^2.4.2",
     "prettier": "^3.5.3",
+    "simple-git-hooks": "^2.13.0",
     "typescript": "^5.8.3"
   }
 }
