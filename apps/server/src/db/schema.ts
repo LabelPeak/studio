@@ -1,7 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
   boolean,
-  char,
   integer,
   json,
   pgTable,
@@ -41,7 +40,7 @@ export const projectRelations = relations(projectTable, ({ many, one }) => ({
 export const usersToProjects = pgTable(
   "user_project",
   {
-    role: char({ length: 10 }).notNull(),
+    role: varchar({ length: 10 }).notNull(),
     user: integer().references(() => userTable.id),
     project: integer().references(() => projectTable.id)
   },
@@ -61,7 +60,7 @@ export const usersToProjectsRelations = relations(usersToProjects, ({ one }) => 
 
 export const datasetTable = pgTable("dataset", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  type: char({ length: 16 }).notNull(),
+  type: varchar({ length: 16 }).notNull(),
   location: varchar({ length: 200 }).notNull(),
   project: integer().references(() => projectTable.id)
 });
