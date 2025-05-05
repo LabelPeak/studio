@@ -26,7 +26,7 @@ async function login(dto: AuthDto.LoginReq) {
   const token = await sign(payload, String(process.env.JWT_SECRET));
 
   return {
-    token
+    token: `Bearer ${token}`
   };
 }
 
