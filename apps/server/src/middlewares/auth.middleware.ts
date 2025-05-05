@@ -20,7 +20,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     if (staff) {
       c.set("authPayload", {
         operatorId: payload.id,
-        operatorIsSuperAdmin: staff.superadmin === 1 ? true : false
+        operatorIsSuperAdmin: Boolean(staff.superadmin)
       });
       await next();
       return;

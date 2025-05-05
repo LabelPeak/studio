@@ -76,7 +76,7 @@ async function createSingleStaff(dto: UserDto.CreateSingleStaffReq) {
             : `${dto.realname}.${(sameNameCnt + 1).toString().padStart(3, "0").split("").join("")}`,
         realname: dto.realname,
         password: encryptedPassword,
-        superadmin: 0
+        superadmin: false
       }
     ])
     .returning();

@@ -1,12 +1,21 @@
 import { relations } from "drizzle-orm";
-import { char, integer, json, pgTable, primaryKey, timestamp, varchar } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  char,
+  integer,
+  json,
+  pgTable,
+  primaryKey,
+  timestamp,
+  varchar
+} from "drizzle-orm/pg-core";
 
 export const userTable = pgTable("user", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   password: varchar({ length: 80 }).notNull(),
   username: varchar({ length: 20 }).notNull(),
   realname: varchar({ length: 10 }).notNull(),
-  superadmin: integer()
+  superadmin: boolean()
 });
 
 export const userRelations = relations(userTable, ({ many }) => ({
