@@ -46,11 +46,7 @@ async function findMine(_: ProjectDto.FindMineReq, authPayload: ContextVariableM
   return list;
 }
 
-async function createSingleProject(
-  dto: ProjectDto.CreateSingleProjectReq,
-  authPayload: ContextVariableMap["authPayload"]
-) {
-  const { operatorId } = authPayload;
+async function createSingleProject(dto: ProjectDto.CreateSingleProjectReq) {
   const admin = await db.query.userTable.findFirst({
     where: (_userTable) => eq(_userTable.id, dto.admin)
   });
@@ -76,7 +72,7 @@ async function createSingleProject(
   await db.insert(usersToProjects).values([
     {
       role: "admin",
-      user: operatorId,
+      user: admin?.id,
       project: project.id
     }
   ]);
