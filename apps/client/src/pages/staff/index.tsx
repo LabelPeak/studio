@@ -7,8 +7,8 @@ import { useIntl } from "react-intl";
 import { User } from "@/interfaces/user";
 import StaffService from "@/services/staff";
 
-import CreateStaffFormDrawer from "./CreateStaffFormDrawer";
-import UpdateStaffFormDrawer from "./UpdateStaffFormDrawer";
+import CreateStaffFormDrawer from "./components/create-staff-form-drawer";
+import UpdateStaffFormDrawer from "./components/update-staff-form-drawer";
 
 export default function StaffPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);

@@ -11,7 +11,7 @@ import useAuth from "@/hooks/useAuth";
 import useUser from "@/hooks/useUser";
 import StaffService from "@/services/staff";
 
-import UserIdentifier from "./UserIdentifier";
+import UserIdentifier from "./components/user-identifier";
 
 const featureList: Array<{
   name: string;

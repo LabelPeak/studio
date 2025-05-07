@@ -9,11 +9,11 @@ import { User } from "@/interfaces/user";
 import ProjectService from "@/services/project";
 import StaffService from "@/services/staff";
 
-import CreateProjectDrawer from "./CreateProjectFormDrawer";
-import ProjectColumnPlaceholder from "./ProjectColumnPlaceHolder";
-import ProjectItem from "./ProjectItem";
-import StaffColumnPlaceholder from "./StaffColumnPlaceholder";
-import StaffItem from "./StaffItem";
+import CreateProjectDrawer from "./components/create-project-form-drawer";
+import ProjectColumnPlaceholder from "./components/project-column-placeholder";
+import ProjectItem from "./components/project-item";
+import StaffColumnPlaceholder from "./components/staff-column-placeholder";
+import StaffItem from "./components/staff-item";
 
 export function DashboardPage() {
   const intl = useIntl();
