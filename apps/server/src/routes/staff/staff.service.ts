@@ -25,7 +25,10 @@ async function findOneById(dto: UserDto.FindOneByIdReq) {
 async function findAll(dto: UserDto.FindAllReq) {
   const list = await db.query.userTable.findMany({
     offset: (dto.page - 1) * dto.size,
-    limit: dto.size
+    limit: dto.size,
+    columns: {
+      password: false
+    }
   });
 
   return {
