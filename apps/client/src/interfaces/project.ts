@@ -4,13 +4,7 @@ import { User } from "./user";
 export enum Access {
   Hidden = "hidden",
   Read = "read",
-  Write = "write",
-}
-
-export enum Role {
-  admin = "admin",
-  annotator = "annotator",
-  checker = "checker"
+  Write = "write"
 }
 
 export interface Project {
@@ -21,10 +15,4 @@ export interface Project {
   admin: User;
   presets: string;
   dataset: Dataset;
-  role: Role
-}
-
-export interface ProjectWithAnnotateInfo extends Project {
-  countAnnotations: number;
-  countDataItems: number;
 }

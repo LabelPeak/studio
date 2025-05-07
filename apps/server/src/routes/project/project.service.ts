@@ -39,8 +39,25 @@ async function findAll(dto: ProjectDto.FindAllReq) {
 
 async function findMine(_: ProjectDto.FindMineReq, authPayload: ContextVariableMap["authPayload"]) {
   const { operatorId } = authPayload;
-  const list = await db.query.projectTable.findMany({
-    where: (_projectTable) => eq(_projectTable.admin, operatorId)
+
+  const list = await db.query.usersToProjects.findMany({
+    where: (_usersToProjects) => eq(_usersToProjects.user, operatorId),
+    with: {
+      project: {
+        with: {
+          admin: {
+            columns: {
+              username: false,
+              password: false,
+              superadmin: false
+            }
+          }
+        },
+        columns: {
+          presets: false
+        }
+      }
+    }
   });
 
   return list;

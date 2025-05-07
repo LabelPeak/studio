@@ -1,4 +1,5 @@
-import { Role } from "@/interfaces/project";
+import { Role } from "@/interfaces/user-project-relation";
+
 import useUser from "./useUser";
 
 interface IProps {
@@ -28,6 +29,6 @@ export function useAccess(props?: IProps): IAccess {
     canSeeStaff: user.superadmin === false,
     canSeeAdmin: role === Role.admin,
     canSeeChecker: role === Role.checker,
-    canSeeAnnotator: role === Role.annotator,
+    canSeeAnnotator: role === Role.annotator
   };
 }

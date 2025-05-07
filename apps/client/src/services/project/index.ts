@@ -1,36 +1,33 @@
-import { Project, ProjectWithAnnotateInfo, Role } from "@/interfaces/project";
+import { Project } from "@/interfaces/project";
+import { Role, UserProjectRelation } from "@/interfaces/user-project-relation";
+
 import { requestWithAuth } from "../request";
 
+export interface UserProjectRelationWithAnnotation extends UserProjectRelation {
+  countAnnotations: number;
+  countDataItems: number;
+}
+
 function getMyParticipateProjects() {
-  return requestWithAuth<ProjectWithAnnotateInfo[]>("/api/project/mine");
+  return requestWithAuth<UserProjectRelationWithAnnotation[]>("/api/project/mine");
 }
 
 function getProjectDetail(projectId: number) {
   return requestWithAuth<Project>("/api/project/query/" + projectId.toString());
 }
 
-function findAll(props: {
-  page: number,
-  size: number
-}) {
+function findAll(props: { page: number; size: number }) {
   return requestWithAuth<{
     list: Project[];
     total: number;
-  }>(
-    `/api/project/all?page=${props.page}&size=${props.size}`
-  );
+  }>(`/api/project/all?page=${props.page}&size=${props.size}`);
 }
 
-function create(props:
-  { name: string, access: string, type: string, admin: number }
-) {
-  return requestWithAuth<Project>(
-    "/api/project/create", {
-      method: "POST",
-      body: JSON.stringify(props)
-    }
-  );
-
+function create(props: { name: string; access: string; type: string; admin: number }) {
+  return requestWithAuth<Project>("/api/project/create", {
+    method: "POST",
+    body: JSON.stringify(props)
+  });
 }
 
 function remove(projectId: number) {
@@ -53,11 +50,7 @@ function update(
   });
 }
 
-function assignStaff(props: {
-  user: number;
-  project: number;
-  role: Role;
-}) {
+function assignStaff(props: { user: number; project: number; role: Role }) {
   return requestWithAuth<null>("/api/project/assign", {
     method: "POST",
     body: JSON.stringify(props)
