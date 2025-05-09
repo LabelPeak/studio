@@ -29,12 +29,12 @@ export const projectTable = pgTable("project", {
   access: varchar({ length: 10 }).notNull(),
   statusHistory: json().notNull(),
   admin: integer().references(() => userTable.id)
-  // FIXME: dataset 和 role 字段少了
 });
 
 export const projectRelations = relations(projectTable, ({ many, one }) => ({
   admin: one(userTable, { fields: [projectTable.admin], references: [userTable.id] }),
-  users: many(usersToProjects)
+  users: many(usersToProjects),
+  dataset: one(datasetTable, { fields: [projectTable.id], references: [datasetTable.project] })
 }));
 
 export const usersToProjects = pgTable(
@@ -65,13 +65,24 @@ export const datasetTable = pgTable("dataset", {
   project: integer().references(() => projectTable.id, { onDelete: "cascade" })
 });
 
+export const datasetRelations = relations(datasetTable, ({ many }) => ({
+  dataitems: many(dataItemTable)
+}));
+
 export const dataItemTable = pgTable("dataitem", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   annotation: json().notNull(),
   file: varchar({ length: 80 }).notNull(),
-  dataset: integer().references(() => datasetTable.id),
+  dataset: integer(),
   reannotation: json().notNull(),
   feedback: varchar({ length: 50 }).notNull(),
   approved: integer().notNull(),
   updateAt: timestamp().notNull()
 });
+
+export const dataItemRelations = relations(dataItemTable, ({ one }) => ({
+  dataset: one(datasetTable, {
+    fields: [dataItemTable.dataset],
+    references: [datasetTable.id]
+  })
+}));

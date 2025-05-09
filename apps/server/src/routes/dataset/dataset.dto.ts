@@ -6,11 +6,19 @@ const createSchema = z.object({
   project: z.number()
 });
 
+const findAllDataItemByDatasetIdSchema = z.object({
+  datasetId: z.number(),
+  page: z.number(),
+  size: z.number()
+});
+
 export const DatasetSchema = {
-  createSchema
+  createSchema,
+  findAllDataItemByDatasetIdSchema
 };
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace DatasetDto {
   export type CreateDatasetReq = z.infer<typeof createSchema>;
+  export type FindAllDataItemByDatasetIdReq = z.infer<typeof findAllDataItemByDatasetIdSchema>;
 }

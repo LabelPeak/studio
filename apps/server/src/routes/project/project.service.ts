@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { ContextVariableMap } from "hono";
 
 import { db } from "@/db/connection.ts";
@@ -8,16 +8,24 @@ import { BizException } from "@/utils/exception.ts";
 import { datasetService } from "../dataset/dataset.service.ts";
 import type { ProjectDto } from "./project.dto.ts";
 
-async function findOneById(dto: ProjectDto.FindOneByIdReq) {
-  const project = await db.query.projectTable.findFirst({
-    where: (_projectTable) => eq(_projectTable.id, dto.id)
+async function findOneById(
+  dto: ProjectDto.FindOneByIdReq,
+  authPayload: ContextVariableMap["authPayload"]
+) {
+  const operatorId = authPayload.operatorId;
+
+  const relation = await db.query.usersToProjects.findFirst({
+    where: (_table) => and(eq(_table.user, operatorId), eq(_table.project, dto.id)),
+    with: {
+      project: {
+        with: {
+          dataset: true
+        }
+      }
+    }
   });
 
-  if (!project) {
-    throw new BizException("project_not_found");
-  }
-
-  return project;
+  return relation;
 }
 
 async function findAll(dto: ProjectDto.FindAllReq) {

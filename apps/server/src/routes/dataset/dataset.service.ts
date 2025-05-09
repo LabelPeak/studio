@@ -1,3 +1,5 @@
+import { eq } from "drizzle-orm";
+
 import { db } from "@/db/connection.ts";
 import { datasetTable } from "@/db/schema.ts";
 
@@ -17,7 +19,22 @@ async function createDataset(dto: DatasetDto.CreateDatasetReq) {
 
   return dataset;
 }
+async function findAllDataItemByDatasetId(dto: DatasetDto.FindAllDataItemByDatasetIdReq) {
+  const list = await db.query.dataItemTable.findMany({
+    where: (_table) => eq(_table.dataset, dto.datasetId),
+    limit: dto.size,
+    offset: (dto.page - 1) * dto.size
+  });
+
+  const total = await db.$count(datasetTable, eq(datasetTable.id, dto.datasetId));
+
+  return {
+    list,
+    total
+  };
+}
 
 export const datasetService = {
-  createDataset
+  createDataset,
+  findAllDataItemByDatasetId
 };
