@@ -18,7 +18,7 @@ projectRouter.get("/query/:id", async (c) => {
     throw new BizException("invalid_param");
   }
 
-  const res = await projectService.findOneById(parsed.data);
+  const res = await projectService.findOneById(parsed.data, c.get("authPayload"));
   return c.json(createResponse(res));
 });
 
@@ -52,9 +52,8 @@ projectRouter.post("/create", superadminMiddleware, async (c) => {
     throw new BizException("invalid_param");
   }
 
-  const res = await projectService.createSingleProject(parsed.data, c.get("authPayload"));
+  const res = await projectService.createSingleProject(parsed.data);
 
-  // 修改：将 res 用 createResponse 包裹
   return c.json(createResponse(res));
 });
 

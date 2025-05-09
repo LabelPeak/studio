@@ -1,18 +1,24 @@
 import { Modal, Typography } from "antd";
-import CheckStatusTag from "@/components/CheckStatusTag";
 import { ColumnsType } from "antd/es/table";
-import { DataItem } from "@/interfaces/dataset";
 import classNames from "classnames";
 import { format } from "date-fns";
 
-function generateColumns(props:
-  { projectLocation: string, isToolOpen: boolean }
-) {
+import CheckStatusTag from "@/components/CheckStatusTag";
+import { DataItem } from "@/interfaces/dataset";
+
+interface GenerateColumnsProps {
+  projectLocation: string;
+  isToolOpen: boolean;
+}
+
+function generateColumns(props: GenerateColumnsProps) {
   const { projectLocation, isToolOpen } = props;
 
   function handleViewCode(dataItem: DataItem) {
     const data: DataItem[] = JSON.parse(dataItem.annotation);
-    if (data.length === 0) return;
+    if (data.length === 0) {
+      return;
+    }
 
     Modal.confirm({
       title: "源标注数据",
@@ -21,9 +27,7 @@ function generateColumns(props:
       icon: <div className="i-mdi-code-json c-nord-frost-3 text-24px mr-2"></div>,
       content: (
         <Typography.Paragraph>
-          <pre className="of-auto max-h-60vh">
-            {JSON.stringify(data, null, 2)}
-          </pre>
+          <pre className="of-auto max-h-60vh">{JSON.stringify(data, null, 2)}</pre>
         </Typography.Paragraph>
       )
     });
@@ -41,7 +45,7 @@ function generateColumns(props:
       ellipsis: true,
       // TODO: render data source preview
       render: (text: string) => `${projectLocation}/${text}`
-    },
+    }
   ];
 
   if (!isToolOpen) {
@@ -65,7 +69,7 @@ function generateColumns(props:
         dataIndex: "approved",
         align: "center",
         render: (approved: boolean | undefined) => <CheckStatusTag checked={approved} />
-      },
+      }
     ]);
   }
 
@@ -79,7 +83,10 @@ function generateColumns(props:
           "i-mdi-code-json c-nord-frost-3 text-18px inline-block",
           record.annotation === "[]" ? "op-30 cursor-not-allowed" : "cursor-pointer"
         ])}
-        onClick={(e) => { e.stopPropagation(); handleViewCode(record); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleViewCode(record);
+        }}
       />
     )
   });

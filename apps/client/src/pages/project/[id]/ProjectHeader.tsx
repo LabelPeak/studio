@@ -1,20 +1,25 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { type ReactNode, memo, useMemo } from "react";
-import AccessTag from "@/components/AccessTag";
-import { Project } from "@/interfaces/project";
-import RoleTag from "@/components/RoleTag";
 import { Tag } from "antd";
+import { memo, type ReactNode, useMemo } from "react";
 import { useIntl } from "react-intl";
-interface IProps {
-  project?: Project;
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
+import AccessTag from "@/components/AccessTag";
+import RoleTag from "@/components/RoleTag";
+import { Project } from "@/interfaces/project";
+import { Role } from "@/interfaces/user-project-relation";
+
+interface ProjectHeaderProps {
+  project: Project;
+  role: Role;
   extra?: ReactNode;
 }
 
-function ProjectHeader(props: IProps) {
-  const { project, extra } = props;
+function ProjectHeader(props: ProjectHeaderProps) {
+  const { project, extra, role } = props;
   const navigate = useNavigate();
   const location = useLocation();
   const intl = useIntl();
+
   const backPathname = useMemo(() => {
     const temp = location.pathname.split("/");
     temp.pop();
@@ -26,27 +31,28 @@ function ProjectHeader(props: IProps) {
       <Link
         className="b-r-1 b-r-solid b-color-nord-snow-2 px-4 flex items-center hover:bg-nord-snow-2"
         to=".."
-        onClick={(e) => {e.preventDefault(); navigate(backPathname); } }
+        onClick={(e) => {
+          e.preventDefault();
+          navigate(backPathname);
+        }}
       >
         <div className="i-mdi-arrow-left text-5 c-nord-polar-3" />
       </Link>
       <div className="px-4 flex items-center">
-        <span className="c-nord-polar-3 mr-2">#{project?.id}</span>
-        <span className="font-bold">{project?.name}</span>
+        <span className="c-nord-polar-3 mr-2">#{project.id}</span>
+        <span className="font-bold">{project.name}</span>
       </div>
       <div className="mr-2 flex items-center">
-        <Tag>{ intl.formatMessage({ id: project?.dataset.type }) }</Tag>
+        <Tag>{intl.formatMessage({ id: project.dataset.type })}</Tag>
       </div>
       <div className="mr-2 flex items-center">
-        <AccessTag access={project!.access} />
+        <AccessTag access={project.access} />
       </div>
       <div className="mr-2 flex items-center">
-        <RoleTag role={project!.role} />
+        <RoleTag role={role} />
       </div>
       <div className="flex-auto" />
-      <div className="flex items-center px-4">
-        { extra }
-      </div>
+      <div className="flex items-center px-4">{extra}</div>
     </div>
   );
 }

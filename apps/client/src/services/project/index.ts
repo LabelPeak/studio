@@ -13,7 +13,7 @@ function getMyParticipateProjects() {
 }
 
 function getProjectDetail(projectId: number) {
-  return requestWithAuth<Project>("/api/project/query/" + projectId.toString());
+  return requestWithAuth<UserProjectRelation>("/api/project/query/" + projectId.toString());
 }
 
 function findAll(props: { page: number; size: number }) {

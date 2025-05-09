@@ -1,32 +1,43 @@
-import AnnotateTool, { AnnotateToolRef } from "@/components/AnnotateTool";
-import { Button, Modal, Space, Table, message } from "antd";
-import { Link, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { Button, Empty, message, Modal, Space, Table } from "antd";
 import { useMemo, useRef, useState } from "react";
+import { useIntl } from "react-intl";
+import { Link, useParams } from "react-router-dom";
+
 import Access from "@/components/Access";
+import AnnotateTool, { AnnotateToolRef } from "@/components/AnnotateTool";
+import LoadingLayer from "@/components/LoadingLayer";
+import { useAccess } from "@/hooks/useAccess";
 import { DataItem } from "@/interfaces/dataset";
 import DatasetService from "@/services/dataset";
-import ImportDataItemsForm from "./ImportDataItemsForm";
-import LoadingLayer from "@/components/LoadingLayer";
-import ProjectHeader from "./ProjectHeader";
 import ProjectService from "@/services/project";
+
 import generateColumns from "./columns";
-import { useAccess } from "@/hooks/useAccess";
-import { useIntl } from "react-intl";
-import { useRequest } from "ahooks";
-import useWorkingProject from "@/hooks/useWorkingProject";
+import ImportDataItemsForm from "./ImportDataItemsForm";
+import ProjectHeader from "./ProjectHeader";
 
 export function ProjectDetailPage() {
   const { id: projectId } = useParams<{ id: string }>();
-  const { project, setProject } = useWorkingProject();
-  const [dataItems, setDataItems] = useState<DataItem[]>([]);
+  // const { project, setProject } = useWorkingProject();
+  // const [dataItems, setDataItems] = useState<DataItem[]>([]);
   const [annotatingItem, setAnnotatingItem] = useState<DataItem | null>(null);
   const intl = useIntl();
-  const access = useAccess({ role: project?.role });
   const [openImportForm, setOpenImportForm] = useState(false);
   const annotateToolRef = useRef<AnnotateToolRef>(null);
   const [isToolOpen, setIsToolOpen] = useState(false);
   const [isMultiSelect, setIsMultiSelect] = useState(false);
   const selectedDataItems = useRef<DataItem[]>([]);
+  const [dataItemPage] = useState(1);
+
+  const { data: queryProjectResp, isFetching: loadingProject } = useQuery({
+    queryKey: ["workingProject", projectId] as const,
+    queryFn: ({ queryKey }) => {
+      const id = queryKey[1] ? parseInt(queryKey[1]) : 0;
+      return ProjectService.getProjectDetail(id);
+    }
+  });
+
+  const { project, role } = queryProjectResp ?? {};
 
   const columns = useMemo(() => {
     return generateColumns({
@@ -35,23 +46,27 @@ export function ProjectDetailPage() {
     });
   }, [project, isToolOpen]);
 
-  const { loading: loadingProject } = useRequest(ProjectService.getProjectDetail, {
-    defaultParams: [+(projectId || "0")],
-    onSuccess: (res) => {
-      if (res.data?.id) {
-        setProject(res.data);
-        loadDataItems({ page: 1, size: 10, datasetId: res.data.dataset.id });
-      }
-    }
-  });
+  const access = useAccess({ role });
 
+  // TODO: use infinite list
   const {
-    run: loadDataItems,
-    loading: loadingDataItems
-  } = useRequest(DatasetService.getDataItems, {
-    manual: true,
-    onSuccess: (res) => {
-      if (res.data) setDataItems(res.data.list);
+    data: dataItems,
+    isFetching: loadingDataItems,
+    refetch: refreshDataItems
+  } = useQuery({
+    queryKey: ["dataItems", project?.dataset.id, dataItemPage] as const,
+    queryFn: async ({ queryKey }) => {
+      if (queryKey[1] === undefined) {
+        return [];
+      }
+      const res = await DatasetService.getDataItems({
+        datasetId: queryKey[1],
+        page: queryKey[2],
+        size: 10
+      });
+
+      console.log("fuck", res.list);
+      return res.list;
     }
   });
 
@@ -62,7 +77,7 @@ export function ProjectDetailPage() {
   function handleFinishImportFile(count: number) {
     setOpenImportForm(false);
     if (count > 0 && project) {
-      loadDataItems({ page: 1, size: 10, datasetId: project.dataset.id });
+      refreshDataItems();
     }
   }
 
@@ -88,31 +103,42 @@ export function ProjectDetailPage() {
 
   function handleSelectRows(_: any, rows: DataItem[]) {
     selectedDataItems.current = rows;
-    if (rows.length === 0) setIsMultiSelect(false);
-    else {
+    if (rows.length === 0) {
+      setIsMultiSelect(false);
+    } else {
       setIsMultiSelect(true);
     }
   }
 
   async function handleBatchedDelete() {
-    if (!project || selectedDataItems.current.length === 0) return;
-    const res = await DatasetService.deleteDataItems({
-      project: project.id,
-      dataitems: selectedDataItems.current.map(item => item.id)
-    });
-    if (res.code === 200 && res.data) {
-      message.success(`成功删除 ${res.data} 条数据项`);
-      loadDataItems({ datasetId: project.dataset.id, page: 1, size: 10 });
-    } else {
-      message.error("删除失败: " + res.msg || "未知错误");
+    if (!project || selectedDataItems.current.length === 0) {
+      return;
+    }
+    try {
+      const deleteCount = await DatasetService.deleteDataItems({
+        project: project.id,
+        dataitems: selectedDataItems.current.map((item) => item.id)
+      });
+      message.success(`成功删除 ${deleteCount} 条数据项`);
+      refreshDataItems();
+    } catch (error) {
+      if (error instanceof Error) {
+        message.error("删除失败: " + error.message);
+      }
     }
   }
 
-  if (loadingProject) return <LoadingLayer />;
-  else return (
+  if (loadingProject) {
+    return <LoadingLayer />;
+  } else if (!project || !role) {
+    return <Empty />;
+  }
+
+  return (
     <section className="bg-white h-full flex flex-col" id="project-detail-page">
       <ProjectHeader
         project={project}
+        role={role}
         extra={
           <Space>
             <Access accessible={access.canSeeAdmin && isMultiSelect}>
@@ -122,14 +148,12 @@ export function ProjectDetailPage() {
             </Access>
             <Access accessible={access.canSeeAdmin}>
               <Button type="primary" onClick={handleImportFile}>
-                {intl.formatMessage({id: "import" })}
+                {intl.formatMessage({ id: "import" })}
               </Button>
             </Access>
             <Access accessible={access.canSeeAdmin}>
               <Button>
-                <Link to="settings">
-                  {intl.formatMessage({ id: "settings" })}
-                </Link>
+                <Link to="settings">{intl.formatMessage({ id: "settings" })}</Link>
               </Button>
             </Access>
           </Space>
@@ -149,7 +173,7 @@ export function ProjectDetailPage() {
             })}
           />
         </div>
-        { (isToolOpen && project && annotatingItem) &&
+        {isToolOpen && project && annotatingItem && (
           <AnnotateTool
             ref={annotateToolRef}
             project={project}
@@ -157,14 +181,15 @@ export function ProjectDetailPage() {
             annotatingType={project.dataset.type}
             presets={project.presets}
           />
-        }
+        )}
       </div>
-      { project &&
-       <ImportDataItemsForm
-         isOpen={openImportForm}
-         project={project}
-         handleClose={handleFinishImportFile}
-       /> }
+      {project && (
+        <ImportDataItemsForm
+          isOpen={openImportForm}
+          project={project}
+          handleClose={handleFinishImportFile}
+        />
+      )}
     </section>
   );
 }
