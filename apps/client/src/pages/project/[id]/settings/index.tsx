@@ -1,25 +1,17 @@
 import { Menu, MenuProps } from "antd";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
-import LoadingLayer from "@/components/LoadingLayer";
-import ProjectHeader from "../ProjectHeader";
-import ProjectService from "@/services/project";
 import { useIntl } from "react-intl";
-import { useRequest } from "ahooks";
-import useWorkingProject from "@/hooks/useWorkingProject";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
+
+import { useProject } from "@/hooks/use-project";
+
+import ProjectHeader from "../ProjectHeader";
 
 export default function ProjectSettingPage() {
   const navigate = useNavigate();
-  const { project, setProject } = useWorkingProject();
-  const { id: projectId } = useParams<{ id: string }>();
+  const { id: projectId = "" } = useParams();
   const intl = useIntl();
-  const { loading: loadingProject } = useRequest(ProjectService.getProjectDetail, {
-    defaultParams: [+(projectId || "0")],
-    onSuccess: (res) => {
-      if (res.data?.id) {
-        setProject(res.data);
-      }
-    }
-  });
+
+  const { project, role } = useProject(parseInt(projectId));
 
   const menuItems: MenuProps["items"] = [
     { key: "general", label: intl.formatMessage({ id: "project-setting-general" }) },
@@ -32,10 +24,9 @@ export default function ProjectSettingPage() {
     navigate(e.key);
   }
 
-  if (loadingProject) return <LoadingLayer />;
-  else return (
+  return (
     <section id="project-settings" className="h-full bg-white flex flex-col">
-      <ProjectHeader project={project} />
+      <ProjectHeader project={project} role={role} />
       <div className="flex h-full">
         <div className="w-50 h-full">
           <Menu

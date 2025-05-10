@@ -1,38 +1,47 @@
-import { Button, Table } from "antd";
-import { useRef, useState } from "react";
-import AssignStaffFormDrawer from "./AssignStaffFormDrawer";
-import { ColumnsType } from "antd/es/table";
-import { Role } from "@/interfaces/project";
-import RoleTag from "@/components/RoleTag";
-import StaffService from "@/services/staff";
-import { User } from "@/interfaces/user";
+import { useQuery } from "@tanstack/react-query";
+import { Button, Table, TableColumnsType } from "antd";
+import { useState } from "react";
 import { useIntl } from "react-intl";
-import { useRequest } from "ahooks";
-import useWorkingProject from "@/hooks/useWorkingProject";
+import { useParams } from "react-router-dom";
+
+import RoleTag from "@/components/RoleTag";
+import { useProject } from "@/hooks/use-project";
+import { User } from "@/interfaces/user";
+import { Role } from "@/interfaces/user-project-relation";
+import StaffService from "@/services/staff";
+
+import AssignStaffFormDrawer from "./AssignStaffFormDrawer";
 
 interface UserWithRole extends User {
-  role: Role
+  role: Role;
 }
 
 export default function ProjectSettingMember() {
+  const { id: projectId = "" } = useParams();
+  const { project } = useProject(parseInt(projectId));
+
   const intl = useIntl();
-  const project = useWorkingProject(state => state.project);
-  const [staffs, setStaffs] = useState<UserWithRole[]>([]);
-  const paginationRef = useRef({ page: 1, size: 10 });
-  const [totalStaffs, setTotalStaffs] = useState(0);
+  const [staffsPage] = useState(1);
   const [openAssignForm, setOpenAssignForm] = useState(false);
 
-  const { loading, run: findAllInProject } = useRequest(StaffService.findAllInProject, {
-    defaultParams: [{ project: project!.id, ...paginationRef.current }],
-    onSuccess: (res) => {
-      if (res.data && res.code === 200) {
-        setStaffs(res.data.list);
-        setTotalStaffs(res.data.total);
-      }
+  const {
+    data: projectStaffsResp,
+    refetch,
+    isFetching
+  } = useQuery({
+    queryKey: ["projectStaffs", project.id, staffsPage] as const,
+    queryFn: async ({ queryKey }) => {
+      return StaffService.findAllInProject({
+        project: queryKey[1],
+        page: queryKey[2],
+        size: 10
+      });
     }
   });
 
-  const columns: ColumnsType<UserWithRole> = [
+  const { list: staffs = [], total: totalStaffs = 0 } = projectStaffsResp ?? {};
+
+  const columns: TableColumnsType<UserWithRole> = [
     {
       title: intl.formatMessage({ id: "id-prompt" }),
       dataIndex: "id"
@@ -55,7 +64,9 @@ export default function ProjectSettingMember() {
       width: 80,
       align: "center",
       render: () => (
-        <Button type="link" danger>移除</Button>
+        <Button type="link" danger>
+          移除
+        </Button>
       )
     }
   ];
@@ -66,29 +77,29 @@ export default function ProjectSettingMember() {
 
   function handleCloseAssignForm() {
     setOpenAssignForm(false);
-    findAllInProject({ project: project!.id, ...paginationRef.current });
+    refetch();
   }
 
   return (
     <div id="member-setting" className="px-6">
       <div className="flex items-center">
-        <h1>{ intl.formatMessage({ id: "project-setting-member" }) }</h1>
+        <h1>{intl.formatMessage({ id: "project-setting-member" })}</h1>
         <div className="flex-auto" />
         <Button type="primary" onClick={handleClickAssign}>
-          { intl.formatMessage({ id: "project-assign-staff" })}
+          {intl.formatMessage({ id: "project-assign-staff" })}
         </Button>
       </div>
       <Table<UserWithRole>
         columns={columns}
         rowKey="id"
         dataSource={staffs}
-        loading={loading}
+        loading={isFetching}
         pagination={{
           total: totalStaffs
         }}
       />
       <AssignStaffFormDrawer
-        projectId={project!.id}
+        projectId={project.id}
         open={openAssignForm}
         onClose={handleCloseAssignForm}
       />

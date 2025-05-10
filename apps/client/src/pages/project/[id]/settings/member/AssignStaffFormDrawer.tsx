@@ -1,13 +1,14 @@
-import { Button, Drawer, Dropdown, Input, MenuProps, Table, message } from "antd";
-import { useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Button, Drawer, Dropdown, Input, MenuProps, message, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
-import ProjectService from "@/services/project";
-import { Role } from "@/interfaces/project";
-import StaffService from "@/services/staff";
-import { User } from "@/interfaces/user";
+import { useState } from "react";
 import { useIntl } from "react-intl";
-import { useRequest } from "ahooks";
+
 import useUser from "@/hooks/useUser";
+import { User } from "@/interfaces/user";
+import { Role } from "@/interfaces/user-project-relation";
+import ProjectService from "@/services/project";
+import StaffService from "@/services/staff";
 
 interface IProps {
   projectId: number;
@@ -17,15 +18,14 @@ interface IProps {
 
 export default function AssignStaffFormDrawer(props: IProps) {
   const { open, onClose, projectId } = props;
-  const [result, setResult] = useState<User[]>([]);
-  const [resultCount, setResultCount] = useState(0);
-  const myId = useUser(state => state.id);
-  const tokenRef = useRef("");
+  const myId = useUser((state) => state.id);
+  const [staffsPage, setStaffsPage] = useState(1);
+  const [token, setToken] = useState("");
   const intl = useIntl();
 
-  const dropdownItems: MenuProps["items"] = [Role.annotator, Role.checker].map(role => ({
+  const dropdownItems: MenuProps["items"] = [Role.annotator, Role.checker].map((role) => ({
     key: role,
-    label: intl.formatMessage({ id: `role-${role }`})
+    label: intl.formatMessage({ id: `role-${role}` })
   }));
 
   const columns: ColumnsType<User> = [
@@ -42,12 +42,13 @@ export default function AssignStaffFormDrawer(props: IProps) {
       align: "center",
       render: (_, record) => (
         <Dropdown
-          disabled={(record.superadmin || false) || myId === record.id }
+          disabled={record.superadmin || myId === record.id}
           menu={{
             items: dropdownItems,
-            onClick: (e) => handleClickAssignMenu(record.id!, e.key as Role)
+            onClick: (e) => handleClickAssignMenu(record.id, e.key as Role)
           }}
-          trigger={["click"]}>
+          trigger={["click"]}
+        >
           <Button type="link">添加</Button>
         </Dropdown>
       )
@@ -55,41 +56,36 @@ export default function AssignStaffFormDrawer(props: IProps) {
   ];
 
   async function handleClickAssignMenu(id: number, role: Role) {
-    const res = await ProjectService.assignStaff({ project: projectId, user: id, role });
-    if (res.code === 200) {
+    try {
+      await ProjectService.assignStaff({ project: projectId, user: id, role });
       message.success("成功添加员工到项目");
-    } else {
-      message.error("添加员工到项目失败: " + res.msg || "未知错误");
-    }
-  }
-
-  async function handleSearch(token: string) {
-    tokenRef.current = token;
-    if (token.length > 0) {
-      searchStaffs({ page: 1, size: 10, token });
-    }
-  }
-
-  function handleChangePage(pagination: any) {
-    searchStaffs({ page: pagination.current,
-      size: pagination.pageSize,
-      token: tokenRef.current
-    });
-  }
-
-  const { loading, run: searchStaffs } = useRequest(StaffService.search, {
-    manual: true,
-    onSuccess: (res) => {
-      if (res.code === 200 && res.data) {
-        setResult(res.data.list);
-        setResultCount(res.data.total);
+    } catch (err) {
+      if (err instanceof Error) {
+        message.error("添加员工到项目失败: " + err.message);
       }
+    }
+  }
+
+  async function handleSearch(newVal: string) {
+    setToken(newVal);
+  }
+
+  const { data: result, isFetching } = useQuery({
+    queryKey: ["searchStaffs", token, staffsPage] as const,
+    queryFn: async ({ queryKey }) => {
+      if (queryKey[1] === "") {
+        return {
+          list: [],
+          total: 0
+        };
+      }
+      return StaffService.search({ token: queryKey[1], page: queryKey[2], size: 10 });
     }
   });
 
   return (
     <Drawer
-      title={intl.formatMessage({ id: "project-assign-staff"})}
+      title={intl.formatMessage({ id: "project-assign-staff" })}
       width={600}
       onClose={onClose}
       open={open}
@@ -106,16 +102,16 @@ export default function AssignStaffFormDrawer(props: IProps) {
         size="large"
         onSearch={handleSearch}
       />
-      <div className="my-4"/>
+      <div className="my-4" />
       <Table<User>
         columns={columns}
         size="small"
         rowKey="id"
-        loading={loading}
-        dataSource={result}
-        onChange={handleChangePage}
+        loading={isFetching}
+        dataSource={result?.list}
+        onChange={(e) => setStaffsPage(e.current ?? 0)}
         pagination={{
-          total: resultCount
+          total: result?.total
         }}
       />
     </Drawer>

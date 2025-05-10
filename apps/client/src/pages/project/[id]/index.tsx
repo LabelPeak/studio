@@ -1,25 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
-import { Button, Empty, message, Modal, Space, Table } from "antd";
+import { Button, message, Modal, Space, Table } from "antd";
 import { useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { Link, useParams } from "react-router-dom";
 
 import Access from "@/components/Access";
 import AnnotateTool, { AnnotateToolRef } from "@/components/AnnotateTool";
-import LoadingLayer from "@/components/LoadingLayer";
+import { useProject } from "@/hooks/use-project";
 import { useAccess } from "@/hooks/useAccess";
 import { DataItem } from "@/interfaces/dataset";
 import DatasetService from "@/services/dataset";
-import ProjectService from "@/services/project";
 
 import generateColumns from "./columns";
 import ImportDataItemsForm from "./ImportDataItemsForm";
 import ProjectHeader from "./ProjectHeader";
 
 export function ProjectDetailPage() {
-  const { id: projectId } = useParams<{ id: string }>();
-  // const { project, setProject } = useWorkingProject();
-  // const [dataItems, setDataItems] = useState<DataItem[]>([]);
+  const { id: projectId = "" } = useParams();
   const [annotatingItem, setAnnotatingItem] = useState<DataItem | null>(null);
   const intl = useIntl();
   const [openImportForm, setOpenImportForm] = useState(false);
@@ -29,19 +26,11 @@ export function ProjectDetailPage() {
   const selectedDataItems = useRef<DataItem[]>([]);
   const [dataItemPage] = useState(1);
 
-  const { data: queryProjectResp, isFetching: loadingProject } = useQuery({
-    queryKey: ["workingProject", projectId] as const,
-    queryFn: ({ queryKey }) => {
-      const id = queryKey[1] ? parseInt(queryKey[1]) : 0;
-      return ProjectService.getProjectDetail(id);
-    }
-  });
-
-  const { project, role } = queryProjectResp ?? {};
+  const { project, role } = useProject(parseInt(projectId));
 
   const columns = useMemo(() => {
     return generateColumns({
-      projectLocation: project?.dataset.location || "",
+      projectLocation: project.dataset.location || "",
       isToolOpen
     });
   }, [project, isToolOpen]);
@@ -54,18 +43,14 @@ export function ProjectDetailPage() {
     isFetching: loadingDataItems,
     refetch: refreshDataItems
   } = useQuery({
-    queryKey: ["dataItems", project?.dataset.id, dataItemPage] as const,
+    queryKey: ["dataItems", project.dataset.id, dataItemPage] as const,
     queryFn: async ({ queryKey }) => {
-      if (queryKey[1] === undefined) {
-        return [];
-      }
       const res = await DatasetService.getDataItems({
         datasetId: queryKey[1],
         page: queryKey[2],
         size: 10
       });
 
-      console.log("fuck", res.list);
       return res.list;
     }
   });
@@ -76,7 +61,7 @@ export function ProjectDetailPage() {
 
   function handleFinishImportFile(count: number) {
     setOpenImportForm(false);
-    if (count > 0 && project) {
+    if (count > 0) {
       refreshDataItems();
     }
   }
@@ -111,7 +96,7 @@ export function ProjectDetailPage() {
   }
 
   async function handleBatchedDelete() {
-    if (!project || selectedDataItems.current.length === 0) {
+    if (selectedDataItems.current.length === 0) {
       return;
     }
     try {
@@ -126,12 +111,6 @@ export function ProjectDetailPage() {
         message.error("删除失败: " + error.message);
       }
     }
-  }
-
-  if (loadingProject) {
-    return <LoadingLayer />;
-  } else if (!project || !role) {
-    return <Empty />;
   }
 
   return (
@@ -173,7 +152,7 @@ export function ProjectDetailPage() {
             })}
           />
         </div>
-        {isToolOpen && project && annotatingItem && (
+        {isToolOpen && annotatingItem && (
           <AnnotateTool
             ref={annotateToolRef}
             project={project}
@@ -183,13 +162,11 @@ export function ProjectDetailPage() {
           />
         )}
       </div>
-      {project && (
-        <ImportDataItemsForm
-          isOpen={openImportForm}
-          project={project}
-          handleClose={handleFinishImportFile}
-        />
-      )}
+      <ImportDataItemsForm
+        isOpen={openImportForm}
+        project={project}
+        handleClose={handleFinishImportFile}
+      />
     </section>
   );
 }

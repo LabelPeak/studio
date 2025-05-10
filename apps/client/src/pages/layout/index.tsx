@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { message } from "antd";
 import classnames from "classnames";
-import { useEffect, useMemo } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import LoadingLayer from "@/components/LoadingLayer";
@@ -109,7 +109,13 @@ export default function Layout() {
             : null}
         </aside>
         <main className="flex-auto bg-nord-snow-2 of-hidden">
-          {logining ? <LoadingLayer /> : <Outlet />}
+          {logining ? (
+            <LoadingLayer />
+          ) : (
+            <Suspense fallback={<LoadingLayer />}>
+              <Outlet />
+            </Suspense>
+          )}
         </main>
       </section>
     </section>
