@@ -1,7 +1,7 @@
 interface CustomResponse<T> {
   code: number;
   data?: T;
-  msg?: string;
+  message?: string;
 }
 
 export async function request<T>(url: string, options?: RequestInit) {
@@ -16,7 +16,7 @@ export async function request<T>(url: string, options?: RequestInit) {
 
   if (res.code !== 200) {
     // TODO: shared biz error
-    throw new Error(res.msg || "Unknown Error");
+    throw new Error(res.message || "Unknown Error");
   }
 
   return res.data as T;
