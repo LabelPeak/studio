@@ -7,3 +7,10 @@ export class BizException extends Error {
     this.code = code;
   }
 }
+
+export class ServerConfigException extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ServerConfigException";
+  }
+}

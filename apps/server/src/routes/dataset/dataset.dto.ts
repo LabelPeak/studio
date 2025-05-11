@@ -12,13 +12,20 @@ const findAllDataItemByDatasetIdSchema = z.object({
   size: z.number()
 });
 
+const uploadDataItemsSchema = z.object({
+  datasetId: z.number(),
+  file: z.instanceof(File)
+});
+
 export const DatasetSchema = {
   createSchema,
-  findAllDataItemByDatasetIdSchema
+  findAllDataItemByDatasetIdSchema,
+  uploadDataItemsSchema
 };
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace DatasetDto {
   export type CreateDatasetReq = z.infer<typeof createSchema>;
   export type FindAllDataItemByDatasetIdReq = z.infer<typeof findAllDataItemByDatasetIdSchema>;
+  export type UploadDataItemReq = z.infer<typeof uploadDataItemsSchema>;
 }

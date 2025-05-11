@@ -5,6 +5,7 @@ import {
   json,
   pgTable,
   primaryKey,
+  text,
   timestamp,
   varchar
 } from "drizzle-orm/pg-core";
@@ -72,11 +73,11 @@ export const datasetRelations = relations(datasetTable, ({ many }) => ({
 export const dataItemTable = pgTable("dataitem", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   annotation: json().notNull(),
-  file: varchar({ length: 80 }).notNull(),
+  file: text().notNull(),
   dataset: integer(),
   reannotation: json().notNull(),
   feedback: varchar({ length: 50 }).notNull(),
-  approved: integer().notNull(),
+  approved: boolean(),
   updateAt: timestamp().notNull()
 });
 
