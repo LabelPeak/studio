@@ -24,9 +24,9 @@ const createSingleProjectReqSchema = z.object({
 
 const updateByIdReqSchema = z.object({
   id: z.number(),
-  name: z.string(),
-  access: z.string(),
-  presets: z.string()
+  name: z.string().optional(),
+  access: z.string().optional(),
+  presets: z.string().optional()
 });
 
 const assignStaffReqSchema = z.object({

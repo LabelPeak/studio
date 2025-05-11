@@ -1,5 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import type { ContextVariableMap } from "hono";
+import { omit } from "remeda";
 
 import { db } from "@/db/connection.ts";
 import { projectTable, usersToProjects } from "@/db/schema.ts";
@@ -85,7 +86,7 @@ async function createSingleProject(dto: ProjectDto.CreateSingleProjectReq) {
     .values([
       {
         name: dto.name,
-        admin: admin?.id,
+        admin: admin.id,
         access: dto.access,
         createAt: new Date(),
         presets: "[]",
@@ -97,7 +98,7 @@ async function createSingleProject(dto: ProjectDto.CreateSingleProjectReq) {
   await db.insert(usersToProjects).values([
     {
       role: "admin",
-      user: admin?.id,
+      user: admin.id,
       project: project.id
     }
   ]);
@@ -113,9 +114,11 @@ async function createSingleProject(dto: ProjectDto.CreateSingleProjectReq) {
 }
 
 async function update(dto: ProjectDto.UpdateByIdReq) {
+  const omitIdDto = omit(dto, ["id"]);
+
   const [project] = await db
     .update(projectTable)
-    .set(dto)
+    .set(omitIdDto)
     .where(eq(projectTable.id, dto.id))
     .returning();
 
