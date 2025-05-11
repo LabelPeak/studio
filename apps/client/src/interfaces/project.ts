@@ -1,3 +1,4 @@
+import { Label } from "./annotation";
 import { Dataset } from "./dataset";
 import { User } from "./user";
 
@@ -13,6 +14,6 @@ export interface Project {
   access: Access;
   createAt: string;
   admin: User;
-  presets: string;
+  presets: Label[];
   dataset: Dataset;
 }

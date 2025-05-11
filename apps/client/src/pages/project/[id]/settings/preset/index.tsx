@@ -1,5 +1,4 @@
 import { Button, Form, Input, message } from "antd";
-import { useMemo } from "react";
 import { useIntl } from "react-intl";
 import { useParams } from "react-router-dom";
 
@@ -14,12 +13,8 @@ export default function ProjectSettingPreset() {
 
   const intl = useIntl();
   const initialValues = {
-    presets: (JSON.parse(project.presets || "[]") as Label[]).map((item) => item.name).join("\n")
+    presets: project.presets.map((item) => item.name).join("\n")
   };
-
-  const presets = useMemo(() => {
-    return JSON.parse(project.presets || "[]") as Label[];
-  }, [project]);
 
   async function handleSave(e: any) {
     const raw: string = e.presets || "";
@@ -57,9 +52,9 @@ export default function ProjectSettingPreset() {
           </Form.Item>
         </Form>
         <div>
-          <h3 className="my-2 text-4 ml-6">Labels ({presets.length})</h3>
+          <h3 className="my-2 text-4 ml-6">Labels ({project.presets.length})</h3>
           <div className="flex flex-col ml-4 gap-2 min-w-28 h-45 of-auto b-solid b-1 b-color-nord-snow-0 p-2 b-rd-2">
-            {presets.map((label) => (
+            {project.presets.map((label) => (
               <div key={label.index}>
                 <LabelTag name={label.name} index={label.index} />
               </div>

@@ -26,7 +26,7 @@ export const projectTable = pgTable("project", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 100 }).notNull(),
   createAt: timestamp().notNull(),
-  presets: varchar({ length: 500 }).notNull(),
+  presets: json().notNull(),
   access: varchar({ length: 10 }).notNull(),
   statusHistory: json().notNull(),
   admin: integer().references(() => userTable.id)

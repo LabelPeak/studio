@@ -4,19 +4,19 @@ import classNames from "classnames";
 import { format } from "date-fns";
 
 import CheckStatusTag from "@/components/CheckStatusTag";
+import { Annotation } from "@/interfaces/annotation";
 import { DataItem } from "@/interfaces/dataset";
 
 interface GenerateColumnsProps {
-  projectLocation: string;
   isToolOpen: boolean;
 }
 
 function generateColumns(props: GenerateColumnsProps) {
-  const { projectLocation, isToolOpen } = props;
+  const { isToolOpen } = props;
 
   function handleViewCode(dataItem: DataItem) {
-    const data: DataItem[] = JSON.parse(dataItem.annotation);
-    if (data.length === 0) {
+    // TODO: show empty annotation message
+    if (dataItem.annotation.length === 0) {
       return;
     }
 
@@ -24,10 +24,10 @@ function generateColumns(props: GenerateColumnsProps) {
       title: "源标注数据",
       maskClosable: true,
       width: 800,
-      icon: <div className="i-mdi-code-json c-nord-frost-3 text-24px mr-2"></div>,
+      icon: <div className="i-mdi-code-json c-nord-frost-3 text-24px mr-2" />,
       content: (
         <Typography.Paragraph>
-          <pre className="of-auto max-h-60vh">{JSON.stringify(data, null, 2)}</pre>
+          <pre className="of-auto max-h-60vh">{JSON.stringify(dataItem.annotation, null, 2)}</pre>
         </Typography.Paragraph>
       )
     });
@@ -44,7 +44,7 @@ function generateColumns(props: GenerateColumnsProps) {
       dataIndex: "file",
       ellipsis: true,
       // TODO: render data source preview
-      render: (text: string) => `${projectLocation}/${text}`
+      render: (text: string) => `${text}`
     }
   ];
 
@@ -61,7 +61,7 @@ function generateColumns(props: GenerateColumnsProps) {
         dataIndex: "annotation",
         width: 120,
         align: "center",
-        render: (annotation: string) => JSON.parse(annotation).length
+        render: (annotations: Annotation<unknown>[]) => annotations.length
       },
       {
         title: "审核状态",
@@ -81,7 +81,7 @@ function generateColumns(props: GenerateColumnsProps) {
       <div
         className={classNames([
           "i-mdi-code-json c-nord-frost-3 text-18px inline-block",
-          record.annotation === "[]" ? "op-30 cursor-not-allowed" : "cursor-pointer"
+          record.annotation.length === 0 ? "op-30 cursor-not-allowed" : "cursor-pointer"
         ])}
         onClick={(e) => {
           e.stopPropagation();
