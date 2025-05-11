@@ -4,6 +4,7 @@
   "description": "LabelPeak monorepo",
   "scripts": {
     "dev:client": "cd apps/client && npm run dev",
+    "dev:server": "cd apps/server && npm run dev",
     "build:client": "cd apps/client && npm run build",
     "lint": "eslint .",
     "postinstall": "simple-git-hooks"
@@ -23,7 +24,6 @@
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-format": "^1.0.1",
     "eslint-plugin-prettier": "^5.2.6",
-    "jiti": "^2.4.2",
     "prettier": "^3.5.3",
     "simple-git-hooks": "^2.13.0",
     "typescript": "^5.8.3"
