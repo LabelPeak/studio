@@ -1,21 +1,16 @@
 import { Dropdown, type MenuProps, Tag } from "antd";
 import { useIntl } from "react-intl";
-import { useNavigate } from "react-router-dom";
 
 import Access from "@/components/Access";
-import Avatar, { type IAvatarProps } from "@/components/Avatar";
+import Avatar from "@/components/Avatar";
 import { useAccess } from "@/hooks/useAccess";
-import useAuth from "@/hooks/useAuth";
 import useUser from "@/hooks/useUser";
 
-type UserIdentifierProps = IAvatarProps;
+export default function UserIdentifier() {
+  const { signout, realname } = useUser();
 
-export default function UserIdentifier(props: UserIdentifierProps) {
-  const resetUser = useUser((store) => store.reset);
-  const resetAuth = useAuth((store) => store.reset);
   const access = useAccess();
   const intl = useIntl();
-  const navigate = useNavigate();
 
   const items: MenuProps["items"] = [
     {
@@ -25,17 +20,11 @@ export default function UserIdentifier(props: UserIdentifierProps) {
     }
   ];
 
-  const handleClickAvatar: MenuProps["onClick"] = function ({ key }) {
+  const handleClickAvatar: MenuProps["onClick"] = ({ key }) => {
     if (key === "logout") {
-      handleLogout();
+      signout();
     }
   };
-
-  function handleLogout() {
-    resetUser();
-    resetAuth();
-    navigate("/login");
-  }
 
   return (
     <div className="flex gap-2 items-center">
@@ -44,7 +33,7 @@ export default function UserIdentifier(props: UserIdentifierProps) {
       </Access>
       <Dropdown menu={{ items, onClick: handleClickAvatar }} trigger={["click"]}>
         <div className="cursor-pointer">
-          <Avatar {...props} />
+          <Avatar name={realname} />
         </div>
       </Dropdown>
     </div>

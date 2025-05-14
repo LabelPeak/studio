@@ -2,7 +2,7 @@ import { Descriptions, Modal, Upload } from "antd";
 import { useState } from "react";
 import { useIntl } from "react-intl";
 
-import useAuth from "@/hooks/useAuth";
+import useAuth from "@/hooks/use-auth";
 import { DataType } from "@/interfaces/dataset";
 import { Project } from "@/interfaces/project";
 

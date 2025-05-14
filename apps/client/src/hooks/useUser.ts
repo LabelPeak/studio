@@ -1,24 +1,42 @@
-import { Nullable } from "@/interfaces/common";
-import { User } from "@/interfaces/user";
-import { create } from "zustand";
+import { QueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
-interface UserState extends Nullable<User> {
-  setUser: (value: Partial<User>) => void;
-  reset: () => void;
+import StaffService from "@/services/staff";
+
+import useAuth from "./use-auth";
+
+const ONE_DAY = 24 * 60 * 60 * 1000;
+
+function useUser() {
+  const { token, reset: resetToken } = useAuth();
+  const queryClient = new QueryClient();
+  const navigate = useNavigate();
+
+  const { data: user } = useSuspenseQuery({
+    queryKey: ["profile", token],
+    queryFn: async () => {
+      try {
+        const profile = await StaffService.getProfile();
+        return profile;
+      } catch (e) {
+        navigate("/login");
+        throw e;
+      }
+    },
+    refetchInterval: 5 * ONE_DAY
+  });
+
+  const signout = useCallback(() => {
+    resetToken();
+    queryClient.clear();
+    navigate("/login");
+  }, [queryClient, navigate, resetToken]);
+
+  return {
+    ...user,
+    signout
+  };
 }
-
-const useUser = create<UserState>((set) => ({
-  id: null,
-  username: null,
-  realname: null,
-  superadmin: null,
-  setUser: (value) => set({ ...value }),
-  reset: () => set({
-    id: null,
-    username: null,
-    realname: null,
-    superadmin: null
-  })
-}));
 
 export default useUser;

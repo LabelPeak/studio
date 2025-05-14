@@ -2,7 +2,7 @@ import { Button, Form, Input } from "antd";
 import { type IntlShape } from "react-intl";
 import { useNavigate } from "react-router-dom";
 
-import useAuth from "@/hooks/useAuth";
+import useAuth from "@/hooks/use-auth";
 import AuthService from "@/services/auth";
 
 interface IProps {

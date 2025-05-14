@@ -1,3 +1,6 @@
+import { AUTH_TOKEN_KEY } from "@/hooks/use-auth";
+import { CLIENT_ERROR_CODE, ClientError } from "@/utils/error";
+
 interface CustomResponse<T> {
   code: number;
   data?: T;
@@ -23,15 +26,11 @@ export async function request<T>(url: string, options?: RequestInit) {
 }
 
 export function requestWithAuth<T>(url: string, options?: RequestInit) {
-  const context = localStorage.getItem("auth");
-  if (!context) {
-    // TODO: shared biz error
-    throw new Error("Auth Context Not Found");
-  } else {
+  const context = localStorage.getItem(AUTH_TOKEN_KEY) ?? "";
+  try {
     const token = JSON.parse(context)?.state?.token;
     if (!token) {
-      // TODO: shared biz error
-      throw new Error("Auth Token Invalid");
+      throw new ClientError("Auth Token Invalid", CLIENT_ERROR_CODE.NO_AUTHORIZATION);
     } else {
       return request<T>(url, {
         ...(options || {}),
@@ -41,5 +40,7 @@ export function requestWithAuth<T>(url: string, options?: RequestInit) {
         }
       });
     }
+  } catch {
+    throw new ClientError("Auth Token Invalid", CLIENT_ERROR_CODE.NO_AUTHORIZATION);
   }
 }
