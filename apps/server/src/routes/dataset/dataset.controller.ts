@@ -9,7 +9,7 @@ import { datasetService } from "./dataset.service.ts";
 const datasetRouter = new Hono();
 
 datasetRouter.get("/dataitem", async (c) => {
-  const parsed = DatasetSchema.findAllDataItemByDatasetIdSchema.safeParse({
+  const parsed = DatasetSchema.findAllDataItemByDatasetIdReqSchema.safeParse({
     datasetId: Number(c.req.query("datasetId")),
     page: Number(c.req.query("page")),
     size: Number(c.req.query("size"))
@@ -24,9 +24,23 @@ datasetRouter.get("/dataitem", async (c) => {
   return c.json(createResponse(res));
 });
 
+datasetRouter.patch("/dataitem/annotate", async (c) => {
+  const parsed = DatasetSchema.updateAnnotationReqSchema.safeParse({
+    times: Number(c.req.query("times")),
+    ...(await c.req.json())
+  });
+
+  if (!parsed.success) {
+    throw new BizException("invalid_param");
+  }
+
+  const res = await datasetService.updateAnnotation(parsed.data, c.get("authPayload"));
+  return c.json(createResponse(res));
+});
+
 datasetRouter.post("/upload/:id", async (c) => {
   const { file } = await c.req.parseBody();
-  const parsed = DatasetSchema.uploadDataItemsSchema.safeParse({
+  const parsed = DatasetSchema.uploadDataItemsReqSchema.safeParse({
     datasetId: Number(c.req.param("id")),
     file
   });

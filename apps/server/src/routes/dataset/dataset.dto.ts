@@ -1,31 +1,40 @@
 import { z } from "zod";
 
-const createSchema = z.object({
+const createReqSchema = z.object({
   location: z.string(),
   type: z.string(),
   project: z.number()
 });
 
-const findAllDataItemByDatasetIdSchema = z.object({
+const findAllDataItemByDatasetIdReqSchema = z.object({
   datasetId: z.number(),
   page: z.number(),
   size: z.number()
 });
 
-const uploadDataItemsSchema = z.object({
+const uploadDataItemsReqSchema = z.object({
   datasetId: z.number(),
   file: z.instanceof(File)
 });
 
+const updateAnnotationReqSchema = z.object({
+  times: z.number(),
+  data: z.string(),
+  project: z.number(),
+  id: z.number()
+});
+
 export const DatasetSchema = {
-  createSchema,
-  findAllDataItemByDatasetIdSchema,
-  uploadDataItemsSchema
+  createReqSchema,
+  findAllDataItemByDatasetIdReqSchema,
+  uploadDataItemsReqSchema,
+  updateAnnotationReqSchema
 };
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace DatasetDto {
-  export type CreateDatasetReq = z.infer<typeof createSchema>;
-  export type FindAllDataItemByDatasetIdReq = z.infer<typeof findAllDataItemByDatasetIdSchema>;
-  export type UploadDataItemReq = z.infer<typeof uploadDataItemsSchema>;
+  export type CreateDatasetReq = z.infer<typeof createReqSchema>;
+  export type FindAllDataItemByDatasetIdReq = z.infer<typeof findAllDataItemByDatasetIdReqSchema>;
+  export type UploadDataItemReq = z.infer<typeof uploadDataItemsReqSchema>;
+  export type UpdateAnnotationReq = z.infer<typeof updateAnnotationReqSchema>;
 }

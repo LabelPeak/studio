@@ -84,8 +84,43 @@ async function uploadDataItems(
   return null;
 }
 
+async function updateAnnotation(
+  dto: DatasetDto.UpdateAnnotationReq,
+  authPayload: ContextVariableMap["authPayload"]
+) {
+  const { operatorId } = authPayload;
+  const relation = await db.query.usersToProjects.findFirst({
+    where: (_table) => and(eq(_table.user, operatorId), eq(_table.project, dto.project))
+  });
+
+  if (relation?.role !== PROJECT_ROLE.ADMIN && relation?.role !== PROJECT_ROLE.ANNOTATOR) {
+    throw new BizException("permission_denied");
+  }
+
+  if (dto.times === 1) {
+    await db
+      .update(dataItemTable)
+      .set({
+        annotation: dto.data,
+        updateAt: new Date()
+      })
+      .where(eq(dataItemTable.id, dto.id));
+  } else {
+    await db
+      .update(dataItemTable)
+      .set({
+        reannotation: dto.data,
+        updateAt: new Date()
+      })
+      .where(eq(dataItemTable.id, dto.id));
+  }
+
+  return null;
+}
+
 export const datasetService = {
   createDataset,
   findAllDataItemByDatasetId,
-  uploadDataItems
+  uploadDataItems,
+  updateAnnotation
 };
