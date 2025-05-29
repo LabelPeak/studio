@@ -2,8 +2,8 @@ import classNames from "classnames";
 
 import Avatar from "@/components/Avatar";
 import RoleTag from "@/components/RoleTag";
-import { Role } from "@/interfaces/project";
 import { User } from "@/interfaces/user";
+import { Role } from "@/interfaces/user-project-relation";
 
 interface IProps {
   staff: User & { role: Role };
@@ -26,7 +26,7 @@ export default function StaffItem(props: IProps) {
       onClick={handleClick}
     >
       <div className="flex items-center">
-        <Avatar name={staff.realname ?? "未知"} />
+        <Avatar name={staff.realname} />
         <div className="ml-2">{staff.realname}</div>
         <div className="ml-2 text-14px c-nord-polar-3">{staff.username}</div>
         <div className="flex-auto" />

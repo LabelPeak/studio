@@ -18,7 +18,7 @@ interface IProps {
 
 export default function AssignStaffFormDrawer(props: IProps) {
   const { open, onClose, projectId } = props;
-  const myId = useUser((state) => state.id);
+  const { id: myId } = useUser();
   const [staffsPage, setStaffsPage] = useState(1);
   const [token, setToken] = useState("");
   const intl = useIntl();

@@ -30,7 +30,6 @@ export function ProjectDetailPage() {
 
   const columns = useMemo(() => {
     return generateColumns({
-      projectLocation: project.dataset.location || "",
       isToolOpen
     });
   }, [project, isToolOpen]);
@@ -158,7 +157,6 @@ export function ProjectDetailPage() {
             project={project}
             dataItem={annotatingItem}
             annotatingType={project.dataset.type}
-            presets={project.presets}
           />
         )}
       </div>

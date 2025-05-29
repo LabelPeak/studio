@@ -1,28 +1,23 @@
-import { Role } from "@/interfaces/project";
 import { User } from "@/interfaces/user";
+import { Role } from "@/interfaces/user-project-relation";
+
 import { requestWithAuth } from "../request";
 
 function getProfile() {
   return requestWithAuth<User>("/api/staff");
 }
 
-function findAll(props: {
-  page: number, size: number
-}) {
-  return requestWithAuth<{ list: Array<User>, total: number }>(
+function findAll(props: { page: number; size: number }) {
+  return requestWithAuth<{ list: Array<User>; total: number }>(
     `/api/staff/all?page=${props.page}&size=${props.size}`
   );
 }
 
-function findAllInProject(props: {
-  project: number, page: number, size: number
-}) {
+function findAllInProject(props: { project: number; page: number; size: number }) {
   return requestWithAuth<{
-     list: Array<User & { role: Role }>;
-     total: number;
-    }>(
-      `/api/staff/project/${props.project}?page=${props.page}&size=${props.size}`
-    );
+    list: Array<User & { role: Role }>;
+    total: number;
+  }>(`/api/staff/project/${props.project}?page=${props.page}&size=${props.size}`);
 }
 
 function create(props: { realname: string }) {
@@ -32,7 +27,7 @@ function create(props: { realname: string }) {
   });
 }
 
-function update(props: { id: number, realname: string, password: string }) {
+function update(props: { id: number; realname: string; password: string }) {
   return requestWithAuth<null>(`/api/staff/${props.id}`, {
     method: "PATCH",
     body: JSON.stringify(props)
@@ -40,14 +35,15 @@ function update(props: { id: number, realname: string, password: string }) {
 }
 
 function remove(props: { id: number }) {
-  return requestWithAuth<void>(`/api/staff/${props.id}`, {
+  return requestWithAuth<undefined>(`/api/staff/${props.id}`, {
     method: "DELETE"
   });
 }
 
 function search(props: { token: string; page: number; size: number }) {
-  return requestWithAuth<{ list: User[], total: number }>(
-    `/api/staff/search?token=${props.token}&page=${props.page}&size=${props.size}`, {
+  return requestWithAuth<{ list: User[]; total: number }>(
+    `/api/staff/search?token=${props.token}&page=${props.page}&size=${props.size}`,
+    {
       method: "GET"
     }
   );

@@ -1,7 +1,9 @@
-import { DataItem, DataType, Dataset } from "@/interfaces/dataset";
-import { AnnotateModuleRef } from "./tool-proto";
-import ImageClassifyModule from "./ImageClassifyModule";
 import { RefObject } from "react";
+
+import { DataItem, Dataset, DataType } from "@/interfaces/dataset";
+
+import ImageClassifyModule from "./ImageClassifyModule";
+import { AnnotateModuleRef } from "./tool-proto";
 
 interface IProps {
   annotatingType: Dataset["type"];
@@ -15,14 +17,7 @@ export default function ModuleMiddleware(props: IProps) {
   const { annotatingType, onUpdate, controller, dataItem } = props;
 
   if (annotatingType === DataType.ImageClassify) {
-    return (
-      <ImageClassifyModule
-        onUpdate={onUpdate}
-        ref={controller}
-        dataItem={dataItem}
-      />
-    );
-  } else {
-    return null;
+    return <ImageClassifyModule onUpdate={onUpdate} ref={controller} dataItem={dataItem} />;
   }
+  return null;
 }

@@ -1,13 +1,14 @@
-import { Role } from "@/interfaces/project";
 import { Tag } from "antd";
 import { useIntl } from "react-intl";
+
+import { Role } from "@/interfaces/user-project-relation";
 
 const RoleTagColorMapper: {
   [key in Role]: string;
 } = {
-  "admin": "blue",
-  "annotator": "volcano",
-  "checker": "green",
+  admin: "blue",
+  annotator: "volcano",
+  checker: "green"
 };
 
 interface IProps {
@@ -20,7 +21,7 @@ export default function RoleTag(props: IProps) {
 
   return (
     <Tag bordered={false} color={RoleTagColorMapper[role]}>
-      { intl.formatMessage({ id: "role-" + role }) }
+      {intl.formatMessage({ id: "role-" + role })}
     </Tag>
   );
 }

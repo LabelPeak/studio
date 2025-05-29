@@ -11,18 +11,17 @@ import AnnotateToolContext from "./context";
 import ModuleMiddleware from "./middleware";
 import { AnnotateModuleRef } from "./tool-proto";
 
-interface IProps {
+interface AnnotateToolProps {
   project: Project;
   dataItem: DataItem;
   annotatingType: Dataset["type"];
-  presets: string;
 }
 
 export interface AnnotateToolRef {
   checkSafeSave: () => boolean;
 }
 
-const AnnotateTool = forwardRef<AnnotateToolRef, IProps>((props, ref) => {
+const AnnotateTool = forwardRef<AnnotateToolRef, AnnotateToolProps>((props, ref) => {
   const { dataItem, annotatingType, project } = props;
   const annotateModuleRef = useRef<AnnotateModuleRef>(null);
   const [isSaveSaved, setIsSaveSaved] = useState(true);
@@ -80,10 +79,7 @@ const AnnotateTool = forwardRef<AnnotateToolRef, IProps>((props, ref) => {
       ])}
     >
       <div className="header b-b-1 b-b-solid b-color-nord-snow-0 flex py-2 items-center">
-        <div className="index text-4 b-r-1 b-r-solid b-color-nord-snow-0 px-4">
-          {" "}
-          #{dataItem.id}{" "}
-        </div>
+        <div className="index text-4 b-r-1 b-r-solid b-color-nord-snow-0 px-4">#{dataItem.id}</div>
         <div className="operations flex-auto flex text-6 px-4 gap-4">
           <div
             title={intl.formatMessage({ id: "operation-undo" })}

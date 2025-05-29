@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useIntl } from "react-intl";
 
 import LoadingLayer from "@/components/LoadingLayer";
-import { Project, Role } from "@/interfaces/project";
+import { Project } from "@/interfaces/project";
 import { User } from "@/interfaces/user";
+import { Role } from "@/interfaces/user-project-relation";
 import ProjectService from "@/services/project";
 import StaffService from "@/services/staff";
 
