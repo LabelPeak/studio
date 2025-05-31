@@ -14,7 +14,8 @@
     "nanoid": "^5.1.5",
     "pg": "^8.14.1",
     "remeda": "^2.21.3",
-    "zod": "^3.24.3"
+    "zod": "^3.24.3",
+    "shared": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.17.30",

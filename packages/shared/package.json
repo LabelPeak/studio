@@ -1,0 +1,19 @@
+{
+  "name": "shared",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "scripts": {
+    "build": "tsdown"
+  },
+  "devDependencies": {
+    "tsdown": "^0.12.5",
+    "typescript": "^5.8.3"
+  }
+}

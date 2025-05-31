@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import type { ContextVariableMap } from "hono";
 import { omit } from "remeda";
+import { PROJECT_STATUS } from "shared";
 
 import { db } from "@/db/connection.ts";
 import { projectTable, usersToProjects } from "@/db/schema.ts";
@@ -90,7 +91,12 @@ async function createSingleProject(dto: ProjectDto.CreateSingleProjectReq) {
         access: dto.access,
         createAt: new Date(),
         presets: "[]",
-        statusHistory: "[]"
+        statusHistory: [
+          {
+            status: PROJECT_STATUS.PENDING,
+            timestamp: Date.now()
+          }
+        ]
       }
     ])
     .returning();
