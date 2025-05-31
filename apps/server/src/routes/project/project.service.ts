@@ -6,6 +6,7 @@ import { PROJECT_STATUS } from "shared";
 import { db } from "@/db/connection.ts";
 import { projectTable, usersToProjects } from "@/db/schema.ts";
 import { BizException } from "@/utils/exception.ts";
+import { appendProjectStatusHistory, composeProjectStatus } from "@/utils/project.ts";
 
 import { datasetService } from "../dataset/dataset.service.ts";
 import type { ProjectDto } from "./project.dto.ts";
@@ -91,12 +92,10 @@ async function createSingleProject(dto: ProjectDto.CreateSingleProjectReq) {
         access: dto.access,
         createAt: new Date(),
         presets: "[]",
-        statusHistory: [
-          {
-            status: PROJECT_STATUS.PENDING,
-            timestamp: Date.now()
-          }
-        ]
+        statusHistory: appendProjectStatusHistory(
+          composeProjectStatus(PROJECT_STATUS.PENDING, admin.username),
+          []
+        )
       }
     ])
     .returning();
