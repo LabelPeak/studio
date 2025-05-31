@@ -16,14 +16,16 @@ export const authMiddleware = createMiddleware(async (c, next) => {
   }
 
   if (payload.id) {
-    const staff = await userService.findOneById({ id: payload.id });
-    if (staff) {
+    try {
+      const staff = await userService.findOneById({ id: payload.id });
       c.set("authPayload", {
         operatorId: payload.id,
         operatorIsSuperAdmin: Boolean(staff.superadmin)
       });
       await next();
       return;
+    } catch {
+      throw new BizException("invalid_token", 401);
     }
   }
   throw new BizException("invalid_token", 401);
