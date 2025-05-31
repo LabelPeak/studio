@@ -6,13 +6,13 @@ import { Link, useParams } from "react-router-dom";
 
 import Access from "@/components/Access";
 import AnnotateTool, { AnnotateToolRef } from "@/components/AnnotateTool";
-import ProjectStatusFlow from "@/components/ProjectStatusFlow";
 import { useProject } from "@/hooks/use-project";
 import { useAccess } from "@/hooks/useAccess";
 import { DataItem } from "@/interfaces/dataset";
 import DatasetService from "@/services/dataset";
 
 import generateColumns from "./columns";
+import ProjectStatusDrawer from "./components/ProjectStatusDrawer";
 import ImportDataItemsForm from "./ImportDataItemsForm";
 import ProjectHeader from "./ProjectHeader";
 
@@ -26,6 +26,8 @@ export function ProjectDetailPage() {
   const [isMultiSelect, setIsMultiSelect] = useState(false);
   const selectedDataItems = useRef<DataItem[]>([]);
   const [dataItemPage] = useState(1);
+
+  const [isOpenStatusDrawer, setIsOpenStatusDrawer] = useState(false);
 
   const { project, role } = useProject(parseInt(projectId));
 
@@ -135,6 +137,9 @@ export function ProjectDetailPage() {
                 <Link to="settings">{intl.formatMessage({ id: "settings" })}</Link>
               </Button>
             </Access>
+            <Access accessible={access.canSeeAdmin}>
+              <Button onClick={() => setIsOpenStatusDrawer(true)}>项目进展</Button>
+            </Access>
           </Space>
         }
       />
@@ -151,7 +156,6 @@ export function ProjectDetailPage() {
               onClick: () => handleClickDataItem(record)
             })}
           />
-          <ProjectStatusFlow statusHistory={project.statusHistory} />
         </div>
         {isToolOpen && annotatingItem && (
           <AnnotateTool
@@ -166,6 +170,11 @@ export function ProjectDetailPage() {
         isOpen={openImportForm}
         project={project}
         handleClose={handleFinishImportFile}
+      />
+      <ProjectStatusDrawer
+        open={isOpenStatusDrawer}
+        onClose={() => setIsOpenStatusDrawer(false)}
+        project={project}
       />
     </section>
   );

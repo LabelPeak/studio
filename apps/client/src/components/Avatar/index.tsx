@@ -1,16 +1,14 @@
-import { Avatar as AntdAvatar } from "antd";
+import { Avatar as AntdAvatar, AvatarProps as AntdAvatarProps } from "antd";
+import clsx from "clsx";
 import { useMemo } from "react";
-
-export interface IAvatarProps {
-  role?: string;
+export interface IAvatarProps extends AntdAvatarProps {
   name: string;
-  size?: string;
 }
 
 const COLOR_LIST = ["#BF616A", "#D08770", "#EBCB8B", "#A3BE8C", "#B48EAD"] as const;
 
 export default function Avatar(props: IAvatarProps) {
-  const { name } = props;
+  const { name, style, className, ...otherProps } = props;
 
   const backgroundColor = useMemo(() => {
     const hash = name.split("").reduce((a, b) => {
@@ -22,7 +20,11 @@ export default function Avatar(props: IAvatarProps) {
   }, [name]);
 
   return (
-    <AntdAvatar style={{ backgroundColor }} className="select-none">
+    <AntdAvatar
+      style={{ backgroundColor, ...style }}
+      className={clsx(className, "select-none")}
+      {...otherProps}
+    >
       {name.slice(-2)}
     </AntdAvatar>
   );

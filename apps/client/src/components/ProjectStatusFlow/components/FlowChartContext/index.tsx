@@ -1,9 +1,10 @@
 import { createContext } from "react";
-
-import { ProjectStatus } from "@/interfaces/project";
+import { ProjectStatusRecord } from "shared";
 
 export const FlowChartContext = createContext<{
-  statusHistory: ProjectStatus[];
+  statusHistory: ProjectStatusRecord[];
+  onStatusNodeClick: (status: ProjectStatusRecord) => void;
 }>({
-  statusHistory: []
+  statusHistory: [],
+  onStatusNodeClick: () => undefined
 });

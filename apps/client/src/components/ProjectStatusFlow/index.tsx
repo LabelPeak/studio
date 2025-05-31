@@ -10,8 +10,7 @@ import {
   useReactFlow
 } from "@xyflow/react";
 import { useEffect } from "react";
-
-import { ProjectStatus } from "@/interfaces/project";
+import { ProjectStatusRecord } from "shared";
 
 import { FlowChartContext } from "./components/FlowChartContext";
 import StatusNode from "./components/StatusNode";
@@ -22,10 +21,11 @@ const FLOW_NODE_TYPE = {
 };
 
 interface ProjectStatusFlowProps {
-  statusHistory: ProjectStatus[];
+  statusHistory: ProjectStatusRecord[];
+  onStatusNodeClick: (status: ProjectStatusRecord) => void;
 }
 
-function ProjectStatusFlowImpl({ statusHistory }: ProjectStatusFlowProps) {
+function ProjectStatusFlowImpl({ statusHistory, onStatusNodeClick }: ProjectStatusFlowProps) {
   const { fitView } = useReactFlow();
 
   const [nodes, setNodes, onNodesChange] = useNodesState([] as any);
@@ -35,10 +35,7 @@ function ProjectStatusFlowImpl({ statusHistory }: ProjectStatusFlowProps) {
     const _nodes = statusHistory.map((item) => {
       return {
         id: item.status,
-        data: {
-          label: item.status,
-          timestamp: item.timestamp
-        },
+        data: item,
         position: { x: 0, y: 0 },
         type: "status"
       };
@@ -54,7 +51,7 @@ function ProjectStatusFlowImpl({ statusHistory }: ProjectStatusFlowProps) {
       };
     });
 
-    setNodes(_nodes);
+    setNodes(_nodes as any[]);
     setEdges(_edges);
   }, []);
 
@@ -66,8 +63,8 @@ function ProjectStatusFlowImpl({ statusHistory }: ProjectStatusFlowProps) {
   });
 
   return (
-    <FlowChartContext.Provider value={{ statusHistory: statusHistory }}>
-      <div className="w-full h-100">
+    <FlowChartContext.Provider value={{ statusHistory, onStatusNodeClick }}>
+      <div className="w-full h-full">
         <ReactFlow
           nodes={nodes}
           edges={edges}

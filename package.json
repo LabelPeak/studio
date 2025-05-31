@@ -6,6 +6,7 @@
     "dev:client": "cd apps/client && npm run dev",
     "dev:server": "cd apps/server && npm run dev",
     "build:client": "cd apps/client && npm run build",
+    "build:shared": "cd apps/shared && npm run build",
     "lint": "eslint .",
     "postinstall": "simple-git-hooks"
   },
