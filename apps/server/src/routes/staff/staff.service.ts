@@ -117,7 +117,11 @@ async function searchStaffs(dto: UserDto.SearchStaffsReq) {
     where: () =>
       or(ilike(userTable.username, `${dto.token}%`), ilike(userTable.realname, `%${dto.token}%`)),
     limit: dto.size,
-    offset: (dto.page - 1) * dto.size
+    offset: (dto.page - 1) * dto.size,
+    columns: {
+      password: false,
+      superadmin: false
+    }
   });
 
   const total = await db.$count(
