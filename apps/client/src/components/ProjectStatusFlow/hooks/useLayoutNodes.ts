@@ -15,7 +15,9 @@ export default function useLayoutNodes({ onLayout }: UseLayoutNodesOptions) {
 
   useEffect(() => {
     if (nodesInitialized) {
-      onLayout(getLayoutedElements(getNodes(), getEdges()).nodes);
+      const nodes = getNodes() as any;
+      const edges = getEdges() as any;
+      onLayout(getLayoutedElements(nodes, edges).nodes);
     }
   }, [nodesInitialized]);
 }

@@ -1,6 +1,6 @@
 import { Role } from "@/interfaces/user-project-relation";
 
-import useUser from "./useUser";
+import useUser from "./use-user";
 
 interface IProps {
   role?: Role;

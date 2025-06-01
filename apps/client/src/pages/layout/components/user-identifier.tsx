@@ -3,8 +3,8 @@ import { useIntl } from "react-intl";
 
 import Access from "@/components/Access";
 import Avatar from "@/components/Avatar";
-import { useAccess } from "@/hooks/useAccess";
-import useUser from "@/hooks/useUser";
+import { useAccess } from "@/hooks/use-access";
+import useUser from "@/hooks/use-user";
 
 export default function UserIdentifier() {
   const { signout, realname } = useUser();

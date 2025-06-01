@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
-import { IAccess } from "./useAccess";
+import { IAccess } from "./use-access";
 
 // @unocss-include
 export const MENU_ITEMS: Array<{

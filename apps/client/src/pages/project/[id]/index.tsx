@@ -6,8 +6,8 @@ import { Link, useParams } from "react-router-dom";
 
 import Access from "@/components/Access";
 import AnnotateTool, { AnnotateToolRef } from "@/components/AnnotateTool";
+import { useAccess } from "@/hooks/use-access";
 import { useProject } from "@/hooks/use-project";
-import { useAccess } from "@/hooks/useAccess";
 import { DataItem } from "@/interfaces/dataset";
 import DatasetService from "@/services/dataset";
 

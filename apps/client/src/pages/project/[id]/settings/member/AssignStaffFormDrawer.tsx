@@ -4,7 +4,7 @@ import { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { useIntl } from "react-intl";
 
-import useUser from "@/hooks/useUser";
+import useUser from "@/hooks/use-user";
 import { User } from "@/interfaces/user";
 import { Role } from "@/interfaces/user-project-relation";
 import ProjectService from "@/services/project";

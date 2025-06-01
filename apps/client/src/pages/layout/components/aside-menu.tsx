@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 
+import { useAccess } from "@/hooks/use-access";
 import { MENU_ITEMS, useBreadCrumbs } from "@/hooks/use-bread-crumbs";
-import { useAccess } from "@/hooks/useAccess";
 
 export default function AsideMenu() {
   const access = useAccess();
