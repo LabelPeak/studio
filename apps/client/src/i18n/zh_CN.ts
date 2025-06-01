@@ -37,6 +37,15 @@ export default {
   "project-preset-edit": "编辑预设标签",
   "project-preset-edit-tips": "换行以分隔多个标签",
 
+  "project-status-pending": "未开始",
+  "project-status-pre_annotating": "预标注中",
+  "project-status-annotating": "标注中",
+  "project-status-checking": "审核中",
+  "project-status-re_annotating": "修正标注中",
+  "project-status-re_checking": "重审核中",
+  "project-status-approved": "准出通过",
+  "project-status-release": "已发布",
+
   hidden: "不可见",
   write: "可写",
   read: "只读",
