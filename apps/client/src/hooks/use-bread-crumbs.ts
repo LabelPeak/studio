@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 
 import { IAccess } from "./useAccess";
 
+// @unocss-include
 export const MENU_ITEMS: Array<{
   name: string;
   url: string;
@@ -18,7 +19,7 @@ export const MENU_ITEMS: Array<{
   },
   { name: "Staffs", url: "/staff", icon: "i-mdi-account-group", access: "canSeeSuperAdmin" },
   { name: "User", url: "/user", icon: "i-mdi-account-circle" }
-];
+] as const;
 
 export const useBreadCrumbs = () => {
   const location = useLocation();
