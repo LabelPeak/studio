@@ -113,6 +113,13 @@ async function deleteStaffById(dto: UserDto.DeleteStaffReq) {
 }
 
 async function searchStaffs(dto: UserDto.SearchStaffsReq) {
+  if (dto.token.length === 0) {
+    return {
+      list: [],
+      total: 0
+    };
+  }
+
   const list = await db.query.userTable.findMany({
     where: () =>
       or(ilike(userTable.username, `${dto.token}%`), ilike(userTable.realname, `%${dto.token}%`)),
