@@ -1,61 +1,32 @@
-import { useQuery } from "@tanstack/react-query";
-import { Button, message, Modal, Space, Table } from "antd";
-import { useMemo, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Button, message, Space } from "antd";
+import { useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { Link, useParams } from "react-router-dom";
 
 import Access from "@/components/Access";
-import AnnotateTool, { AnnotateToolRef } from "@/components/AnnotateTool";
 import { useAccess } from "@/hooks/use-access";
 import { useProject } from "@/hooks/use-project";
 import { DataItem } from "@/interfaces/dataset";
 import DatasetService from "@/services/dataset";
 
-import generateColumns from "./columns";
+import AnnotationArea from "./components/annotation-area";
 import ImportDataItemsForm from "./components/import-data-items-form";
 import ProjectHeader from "./components/project-header";
 import ProjectStatusDrawer from "./components/project-status-drawer";
 
 export function ProjectDetailPage() {
   const { id: projectId = "" } = useParams();
-  const [annotatingItem, setAnnotatingItem] = useState<DataItem | null>(null);
   const intl = useIntl();
   const [openImportForm, setOpenImportForm] = useState(false);
-  const annotateToolRef = useRef<AnnotateToolRef>(null);
-  const [isToolOpen, setIsToolOpen] = useState(false);
   const [isMultiSelect, setIsMultiSelect] = useState(false);
-  const selectedDataItems = useRef<DataItem[]>([]);
-  const [dataItemPage] = useState(1);
+  const selectedDataItemsRef = useRef<DataItem[]>([]);
+  const queryClient = useQueryClient();
 
   const [isOpenStatusDrawer, setIsOpenStatusDrawer] = useState(false);
 
   const { project, role } = useProject(parseInt(projectId));
-
-  const columns = useMemo(() => {
-    return generateColumns({
-      isToolOpen
-    });
-  }, [project, isToolOpen]);
-
   const access = useAccess({ role });
-
-  // TODO: use infinite list
-  const {
-    data: dataItems,
-    isFetching: loadingDataItems,
-    refetch: refreshDataItems
-  } = useQuery({
-    queryKey: ["dataItems", project.dataset.id, dataItemPage] as const,
-    queryFn: async ({ queryKey }) => {
-      const res = await DatasetService.getDataItems({
-        datasetId: queryKey[1],
-        page: queryKey[2],
-        size: 10
-      });
-
-      return res.list;
-    }
-  });
 
   function handleImportFile() {
     setOpenImportForm(true);
@@ -64,32 +35,14 @@ export function ProjectDetailPage() {
   function handleFinishImportFile(count: number) {
     setOpenImportForm(false);
     if (count > 0) {
-      refreshDataItems();
+      queryClient.invalidateQueries({
+        queryKey: ["dataItems", project.dataset.id]
+      });
     }
   }
 
-  function handleClickDataItem(item: DataItem) {
-    setIsToolOpen(true);
-    if (annotateToolRef.current === null) {
-      setAnnotatingItem(item);
-    } else {
-      if (annotateToolRef.current.checkSafeSave()) {
-        setAnnotatingItem(item);
-      } else {
-        Modal.confirm({
-          maskClosable: true,
-          title: "警告",
-          content: "修改内容后未保存，是否放弃修改？",
-          onOk: () => {
-            setAnnotatingItem(item);
-          }
-        });
-      }
-    }
-  }
-
-  function handleSelectRows(_: any, rows: DataItem[]) {
-    selectedDataItems.current = rows;
+  function handleSelectRows(rows: DataItem[]) {
+    selectedDataItemsRef.current = rows;
     if (rows.length === 0) {
       setIsMultiSelect(false);
     } else {
@@ -98,16 +51,18 @@ export function ProjectDetailPage() {
   }
 
   async function handleBatchedDelete() {
-    if (selectedDataItems.current.length === 0) {
+    if (selectedDataItemsRef.current.length === 0) {
       return;
     }
     try {
       const deleteCount = await DatasetService.deleteDataItems({
         project: project.id,
-        dataitems: selectedDataItems.current.map((item) => item.id)
+        dataitems: selectedDataItemsRef.current.map((item) => item.id)
       });
       message.success(`成功删除 ${deleteCount} 条数据项`);
-      refreshDataItems();
+      queryClient.invalidateQueries({
+        queryKey: ["dataItems", project.dataset.id]
+      });
     } catch (error) {
       if (error instanceof Error) {
         message.error("删除失败: " + error.message);
@@ -144,27 +99,7 @@ export function ProjectDetailPage() {
         }
       />
       <div className="flex flex-auto of-hidden">
-        <div id="table-section" className="flex-auto of-auto">
-          <Table<DataItem>
-            loading={loadingDataItems}
-            dataSource={dataItems}
-            rowKey="id"
-            columns={columns}
-            pagination={false}
-            rowSelection={{ type: "checkbox", onChange: handleSelectRows }}
-            onRow={(record) => ({
-              onClick: () => handleClickDataItem(record)
-            })}
-          />
-        </div>
-        {isToolOpen && annotatingItem && (
-          <AnnotateTool
-            ref={annotateToolRef}
-            project={project}
-            dataItem={annotatingItem}
-            annotatingType={project.dataset.type}
-          />
-        )}
+        <AnnotationArea project={project} onSelectDataItems={handleSelectRows} />
       </div>
       <ImportDataItemsForm
         isOpen={openImportForm}

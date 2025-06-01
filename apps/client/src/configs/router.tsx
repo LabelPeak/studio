@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import WelcomePage from "@/components/WelcomePage";
-import DefaultLayout from "@/layouts/default";
+import DefaultLayout from "@/layouts/default-layout";
 import ProjectSettingAccess from "@/pages/(project-settings)/access";
 import ProjectSettingGeneral from "@/pages/(project-settings)/general";
 import ProjectSettingMember from "@/pages/(project-settings)/member";

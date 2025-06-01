@@ -22,7 +22,7 @@ function ProjectHeader(props: ProjectHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const intl = useIntl();
-  const { canSeeAdmin } = useAccess();
+  const { canSeeAdmin } = useAccess({ role });
 
   const backPathname = useMemo(() => {
     const temp = location.pathname.split("/");

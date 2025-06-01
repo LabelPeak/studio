@@ -1,5 +1,6 @@
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { last } from "remeda";
 
 import ProjectService from "@/services/project";
 
@@ -21,10 +22,13 @@ export function useProject(projectId: number) {
     });
   }, [queryClient, projectId]);
 
+  const currentStatus = last(project.statusHistory);
+
   return {
     project,
     role,
     loadingProject,
-    refreshProject
+    refreshProject,
+    currentStatus
   };
 }
