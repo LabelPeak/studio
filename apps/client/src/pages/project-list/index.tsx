@@ -5,7 +5,7 @@ import ProjectService from "@/services/project";
 import ProjectCard from "./components/project-card";
 
 // TODO: add skeleton screen for loading
-export function ProjectPage() {
+export function ProjectListPage() {
   const { data: relations = [] } = useQuery({
     queryKey: ["mineProjects"],
     queryFn: ProjectService.getMyParticipateProjects

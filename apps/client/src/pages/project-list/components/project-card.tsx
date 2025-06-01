@@ -56,7 +56,7 @@ export default function ProjectCard(props: ProjectCardProps) {
             : `${intl.formatMessage({ id: "project-annotate-progress" })}: ${project.countAnnotations}/${project.countDataItems}`} */}
         </span>
         <div className="flex-auto" />
-        {role ? <RoleTag role={role} /> : null}
+        <RoleTag role={role} />
       </div>
     </div>
   );

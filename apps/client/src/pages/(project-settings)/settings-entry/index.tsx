@@ -4,7 +4,7 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 
 import { useProject } from "@/hooks/use-project";
 
-import ProjectHeader from "../ProjectHeader";
+import ProjectHeader from "../../project-detail/components/project-header";
 
 export default function ProjectSettingPage() {
   const navigate = useNavigate();

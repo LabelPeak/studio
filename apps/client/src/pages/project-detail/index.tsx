@@ -12,9 +12,9 @@ import { DataItem } from "@/interfaces/dataset";
 import DatasetService from "@/services/dataset";
 
 import generateColumns from "./columns";
-import ProjectStatusDrawer from "./components/ProjectStatusDrawer";
-import ImportDataItemsForm from "./ImportDataItemsForm";
-import ProjectHeader from "./ProjectHeader";
+import ImportDataItemsForm from "./components/import-data-items-form";
+import ProjectHeader from "./components/project-header";
+import ProjectStatusDrawer from "./components/project-status-drawer";
 
 export function ProjectDetailPage() {
   const { id: projectId = "" } = useParams();

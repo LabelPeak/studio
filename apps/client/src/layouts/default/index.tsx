@@ -10,7 +10,7 @@ import AsideMenu from "./components/aside-menu";
 import BreakCrumbIndicator from "./components/break-crumb-indicator";
 import UserIdentifier from "./components/user-identifier";
 
-export default function Layout() {
+export default function DefaultLayout() {
   return (
     <ErrorBoundary fallbackRender={ErrorFallback}>
       <section id="layout" className="h-[100vh] flex flex-col min-w-3xl">

@@ -1,16 +1,16 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import WelcomePage from "@/components/WelcomePage";
+import DefaultLayout from "@/layouts/default";
+import ProjectSettingAccess from "@/pages/(project-settings)/access";
+import ProjectSettingGeneral from "@/pages/(project-settings)/general";
+import ProjectSettingMember from "@/pages/(project-settings)/member";
+import ProjectSettingPreset from "@/pages/(project-settings)/preset";
+import ProjectSettingPage from "@/pages/(project-settings)/settings-entry";
 import { DashboardPage } from "@/pages/dashboard";
-import Layout from "@/pages/layout";
 import { LoginPage } from "@/pages/login";
-import { ProjectPage } from "@/pages/project";
-import { ProjectDetailPage } from "@/pages/project/[id]/index";
-import ProjectSettingPage from "@/pages/project/[id]/settings";
-import ProjectSettingAccess from "@/pages/project/[id]/settings/access";
-import ProjectSettingGeneral from "@/pages/project/[id]/settings/general";
-import ProjectSettingMember from "@/pages/project/[id]/settings/member";
-import ProjectSettingPreset from "@/pages/project/[id]/settings/preset";
+import { ProjectDetailPage } from "@/pages/project-detail/index";
+import { ProjectListPage } from "@/pages/project-list";
 import StaffPage from "@/pages/staff";
 import { UserPage } from "@/pages/user";
 
@@ -21,7 +21,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <Layout />,
+    element: <DefaultLayout />,
     children: [
       {
         index: true,
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
       },
       {
         path: "project",
-        element: <ProjectPage />
+        element: <ProjectListPage />
       },
       {
         path: "project/:id",
