@@ -2,6 +2,7 @@ import { Modal, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import classNames from "classnames";
 import { format } from "date-fns";
+import { PROJECT_STATUS, ProjectStatus } from "shared";
 
 import CheckStatusTag from "@/components/CheckStatusTag";
 import { Annotation } from "@/interfaces/annotation";
@@ -9,11 +10,10 @@ import { DataItem } from "@/interfaces/dataset";
 
 interface GenerateColumnsProps {
   isToolOpen: boolean;
+  currentStatus?: ProjectStatus;
 }
 
-function generateColumns(props: GenerateColumnsProps) {
-  const { isToolOpen } = props;
-
+export function useDataItemTableColumns({ isToolOpen, currentStatus }: GenerateColumnsProps) {
   function handleViewCode(dataItem: DataItem) {
     // TODO: show empty annotation message
     if (dataItem.annotation.length === 0) {
@@ -33,7 +33,7 @@ function generateColumns(props: GenerateColumnsProps) {
     });
   }
 
-  let columns: ColumnsType<DataItem> = [
+  const columns: ColumnsType<DataItem> = [
     {
       title: "编号",
       dataIndex: "id",
@@ -49,7 +49,7 @@ function generateColumns(props: GenerateColumnsProps) {
   ];
 
   if (!isToolOpen) {
-    columns = columns.concat([
+    columns.push(
       {
         title: "上次修改时间",
         dataIndex: "updateAt",
@@ -62,15 +62,22 @@ function generateColumns(props: GenerateColumnsProps) {
         width: 120,
         align: "center",
         render: (annotations: Annotation<unknown>[]) => annotations.length
-      },
-      {
-        title: "审核状态",
-        width: 120,
-        dataIndex: "approved",
-        align: "center",
-        render: (approved: boolean | undefined) => <CheckStatusTag checked={approved} />
       }
-    ]);
+    );
+  }
+
+  if (
+    currentStatus === PROJECT_STATUS.CHECKING ||
+    currentStatus === PROJECT_STATUS.RE_CHECKING ||
+    currentStatus === PROJECT_STATUS.RE_ANNOTATING
+  ) {
+    columns.push({
+      title: "审核状态",
+      width: 120,
+      dataIndex: "approved",
+      align: "center",
+      render: (approved: boolean | undefined) => <CheckStatusTag checked={approved} />
+    });
   }
 
   columns.push({
@@ -93,5 +100,3 @@ function generateColumns(props: GenerateColumnsProps) {
 
   return columns;
 }
-
-export default generateColumns;

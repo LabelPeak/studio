@@ -10,7 +10,7 @@ import { Project } from "@/interfaces/project";
 import { Role } from "@/interfaces/user-project-relation";
 import DatasetService from "@/services/dataset";
 
-import generateColumns from "../../columns";
+import { useDataItemTableColumns } from "../../hooks/use-data-item-table-columns";
 
 interface AnnotationAreaProps {
   project: Project;
@@ -23,10 +23,9 @@ export default function AnnotationArea({ project, role, onSelectDataItems }: Ann
   const [annotatingItem, setAnnotatingItem] = useState<DataItem | null>(null);
   const [isToolOpen, setIsToolOpen] = useState(false);
   const annotateToolRef = useRef<AnnotateToolRef>(null);
+  const currentStatus = last(project.statusHistory)?.status;
 
   const isShowAnnotationArea = useMemo(() => {
-    const currentStatus = last(project.statusHistory)?.status;
-
     if (role === Role.annotator) {
       if (
         currentStatus === PROJECT_STATUS.ANNOTATING ||
@@ -48,11 +47,7 @@ export default function AnnotationArea({ project, role, onSelectDataItems }: Ann
     return true;
   }, [project.statusHistory, role]);
 
-  const columns = useMemo(() => {
-    return generateColumns({
-      isToolOpen
-    });
-  }, [project, isToolOpen]);
+  const columns = useDataItemTableColumns({ isToolOpen, currentStatus });
 
   const { data: dataItems, isFetching: loadingDataItems } = useQuery({
     queryKey: ["dataItems", project.dataset.id, dataItemPage] as const,
