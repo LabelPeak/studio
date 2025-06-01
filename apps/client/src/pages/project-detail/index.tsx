@@ -99,7 +99,7 @@ export function ProjectDetailPage() {
         }
       />
       <div className="flex flex-auto of-hidden">
-        <AnnotationArea project={project} onSelectDataItems={handleSelectRows} />
+        <AnnotationArea project={project} onSelectDataItems={handleSelectRows} role={role} />
       </div>
       <ImportDataItemsForm
         isOpen={openImportForm}

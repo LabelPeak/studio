@@ -1,7 +1,9 @@
 import { PROJECT_STATUS } from "@/utils/project";
 
+export type ProjectStatus = (typeof PROJECT_STATUS)[keyof typeof PROJECT_STATUS];
+
 export interface ProjectStatusRecord {
-  status: (typeof PROJECT_STATUS)[keyof typeof PROJECT_STATUS];
+  status: ProjectStatus;
   startAt: number;
   endAt?: number;
   /**

@@ -1,10 +1,7 @@
 import { last } from "remeda";
-import type { PROJECT_STATUS, ProjectStatusRecord } from "shared";
+import type { ProjectStatus, ProjectStatusRecord } from "shared";
 
-export function composeProjectStatus(
-  status: (typeof PROJECT_STATUS)[keyof typeof PROJECT_STATUS],
-  trigger?: string
-): ProjectStatusRecord {
+export function composeProjectStatus(status: ProjectStatus, trigger?: string): ProjectStatusRecord {
   return {
     status,
     trigger,
