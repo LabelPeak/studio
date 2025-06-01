@@ -111,6 +111,7 @@ export default function AnnotationArea({ project, role, onSelectDataItems }: Ann
       {isToolOpen && annotatingItem && (
         <AnnotateTool
           ref={annotateToolRef}
+          onClose={() => setIsToolOpen(false)}
           project={project}
           dataItem={annotatingItem}
           annotatingType={project.dataset.type}

@@ -91,9 +91,9 @@ export function ProjectDetailPage() {
               <Button onClick={() => setIsOpenStatusDrawer(true)}>项目进展</Button>
             </Access>
             <Access accessible={access.canSeeAdmin}>
-              <Button>
-                <Link to="settings">{intl.formatMessage({ id: "settings" })}</Link>
-              </Button>
+              <Link to="settings">
+                <Button>{intl.formatMessage({ id: "settings" })}</Button>
+              </Link>
             </Access>
           </Space>
         }

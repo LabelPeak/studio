@@ -15,6 +15,7 @@ interface AnnotateToolProps {
   project: Project;
   dataItem: DataItem;
   annotatingType: Dataset["type"];
+  onClose: () => void;
 }
 
 export interface AnnotateToolRef {
@@ -22,7 +23,7 @@ export interface AnnotateToolRef {
 }
 
 const AnnotateTool = forwardRef<AnnotateToolRef, AnnotateToolProps>((props, ref) => {
-  const { dataItem, annotatingType, project } = props;
+  const { dataItem, annotatingType, project, onClose } = props;
   const annotateModuleRef = useRef<AnnotateModuleRef>(null);
   const [isSaveSaved, setIsSaveSaved] = useState(true);
   const intl = useIntl();
@@ -91,15 +92,11 @@ const AnnotateTool = forwardRef<AnnotateToolRef, AnnotateToolProps>((props, ref)
           />
           <div
             title={intl.formatMessage({ id: "operation-reset" })}
-            className="cursor-pointer i-mdi-close c-nord-polar-3"
+            className="cursor-pointer i-mdi-delete-outline c-nord-aurora-0"
             onClick={handleClickReset}
           />
-          <div
-            title={intl.formatMessage({ id: "operation-delete" })}
-            className="cursor-pointer i-mdi-delete-outline c-nord-aurora-0"
-          />
         </div>
-        <div className="mr-4">
+        <div className="flex mr-4 gap-2">
           {!isSaveSaved &&
             (project.access !== Access.Write ? (
               <Tag color="orange">项目{intl.formatMessage({ id: project.access })}, 无法更新</Tag>
@@ -112,6 +109,9 @@ const AnnotateTool = forwardRef<AnnotateToolRef, AnnotateToolProps>((props, ref)
             disabled={project.access !== Access.Write}
           >
             {intl.formatMessage({ id: "operation-update" })}
+          </Button>
+          <Button onClick={onClose} danger>
+            关闭
           </Button>
         </div>
       </div>
