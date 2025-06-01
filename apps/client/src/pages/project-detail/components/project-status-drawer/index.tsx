@@ -11,7 +11,14 @@ interface ProjectStatusDrawerProps {
 
 export default function ProjectStatusDrawer({ open, onClose, project }: ProjectStatusDrawerProps) {
   return (
-    <Drawer open={open} onClose={onClose} width={800}>
+    <Drawer
+      open={open}
+      onClose={onClose}
+      width={800}
+      classNames={{
+        header: "!hidden"
+      }}
+    >
       <ProjectStatusView project={project} />
     </Drawer>
   );

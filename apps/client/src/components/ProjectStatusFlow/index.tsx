@@ -58,7 +58,10 @@ function ProjectStatusFlowImpl({ statusHistory, onStatusNodeClick }: ProjectStat
   useLayoutNodes({
     onLayout: (layoutedNodes) => {
       setNodes(layoutedNodes);
-      fitView();
+      fitView({
+        maxZoom: 1,
+        minZoom: 1
+      });
     }
   });
 
@@ -69,7 +72,6 @@ function ProjectStatusFlowImpl({ statusHistory, onStatusNodeClick }: ProjectStat
           nodes={nodes}
           edges={edges}
           nodeTypes={FLOW_NODE_TYPE}
-          fitView
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           zoomOnScroll={false}
@@ -79,6 +81,9 @@ function ProjectStatusFlowImpl({ statusHistory, onStatusNodeClick }: ProjectStat
           nodesConnectable={false}
           panOnDrag={false}
           panOnScrollMode={PanOnScrollMode.Vertical}
+          proOptions={{
+            hideAttribution: true
+          }}
         >
           <Background />
         </ReactFlow>

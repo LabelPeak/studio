@@ -17,9 +17,9 @@ export default function StatusNode({ data }: StatusNodeProps) {
       onClick={() => onStatusNodeClick(data)}
     >
       <div className="w-2 h-2 rounded-full bg-green-5 mr-2 border-1 border-solid border-green-7" />
-      <Handle type="target" position={Position.Left} />
+      <Handle type="target" position={Position.Left} className="op-0" />
       <div>{data.status}</div>
-      <Handle type="source" position={Position.Right} />
+      <Handle type="source" position={Position.Right} className="op-0" />
     </div>
   );
 }
