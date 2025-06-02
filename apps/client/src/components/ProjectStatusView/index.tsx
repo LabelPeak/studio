@@ -3,7 +3,7 @@ import { ProjectStatusRecord } from "shared";
 
 import { Project } from "@/interfaces/project";
 
-import ProjectStatusFlow from "../ProjectStatusFlow";
+import ProjectStatusFlow from "./components/ProjectStatusFlow";
 import ProjectStepCheckList from "./components/ProjectStepCheckList";
 import StatusDetail from "./components/StatusDetail";
 import StatusHeader from "./components/StatusHeader";
@@ -25,7 +25,7 @@ export default function ProjectStatusView({ project }: ProjectStatusViewProps) {
           onStatusNodeClick={(status) => setSelectedStatusNode(status)}
         />
       </div>
-      <StatusDetail statusRecord={selectedStatusNode} />
+      <StatusDetail statusRecord={selectedStatusNode} statusHistory={project.statusHistory} />
     </section>
   );
 }

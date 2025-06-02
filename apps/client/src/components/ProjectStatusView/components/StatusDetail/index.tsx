@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, Descriptions, Empty } from "antd";
 import { format } from "date-fns";
+import { useIntl } from "react-intl";
 import { first } from "remeda";
 import { ProjectStatusRecord } from "shared";
 
@@ -10,9 +11,11 @@ import StatusLight from "../StatusLight";
 
 interface StatusDetailProps {
   statusRecord: ProjectStatusRecord | null;
+  statusHistory: ProjectStatusRecord[];
 }
 
-export default function StatusDetail({ statusRecord }: StatusDetailProps) {
+export default function StatusDetail({ statusRecord, statusHistory }: StatusDetailProps) {
+  const intl = useIntl();
   const { data: user } = useQuery({
     queryKey: ["findStaffByUsername", statusRecord?.trigger ?? "_"] as const,
     queryFn: ({ queryKey }) => {
@@ -34,8 +37,10 @@ export default function StatusDetail({ statusRecord }: StatusDetailProps) {
     <Card
       title={
         <div className="flex items-center">
-          <StatusLight.InProgress />
-          <span className="ml-1">{statusRecord.status}</span>
+          <StatusLight status={statusRecord.status} statusHistory={statusHistory} />
+          <span className="ml-2">
+            {intl.formatMessage({ id: `project-status-${statusRecord.status}` })}
+          </span>
         </div>
       }
     >

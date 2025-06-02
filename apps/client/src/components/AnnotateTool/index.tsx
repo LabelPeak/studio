@@ -96,7 +96,7 @@ const AnnotateTool = forwardRef<AnnotateToolRef, AnnotateToolProps>((props, ref)
             onClick={handleClickReset}
           />
         </div>
-        <div className="flex mr-4 gap-2">
+        <div className="flex mr-4 gap-2 items-center">
           {!isSaveSaved &&
             (project.access !== Access.Write ? (
               <Tag color="orange">项目{intl.formatMessage({ id: project.access })}, 无法更新</Tag>

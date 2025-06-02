@@ -22,6 +22,12 @@ const ORDERED_PROJECT_STATUS_LIST: ProjectStatus[] = [
   PROJECT_STATUS.RELEASED
 ] as const;
 
+/**
+ * Is current status before target status
+ * @param current
+ * @param target
+ * @returns
+ */
 export function isStatusBefore(current: ProjectStatus, target: ProjectStatus): boolean {
   const currentIndex = ORDERED_PROJECT_STATUS_LIST.indexOf(current);
   const targetIndex = ORDERED_PROJECT_STATUS_LIST.indexOf(target);

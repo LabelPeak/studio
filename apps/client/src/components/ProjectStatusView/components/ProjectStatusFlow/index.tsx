@@ -12,9 +12,9 @@ import {
 import { useEffect } from "react";
 import { ProjectStatusRecord } from "shared";
 
-import { FlowChartContext } from "./components/FlowChartContext";
-import StatusNode from "./components/StatusNode";
-import useLayoutNodes from "./hooks/useLayoutNodes";
+import useLayoutNodes from "../../hooks/useLayoutNodes";
+import { FlowChartContext } from "../FlowChartContext";
+import StatusNode from "../FlowStatusNode";
 
 const FLOW_NODE_TYPE = {
   status: StatusNode
