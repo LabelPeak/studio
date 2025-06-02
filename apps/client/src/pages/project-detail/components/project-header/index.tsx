@@ -2,7 +2,7 @@ import { Tag } from "antd";
 import { memo, type ReactNode, useMemo } from "react";
 import { useIntl } from "react-intl";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { first } from "remeda";
+import { last } from "remeda";
 
 import Access from "@/components/Access";
 import AccessTag from "@/components/AccessTag";
@@ -60,7 +60,7 @@ function ProjectHeader(props: ProjectHeaderProps) {
       <div className="mr-2 flex items-center">
         <Tag bordered={false}>
           项目状态:{" "}
-          {intl.formatMessage({ id: `project-status-${first(project.statusHistory)?.status}` })}
+          {intl.formatMessage({ id: `project-status-${last(project.statusHistory)?.status}` })}
         </Tag>
       </div>
       <div className="flex-auto" />

@@ -1,3 +1,5 @@
+import { ProjectStatusRecord } from "shared";
+
 import { Project } from "@/interfaces/project";
 import { Role, UserProjectRelation } from "@/interfaces/user-project-relation";
 
@@ -57,6 +59,13 @@ function assignStaff(props: { user: number; project: number; role: Role }) {
   });
 }
 
+function pushStatusHistory(props: { projectId: number; record: Partial<ProjectStatusRecord> }) {
+  return requestWithAuth<null>("/api/project/status-history/push", {
+    method: "POST",
+    body: JSON.stringify(props)
+  });
+}
+
 const ProjectService = {
   getMyParticipateProjects,
   getProjectDetail,
@@ -64,7 +73,8 @@ const ProjectService = {
   create,
   remove,
   update,
-  assignStaff
+  assignStaff,
+  pushStatusHistory
 };
 
 export default ProjectService;

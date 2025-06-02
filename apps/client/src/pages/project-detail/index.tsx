@@ -3,12 +3,15 @@ import { Button, message, Space } from "antd";
 import { useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { Link, useParams } from "react-router-dom";
+import { last } from "remeda";
+import { isStatusBefore, PROJECT_STATUS } from "shared";
 
 import Access from "@/components/Access";
 import { useAccess } from "@/hooks/use-access";
 import { useProject } from "@/hooks/use-project";
 import { DataItem } from "@/interfaces/dataset";
 import DatasetService from "@/services/dataset";
+import ProjectService from "@/services/project";
 
 import AnnotationArea from "./components/annotation-area";
 import ImportDataItemsForm from "./components/import-data-items-form";
@@ -27,6 +30,7 @@ export function ProjectDetailPage() {
 
   const { project, role } = useProject(parseInt(projectId));
   const access = useAccess({ role });
+  const currentStatus = last(project.statusHistory)?.status;
 
   function handleImportFile() {
     setOpenImportForm(true);
@@ -70,6 +74,21 @@ export function ProjectDetailPage() {
     }
   }
 
+  async function handleStartAnnotate() {
+    try {
+      await ProjectService.pushStatusHistory({
+        projectId: project.id,
+        record: {
+          status: PROJECT_STATUS.ANNOTATING
+        }
+      });
+    } catch (e) {
+      if (e instanceof Error) {
+        message.error(e.message);
+      }
+    }
+  }
+
   return (
     <section className="bg-white h-full flex flex-col" id="project-detail-page">
       <ProjectHeader
@@ -82,10 +101,20 @@ export function ProjectDetailPage() {
                 {intl.formatMessage({ id: "batched-delete" })}
               </Button>
             </Access>
-            <Access accessible={access.canSeeAdmin}>
+            <Access
+              accessible={
+                access.canSeeAdmin &&
+                Boolean(
+                  currentStatus && isStatusBefore(currentStatus, PROJECT_STATUS.PRE_ANNOTATING)
+                )
+              }
+            >
               <Button type="primary" onClick={handleImportFile}>
                 {intl.formatMessage({ id: "import" })}
               </Button>
+            </Access>
+            <Access accessible={access.canSeeAdmin && currentStatus === PROJECT_STATUS.PENDING}>
+              <Button onClick={handleStartAnnotate}>下发标注任务</Button>
             </Access>
             <Access accessible={access.canSeeAdmin}>
               <Button onClick={() => setIsOpenStatusDrawer(true)}>项目进展</Button>

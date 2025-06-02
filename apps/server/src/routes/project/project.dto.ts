@@ -1,4 +1,7 @@
+import { PROJECT_STATUS } from "shared";
 import { z } from "zod";
+
+import { convertConstToZodEnum } from "@/utils/zod.ts";
 
 const findOneByIdReqSchema = z.object({
   id: z.number()
@@ -35,6 +38,14 @@ const assignStaffReqSchema = z.object({
   role: z.string()
 });
 
+const pushStatusHistoryReqSchema = z.object({
+  projectId: z.number(),
+  record: z.object({
+    status: convertConstToZodEnum(PROJECT_STATUS),
+    trigger: z.string().optional()
+  })
+});
+
 export const ProjectSchema = {
   findOneByIdReqSchema,
   findAllRequestReqSchema,
@@ -42,7 +53,8 @@ export const ProjectSchema = {
   deleteByIdReqSchema,
   createSingleProjectReqSchema,
   updateByIdReqSchema,
-  assignStaffReqSchema
+  assignStaffReqSchema,
+  pushStatusHistoryReqSchema
 };
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -54,4 +66,5 @@ export namespace ProjectDto {
   export type CreateSingleProjectReq = z.infer<typeof createSingleProjectReqSchema>;
   export type UpdateByIdReq = z.infer<typeof updateByIdReqSchema>;
   export type AssignStaffReq = z.infer<typeof assignStaffReqSchema>;
+  export type PushStatusHistoryReq = z.infer<typeof pushStatusHistoryReqSchema>;
 }

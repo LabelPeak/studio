@@ -1,12 +1,12 @@
 import { and, eq } from "drizzle-orm";
 import type { ContextVariableMap } from "hono";
-import { omit } from "remeda";
-import { PROJECT_STATUS } from "shared";
+import { last, omit } from "remeda";
+import { isStatusBefore, PROJECT_STATUS, type ProjectStatusRecord } from "shared";
+import { appendProjectStatusHistory, composeProjectStatus } from "shared";
 
 import { db } from "@/db/connection.ts";
 import { projectTable, usersToProjects } from "@/db/schema.ts";
 import { BizException } from "@/utils/exception.ts";
-import { appendProjectStatusHistory, composeProjectStatus } from "@/utils/project.ts";
 
 import { datasetService } from "../dataset/dataset.service.ts";
 import type { ProjectDto } from "./project.dto.ts";
@@ -154,6 +154,42 @@ async function assignStaff(dto: ProjectDto.AssignStaffReq) {
   return relation;
 }
 
+async function pushStatusHistory(dto: ProjectDto.PushStatusHistoryReq) {
+  const project = await db.query.projectTable.findFirst({
+    where: (_table) => and(eq(_table.id, dto.projectId))
+  });
+
+  if (project === undefined) {
+    throw new BizException("project_not_found");
+  }
+
+  const currentStatus = last(project.statusHistory as ProjectStatusRecord[])?.status;
+  if (!currentStatus) {
+    throw new BizException("empty_status_history");
+  }
+
+  if (isStatusBefore(dto.record.status, currentStatus) || currentStatus === dto.record.status) {
+    throw new BizException("invalid_status");
+  }
+
+  const newHistory = appendProjectStatusHistory(
+    dto.record,
+    project.statusHistory as ProjectStatusRecord[]
+  );
+
+  await db
+    .update(projectTable)
+    .set({
+      statusHistory: newHistory
+    })
+    .where(eq(projectTable.id, dto.projectId))
+    .returning();
+
+  return {
+    newHistory
+  };
+}
+
 export const projectService = {
   findOneById,
   findAll,
@@ -161,5 +197,6 @@ export const projectService = {
   createSingleProject,
   update,
   deleteById,
-  assignStaff
+  assignStaff,
+  pushStatusHistory
 };

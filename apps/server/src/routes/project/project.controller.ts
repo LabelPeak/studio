@@ -91,4 +91,14 @@ projectRouter.post("/assign", async (c) => {
   return c.json(createResponse(res));
 });
 
+projectRouter.post("/status-history/push", async (c) => {
+  const parsed = ProjectSchema.pushStatusHistoryReqSchema.safeParse(await c.req.json());
+  if (!parsed.success) {
+    throw new BizException("invalid_param");
+  }
+
+  const res = await projectService.pushStatusHistory(parsed.data);
+  return c.json(createResponse(res));
+});
+
 export { projectRouter };
