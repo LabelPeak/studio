@@ -18,6 +18,7 @@
     "remeda": "^2.21.3",
     "shared": "workspace:*",
     "vitest": "^3.2.0",
+    "yaml": "^2.8.0",
     "zod": "^3.24.3"
   },
   "devDependencies": {
