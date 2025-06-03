@@ -66,7 +66,7 @@ export class CocoReleaseLoader extends BasicReleaseLoader {
     for (let i = 0; i < this.dataItems.length; i++) {
       const dataItem = this.dataItems[i];
 
-      const numericImageId = dataItem.id;
+      const numericImageId = i + 1;
 
       // Compose CocoImage
       const image = this.composeCocoImage(dataItem, numericImageId);

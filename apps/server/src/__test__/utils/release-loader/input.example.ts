@@ -4,7 +4,7 @@ export const exampleLabels = ["葡萄", "香蕉", "苹果", "卷心菜"];
 
 export const exampleDataItems: DataItem[] = [
   {
-    id: 1,
+    id: 1000,
     annotation: [
       {
         originHeight: 992,
@@ -41,7 +41,7 @@ export const exampleDataItems: DataItem[] = [
     updateAt: new Date()
   },
   {
-    id: 2,
+    id: 1002,
     annotation: [
       {
         originHeight: 992,
@@ -78,7 +78,7 @@ export const exampleDataItems: DataItem[] = [
     updateAt: new Date()
   },
   {
-    id: 3,
+    id: 1003,
     annotation: [
       {
         originHeight: 992,
