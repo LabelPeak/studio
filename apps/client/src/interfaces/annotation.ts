@@ -3,8 +3,11 @@ export interface Label {
   name: string;
 }
 
+/**
+ * @deprecated
+ */
 export interface Annotation<T> {
   id: string;
   value: T;
-  type: "labels" | "relations"
+  type: "labels" | "relations";
 }
