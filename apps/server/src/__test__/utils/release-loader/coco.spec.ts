@@ -1,13 +1,15 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { CocoReleaseLoader } from "@/utils/release-loader/coco.ts";
 
-import { exampleDataItems, exampleDataset, exampleLabels } from "./input.example.ts";
+import { exampleDataItems, exampleDataset, exampleDate, exampleLabels } from "./input.example.ts";
 
 describe("CocoLoader", () => {
   it("should transform to coco format", () => {
     const releaseName = "<releaseName>";
     const poc = "<poc>";
+
+    vi.setSystemTime(exampleDate);
 
     const loader = new CocoReleaseLoader({
       releaseName,

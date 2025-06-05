@@ -33,7 +33,7 @@ export const exampleDataItems: DataItem[] = [
         type: "labels"
       }
     ],
-    file: "",
+    file: "http://images.cocodataset.org/test2014/COCO_test2014_000000523573.jpg",
     dataset: 1,
     reannotation: [],
     feedback: "",
@@ -70,7 +70,7 @@ export const exampleDataItems: DataItem[] = [
         type: "labels"
       }
     ],
-    file: "",
+    file: "http://images.cocodataset.org/test2014/COCO_test2014_000000347527.jpg",
     dataset: 1,
     reannotation: [],
     feedback: "",
@@ -107,7 +107,7 @@ export const exampleDataItems: DataItem[] = [
         type: "labels"
       }
     ],
-    file: "",
+    file: "http://images.cocodataset.org/test2014/COCO_test2014_000000413171.jpg",
     dataset: 1,
     reannotation: [],
     feedback: "",
@@ -122,3 +122,5 @@ export const exampleDataset: Dataset = {
   location: "test",
   project: null
 };
+
+export const exampleDate = new Date("2025-06-03T00:00:00.000Z");
