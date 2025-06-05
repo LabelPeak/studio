@@ -1,4 +1,6 @@
+import { format } from "date-fns";
 import type { InferSelectModel } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
 import type { dataItemTable, datasetTable } from "@/db/schema.ts";
 
@@ -31,5 +33,9 @@ export abstract class BasicReleaseLoader {
     this.poc = poc;
   }
 
-  abstract releaseToZip(): Promise<string>;
+  abstract releaseToZip(): Promise<Buffer>;
+
+  getArchiveName() {
+    return `labelpeak-dataset-${this.releaseName}-${format(new Date(), "yyyyMMdd")}-${nanoid(6)}`;
+  }
 }

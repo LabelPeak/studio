@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",
+    "archiver": "^7.0.1",
     "date-fns": "^2.30.0",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.41.0",
@@ -22,6 +23,7 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@types/archiver": "^6.0.3",
     "@types/node": "^20.17.30",
     "@types/pg": "^8.11.13",
     "bcrypt-ts": "^6.0.0",
