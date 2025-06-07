@@ -24,11 +24,18 @@ const updateAnnotationReqSchema = z.object({
   id: z.number()
 });
 
+const updatePreAnnotationReqSchema = z.object({
+  data: z.string(),
+  project: z.number(),
+  id: z.number()
+});
+
 export const DatasetSchema = {
   createReqSchema,
   findAllDataItemByDatasetIdReqSchema,
   uploadDataItemsReqSchema,
-  updateAnnotationReqSchema
+  updateAnnotationReqSchema,
+  updatePreAnnotationReqSchema
 };
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -37,4 +44,5 @@ export namespace DatasetDto {
   export type FindAllDataItemByDatasetIdReq = z.infer<typeof findAllDataItemByDatasetIdReqSchema>;
   export type UploadDataItemReq = z.infer<typeof uploadDataItemsReqSchema>;
   export type UpdateAnnotationReq = z.infer<typeof updateAnnotationReqSchema>;
+  export type UpdatePreAnnotationReq = z.infer<typeof updatePreAnnotationReqSchema>;
 }

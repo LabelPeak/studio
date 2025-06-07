@@ -118,9 +118,35 @@ async function updateAnnotation(
   return null;
 }
 
+/**
+ * Only use for inngest to update pre-annotation
+ */
+async function updatePreAnnotation(dto: DatasetDto.UpdatePreAnnotationReq) {
+  // const project = await db.query.projectTable.findFirst({
+  // where: (_table) => and(eq(_table.id, dto.project))
+  // });
+
+  // if (
+  // last(project?.statusHistory as ProjectStatusRecord[])?.status !== PROJECT_STATUS.PRE_ANNOTATING
+  // ) {
+  // throw new BizException("invalid_status");
+  // }
+
+  await db
+    .update(dataItemTable)
+    .set({
+      annotation: dto.data,
+      updateAt: new Date()
+    })
+    .where(eq(dataItemTable.id, dto.id));
+
+  return null;
+}
+
 export const datasetService = {
   createDataset,
   findAllDataItemByDatasetId,
   uploadDataItems,
-  updateAnnotation
+  updateAnnotation,
+  updatePreAnnotation
 };

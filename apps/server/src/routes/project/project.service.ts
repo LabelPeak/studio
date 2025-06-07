@@ -7,9 +7,11 @@ import { appendProjectStatusHistory, composeProjectStatus } from "shared";
 import { db } from "@/db/connection.ts";
 import { projectTable, usersToProjects } from "@/db/schema.ts";
 import { BizException } from "@/utils/exception.ts";
+import { inngest } from "@/utils/inngest.ts";
 
 import { datasetService } from "../dataset/dataset.service.ts";
 import type { ProjectDto } from "./project.dto.ts";
+import { PROJECT_ROLE } from "./project.entity.ts";
 
 async function findOneById(
   dto: ProjectDto.FindOneByIdReq,
@@ -190,6 +192,53 @@ async function pushStatusHistory(dto: ProjectDto.PushStatusHistoryReq) {
   };
 }
 
+async function startPreAnnotate(
+  dto: ProjectDto.StartPreAnnotateReq,
+  authPayload: ContextVariableMap["authPayload"]
+) {
+  const relation = await findOneById({ id: dto.projectId }, authPayload);
+
+  if (relation?.role !== PROJECT_ROLE.ADMIN) {
+    throw new BizException("permission_denied");
+  }
+
+  if (
+    last(relation.project?.statusHistory as ProjectStatusRecord[])?.status !==
+    PROJECT_STATUS.PENDING
+  ) {
+    throw new BizException("invalid_status");
+  }
+
+  if (!relation.user || !relation.project) {
+    throw new BizException("project_not_found");
+  }
+
+  // const user = await userService.findOneById({ id: relation.user });
+
+  try {
+    await inngest.send({
+      name: "app/project.pre-annotate",
+      data: {
+        projectId: relation.project.id,
+        datasetId: relation.project.dataset.id,
+        labels: relation.project.presets
+      }
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(error.message);
+    }
+    throw new BizException("inngest_error");
+  }
+
+  /* pushStatusHistory({
+    projectId: relation.project.id,
+    record: composeProjectStatus(PROJECT_STATUS.PRE_ANNOTATING, user.username)
+  }); */
+
+  return null;
+}
+
 export const projectService = {
   findOneById,
   findAll,
@@ -198,5 +247,6 @@ export const projectService = {
   update,
   deleteById,
   assignStaff,
-  pushStatusHistory
+  pushStatusHistory,
+  startPreAnnotate
 };

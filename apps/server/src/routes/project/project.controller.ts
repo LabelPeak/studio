@@ -101,4 +101,14 @@ projectRouter.post("/status-history/push", async (c) => {
   return c.json(createResponse(res));
 });
 
+projectRouter.post("/pre-annotate/start", async (c) => {
+  const parsed = ProjectSchema.startPreAnnotateReqSchema.safeParse(await c.req.json());
+  if (!parsed.success) {
+    throw new BizException("invalid_param");
+  }
+
+  const res = await projectService.startPreAnnotate(parsed.data, c.get("authPayload"));
+  return c.json(createResponse(res));
+});
+
 export { projectRouter };

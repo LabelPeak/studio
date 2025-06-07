@@ -3,19 +3,24 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "dk": "drizzle-kit"
+    "dk": "drizzle-kit",
+    "dev:inngest": "pnpx inngest-cli dev"
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",
+    "consola": "^3.4.2",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.41.0",
     "hono": "^4.7.7",
+    "image-dimensions": "^2.3.0",
+    "inngest": "^3.38.0",
+    "mime-types": "^3.0.1",
     "minio": "^8.0.5",
     "nanoid": "^5.1.5",
     "pg": "^8.14.1",
     "remeda": "^2.21.3",
-    "zod": "^3.24.3",
-    "shared": "workspace:*"
+    "shared": "workspace:*",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@types/node": "^20.17.30",

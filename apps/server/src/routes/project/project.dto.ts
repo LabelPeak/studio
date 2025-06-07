@@ -46,6 +46,10 @@ const pushStatusHistoryReqSchema = z.object({
   })
 });
 
+const startPreAnnotateReqSchema = z.object({
+  projectId: z.number()
+});
+
 export const ProjectSchema = {
   findOneByIdReqSchema,
   findAllRequestReqSchema,
@@ -54,7 +58,8 @@ export const ProjectSchema = {
   createSingleProjectReqSchema,
   updateByIdReqSchema,
   assignStaffReqSchema,
-  pushStatusHistoryReqSchema
+  pushStatusHistoryReqSchema,
+  startPreAnnotateReqSchema
 };
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -67,4 +72,5 @@ export namespace ProjectDto {
   export type UpdateByIdReq = z.infer<typeof updateByIdReqSchema>;
   export type AssignStaffReq = z.infer<typeof assignStaffReqSchema>;
   export type PushStatusHistoryReq = z.infer<typeof pushStatusHistoryReqSchema>;
+  export type StartPreAnnotateReq = z.infer<typeof startPreAnnotateReqSchema>;
 }
