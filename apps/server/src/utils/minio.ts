@@ -33,12 +33,12 @@ if (!exists) {
 export async function storeFile(file: File, fileName: string) {
   const arrayBuffer = await file.arrayBuffer();
 
-  return await storeFileFromBuffer(Buffer.from(arrayBuffer), fileName);
+  return await storeFileFromBuffer(Buffer.from(arrayBuffer), fileName, file.type);
 }
 
-export async function storeFileFromBuffer(buffer: Buffer, fileName: string) {
+export async function storeFileFromBuffer(buffer: Buffer, fileName: string, fileType?: string) {
   await minioClient.putObject(bucket, fileName, buffer, undefined, {
-    "Content-Type": "application/octet-stream"
+    "Content-Type": fileType ?? "application/octet-stream"
   });
 
   return `http://${MINIO_ENV.endPoint}:${MINIO_ENV.port}/${MINIO_ENV.bucket}/${fileName}`;
