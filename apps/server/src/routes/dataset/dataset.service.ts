@@ -28,7 +28,8 @@ async function findAllDataItemByDatasetId(dto: DatasetDto.FindAllDataItemByDatas
   const list = await db.query.dataItemTable.findMany({
     where: (_table) => eq(_table.dataset, dto.datasetId),
     limit: dto.size,
-    offset: (dto.page - 1) * dto.size
+    offset: (dto.page - 1) * dto.size,
+    orderBy: (_table) => _table.id
   });
 
   const total = await db.$count(datasetTable, eq(datasetTable.id, dto.datasetId));

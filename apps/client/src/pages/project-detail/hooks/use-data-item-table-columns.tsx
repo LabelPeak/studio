@@ -36,8 +36,8 @@ export function useDataItemTableColumns({ isToolOpen, currentStatus }: GenerateC
   const columns: ColumnsType<DataItem> = [
     {
       title: "编号",
-      dataIndex: "id",
-      width: 80
+      width: 80,
+      render: (_a, _b, index) => `${index + 1}`
     },
     {
       title: "来源",

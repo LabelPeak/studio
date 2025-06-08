@@ -30,7 +30,9 @@ export default function ProjectCard(props: ProjectCardProps) {
     >
       <div className="body px-4 mb-3 flex items-end">
         {project.access ? <AccessTag access={project.access} /> : null}
-        <span className="font-bold mr-2 of-hidden text-ellipsis">{project.name}</span>
+        <span className="font-bold mr-2 of-hidden text-ellipsis line-clamp-1" title={project.name}>
+          {project.name}
+        </span>
         <span
           className="text-14px c-nord-polar-3 shrink-0"
           title={intl.formatMessage({ id: "role-admin" })}
