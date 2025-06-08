@@ -1,3 +1,4 @@
+import archiver from "archiver";
 import { format } from "date-fns";
 import { type ImageClassifyAnnotation } from "shared";
 
@@ -13,10 +14,13 @@ interface CocoInfo {
 
 interface CocoImage {
   id: number;
-  file_name: string;
+  license?: number;
+  coco_url?: string;
+  flickr_url?: string;
   width: number;
   height: number;
-  license?: number;
+  file_name: string;
+  date_captured: string;
 }
 
 interface CocoAnnotation {
@@ -38,6 +42,9 @@ interface CocoCategory {
   supercategory?: string;
 }
 
+/**
+ * @see https://docs.aws.amazon.com/rekognition/latest/customlabels-dg/md-coco-overview.html
+ */
 export interface CocoOutputJSON {
   info: CocoInfo;
   images: CocoImage[];
@@ -46,8 +53,27 @@ export interface CocoOutputJSON {
 }
 
 export class CocoReleaseLoader extends BasicReleaseLoader {
-  public releaseToZip(): Promise<string> {
-    return Promise.resolve("");
+  public async releaseToZip(): Promise<Buffer> {
+    const archive = archiver("zip", { zlib: { level: 9 } });
+    const buffers: Buffer[] = [];
+
+    archive.on("data", (chunk) => {
+      buffers.push(chunk);
+    });
+
+    const jsonContent = this.composeCocoOutputJSON();
+    archive.append(JSON.stringify(jsonContent), { name: "data.json" });
+
+    try {
+      await archive.finalize();
+      const zipBuffer = Buffer.concat(buffers);
+
+      return zipBuffer;
+    } catch (error) {
+      throw new Error(
+        `Failed to create archive: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
   }
 
   public composeCocoOutputJSON(): CocoOutputJSON {
@@ -107,9 +133,11 @@ export class CocoReleaseLoader extends BasicReleaseLoader {
 
     return {
       id: imageId,
-      file_name: `${String(imageId).padStart(10, "0")}.${ext}`,
+      coco_url: dataItem.file,
       width: (dataItem.annotation as ImageClassifyAnnotation[]).at(0)?.originWidth ?? 0,
-      height: (dataItem.annotation as ImageClassifyAnnotation[]).at(0)?.originHeight ?? 0
+      height: (dataItem.annotation as ImageClassifyAnnotation[]).at(0)?.originHeight ?? 0,
+      file_name: `${String(imageId).padStart(10, "0")}.${ext}`,
+      date_captured: format(dataItem.updateAt, "yyyy-MM-dd HH:mm:ss")
     };
   }
 

@@ -32,6 +32,10 @@ export class YoloReleaseLoader extends BasicReleaseLoader {
     const archive = archiver("zip", { zlib: { level: 9 } });
     const buffers: Buffer[] = [];
 
+    archive.on("data", (chunk) => {
+      buffers.push(chunk);
+    });
+
     const yamlContent = this.composeYoloOutputYAML();
     archive.append(yamlContent, { name: "data.yaml" });
 
@@ -64,10 +68,6 @@ export class YoloReleaseLoader extends BasicReleaseLoader {
         name: `/labels/${directory}/${imageName}.txt`
       });
     }
-
-    archive.on("data", (chunk) => {
-      buffers.push(chunk);
-    });
 
     try {
       await archive.finalize();
