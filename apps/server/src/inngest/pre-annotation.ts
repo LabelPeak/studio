@@ -1,6 +1,7 @@
 import consola from "consola";
 import { imageDimensionsFromData } from "image-dimensions";
 import { nanoid } from "nanoid";
+import pLimit from "p-limit";
 import { round } from "remeda";
 
 import { datasetService } from "@/routes/dataset/dataset.service.ts";
@@ -39,10 +40,20 @@ async function parseDataItemImage(url: string) {
   return { dataURI, dimensions };
 }
 
-async function fetchAnnotationFromLLM(
-  dataURI: string,
-  labels: ProjectPreAnnotateEventData["labels"]
-): Promise<LLMAnnotation[]> {
+interface FetchAnnotationFormLLMOptions {
+  dataURI: string;
+  labels: ProjectPreAnnotateEventData["labels"];
+  dimensions?: {
+    width: number;
+    height: number;
+  };
+}
+
+async function fetchAnnotationFromLLM({
+  dataURI,
+  labels,
+  dimensions
+}: FetchAnnotationFormLLMOptions): Promise<LLMAnnotation[]> {
   const headers = new Headers({
     "Content-Type": "application/json",
     Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
@@ -60,6 +71,7 @@ async function fetchAnnotationFromLLM(
 ${labels.map((label) => label.name).join(",")} 这些标签。
 在图中找出所有与这些标签相关的区域，一个标签可能对应多个对象。
 请以 { label: "<detectedLabelName>", area: [<xMin>, <yMin>, <width>, <height>]} 这样的 json 对象形式表示标注数据。
+用户会告诉你图片的尺寸，你需要根据图片的尺寸来计算标注数据的坐标和尺寸, area 里面的字段值均为图片的实际像素。
 最终输出 json 数组，表示这张图里面的所有标注对象。
 
 注意：
@@ -72,6 +84,10 @@ ${labels.map((label) => label.name).join(",")} 这些标签。
         {
           role: "user",
           content: [
+            {
+              type: "text",
+              text: `图片的宽度为 ${dimensions?.width} 像素, 高度为 ${dimensions?.height} 像素。`
+            },
             {
               type: "image_url",
               image_url: {
@@ -90,14 +106,18 @@ ${labels.map((label) => label.name).join(",")} 这些标签。
   return annotations;
 }
 
-function transformLLMAnnotation(annotation: LLMAnnotation) {
-  const squareLength = 500;
+function transformLLMAnnotation(
+  annotation: LLMAnnotation,
+  dimensions?: { width: number; height: number }
+) {
+  const squareLength = 1000;
+  const { width, height } = dimensions ?? { width: squareLength, height: squareLength };
 
   return {
-    x: round((annotation.area[0] / squareLength) * 100, 6),
-    y: round((annotation.area[1] / squareLength) * 100, 6),
-    width: round((annotation.area[2] / squareLength) * 100, 6),
-    height: round((annotation.area[3] / squareLength) * 100, 6),
+    x: round((annotation.area[0] / width) * 100, 6),
+    y: round((annotation.area[1] / height) * 100, 6),
+    width: round((annotation.area[2] / width) * 100, 6),
+    height: round((annotation.area[3] / height) * 100, 6),
     labels: [annotation.label]
   };
 }
@@ -106,7 +126,9 @@ const preAnnotateFunction = inngest.createFunction(
   { id: "project-pre-annotate" },
   { event: "app/project.pre-annotate" },
   async ({ event, step }) => {
-    await step.run("Start pre-annotate", async () => {
+    const limit = pLimit(6);
+
+    const result = await step.run("Start pre-annotate", async () => {
       const { datasetId, labels, projectId } = event.data as ProjectPreAnnotateEventData;
       // TODO: 分页发送
       const { list } = await datasetService.findAllDataItemByDatasetId({
@@ -116,28 +138,37 @@ const preAnnotateFunction = inngest.createFunction(
       });
 
       const resultList = await Promise.allSettled(
-        list.map(async (dataItem) => {
-          const { dataURI, dimensions } = await parseDataItemImage(dataItem.file);
-          const annotations = await fetchAnnotationFromLLM(dataURI, labels);
+        list.map(async (dataItem) =>
+          limit(async () => {
+            const { dataURI, dimensions } = await parseDataItemImage(dataItem.file);
+            const annotations = await fetchAnnotationFromLLM({ dataURI, labels, dimensions });
 
-          const formatted = annotations.map((item) => ({
-            originHeight: dimensions?.height ?? 0,
-            originWidth: dimensions?.width ?? 0,
-            value: transformLLMAnnotation(item),
-            id: nanoid(10),
-            type: "labels"
-          }));
+            const formatted = annotations.map((item) => ({
+              originHeight: dimensions?.height ?? 0,
+              originWidth: dimensions?.width ?? 0,
+              value: transformLLMAnnotation(item, dimensions),
+              id: nanoid(10),
+              type: "labels"
+            }));
 
-          await datasetService.updatePreAnnotation({
-            id: dataItem.id,
-            project: projectId,
-            data: JSON.stringify(formatted)
-          });
-        })
+            await datasetService.updatePreAnnotation({
+              id: dataItem.id,
+              project: projectId,
+              data: JSON.stringify(formatted)
+            });
+
+            return {
+              file: dataItem.file,
+              annotations,
+              dimensions
+            };
+          })
+        )
       );
 
+      const successList = resultList.filter((item) => item.status === "fulfilled");
       const failList = resultList.filter((item) => item.status === "rejected");
-      consola.log(
+      consola.info(
         `Successfully pre-annotated to project#${projectId} for ${list.length - failList.length} data items.`
       );
       if (failList.length > 0) {
@@ -146,11 +177,13 @@ const preAnnotateFunction = inngest.createFunction(
       }
 
       return {
-        total: resultList.length,
-        success: resultList.length - failList.length,
-        fail: failList.length
+        success: successList.map((item) => item.value),
+        totalCount: resultList.length,
+        failCount: failList.length
       };
     });
+
+    return result;
   }
 );
 
