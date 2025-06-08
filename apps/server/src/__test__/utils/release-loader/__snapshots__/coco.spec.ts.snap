@@ -1,0 +1,135 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CocoLoader > should transform to coco format 1`] = `
+{
+  "annotations": [
+    {
+      "area": 15314,
+      "bbox": [
+        105,
+        18,
+        589,
+        26,
+      ],
+      "category_id": 1,
+      "id": 101,
+      "image_id": 1,
+      "iscrowd": 0,
+    },
+    {
+      "area": 11250,
+      "bbox": [
+        406,
+        207,
+        375,
+        30,
+      ],
+      "category_id": 2,
+      "id": 102,
+      "image_id": 1,
+      "iscrowd": 0,
+    },
+    {
+      "area": 7900,
+      "bbox": [
+        832,
+        127,
+        395,
+        20,
+      ],
+      "category_id": 4,
+      "id": 201,
+      "image_id": 2,
+      "iscrowd": 0,
+    },
+    {
+      "area": 10720,
+      "bbox": [
+        414,
+        273,
+        335,
+        32,
+      ],
+      "category_id": 3,
+      "id": 202,
+      "image_id": 2,
+      "iscrowd": 0,
+    },
+    {
+      "area": 218924,
+      "bbox": [
+        1593,
+        -2,
+        478,
+        458,
+      ],
+      "category_id": 4,
+      "id": 301,
+      "image_id": 3,
+      "iscrowd": 0,
+    },
+    {
+      "area": 13790,
+      "bbox": [
+        232,
+        372,
+        394,
+        35,
+      ],
+      "category_id": 1,
+      "id": 302,
+      "image_id": 3,
+      "iscrowd": 0,
+    },
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "葡萄",
+      "supercategory": "object",
+    },
+    {
+      "id": 2,
+      "name": "香蕉",
+      "supercategory": "object",
+    },
+    {
+      "id": 3,
+      "name": "苹果",
+      "supercategory": "object",
+    },
+    {
+      "id": 4,
+      "name": "卷心菜",
+      "supercategory": "object",
+    },
+  ],
+  "images": [
+    {
+      "file_name": "0000000001.jpg",
+      "height": 992,
+      "id": 1,
+      "width": 2056,
+    },
+    {
+      "file_name": "0000000002.jpg",
+      "height": 992,
+      "id": 2,
+      "width": 2056,
+    },
+    {
+      "file_name": "0000000003.jpg",
+      "height": 992,
+      "id": 3,
+      "width": 2056,
+    },
+  ],
+  "info": {
+    "contributor": "<poc>",
+    "date_created": "2025/06/03",
+    "description": "Dataset: <releaseName> - LabelPeak COCO Export",
+    "version": "1.0",
+    "year": 2025,
+  },
+}
+`;

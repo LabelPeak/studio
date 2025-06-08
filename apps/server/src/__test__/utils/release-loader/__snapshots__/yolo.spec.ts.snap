@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`YoloReleaseLoader > should compose yolo annotation per file 1`] = `
+"0 19.473648 3.258277 28.672028 2.719419
+1 28.902435 22.391593 18.261719 3.033151
+"
+`;
+
+exports[`YoloReleaseLoader > should compose yolo output yaml 1`] = `
+"train: /images/train/
+val: /images/val/
+nc: 4
+names:
+  - 葡萄
+  - 香蕉
+  - 苹果
+  - 卷心菜
+"
+`;

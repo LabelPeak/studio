@@ -33,6 +33,9 @@ interface EditorState {
   size: { height: number; width: number };
 }
 
+/**
+ * @deprecated
+ */
 export interface ImageClassifyAnnotation
   extends Annotation<{
     x: number;
@@ -167,7 +170,10 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
         fill: { type: "image", url, mode: "fit" }
       });
       image.once(ImageEvent.LOADED, (e) => {
-        state.loadedImageMeta = { width: e.image.width, height: e.image.height };
+        state.loadedImageMeta = {
+          width: e.image.width,
+          height: e.image.height
+        };
         const annotations = filterAnnotationByLabels(
           _dataItem.annotation as ImageClassifyAnnotation[]
         );
