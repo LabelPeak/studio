@@ -1,9 +1,9 @@
 import { Annotation } from "./annotation";
 
 export enum DataType {
-  InfoExtract = "info-extract",
-  TextClassify = "text-classify",
-  ImageText = "image-text",
+  // InfoExtract = "info-extract",
+  // TextClassify = "text-classify",
+  // ImageText = "image-text",
   ImageClassify = "image-classify"
 }
 

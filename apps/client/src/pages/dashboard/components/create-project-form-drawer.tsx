@@ -23,7 +23,7 @@ export default function CreateProjectDrawer(props: IProps) {
     const res = await StaffService.search({ token, page: 1, size: 10 });
     const temp = res.list.map((item) => ({
       label: `${item.realname} ${item.username}`,
-      value: item.id ?? 0
+      value: item.id
     }));
     return temp;
   }
@@ -67,7 +67,7 @@ export default function CreateProjectDrawer(props: IProps) {
         onFinish={handleSubmit}
         initialValues={{
           access: "write",
-          type: "info-extract"
+          type: DataType.ImageClassify
         }}
       >
         <Form.Item
