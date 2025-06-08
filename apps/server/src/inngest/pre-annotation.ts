@@ -3,6 +3,7 @@ import { imageDimensionsFromData } from "image-dimensions";
 import { nanoid } from "nanoid";
 import pLimit from "p-limit";
 import { round } from "remeda";
+import { z } from "zod";
 
 import { datasetService } from "@/routes/dataset/dataset.service.ts";
 import { inngest } from "@/utils/inngest.ts";
@@ -21,10 +22,12 @@ interface LLMResponse {
   }>;
 }
 
-interface LLMAnnotation {
-  label: string;
-  area: [xMin: number, yMin: number, width: number, height: number];
-}
+const llmAnnotationSchema = z.object({
+  label: z.string(),
+  area: z.tuple([z.number(), z.number(), z.number(), z.number()])
+});
+
+type LLMAnnotation = z.infer<typeof llmAnnotationSchema>;
 
 async function parseDataItemImage(url: string) {
   const resp = await fetch(url);
@@ -69,10 +72,10 @@ async function fetchAnnotationFromLLM({
           role: "system",
           content: `作为数据标注专家，请为用户发送的图片标注
 ${labels.map((label) => label.name).join(",")} 这些标签。
-在图中找出所有与这些标签相关的区域，一个标签可能对应多个对象。
+在图中找出所有与这些标签相关的区域，一个标签可能对应多个对象。尽量让一个框只框住一个对象，越精确越好。
 请以 { label: "<detectedLabelName>", area: [<xMin>, <yMin>, <width>, <height>]} 这样的 json 对象形式表示标注数据。
 用户会告诉你图片的尺寸，你需要根据图片的尺寸来计算标注数据的坐标和尺寸, area 里面的字段值均为图片的实际像素。
-最终输出 json 数组，表示这张图里面的所有标注对象。
+最终输出 json 数组，表示这张图里面的所有标注对象。如果没有识别到对象，输出空数组即可。
 
 注意：
 1. 请严格按照上述格式输出，不要输出任何额外的信息。
@@ -102,8 +105,15 @@ ${labels.map((label) => label.name).join(",")} 这些标签。
   });
 
   const data: LLMResponse = await resp.json();
-  const annotations = JSON.parse(data.choices.at(0)?.message.content ?? "[]") as LLMAnnotation[];
-  return annotations;
+
+  const llmAnnotations = JSON.parse(data.choices.at(0)?.message.content ?? "[]") as LLMAnnotation[];
+
+  const validAnnotations = llmAnnotations.filter((annotation) => {
+    const result = llmAnnotationSchema.safeParse(annotation);
+    return result.success;
+  });
+
+  return validAnnotations;
 }
 
 function transformLLMAnnotation(
