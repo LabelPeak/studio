@@ -29,7 +29,8 @@ export const projectTable = pgTable("project", {
   presets: json().notNull(),
   access: varchar({ length: 10 }).notNull(),
   statusHistory: json().notNull(),
-  admin: integer().references(() => userTable.id)
+  admin: integer().references(() => userTable.id),
+  releaseUrl: varchar()
 });
 
 export const projectRelations = relations(projectTable, ({ many, one }) => ({

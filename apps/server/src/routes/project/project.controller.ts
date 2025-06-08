@@ -111,4 +111,14 @@ projectRouter.post("/pre-annotate/start", async (c) => {
   return c.json(createResponse(res));
 });
 
+projectRouter.post("/release", async (c) => {
+  const parsed = ProjectSchema.releaseProjectReqSchema.safeParse(await c.req.json());
+  if (!parsed.success) {
+    throw new BizException("invalid_param");
+  }
+
+  const res = await projectService.releaseProject(parsed.data, c.get("authPayload"));
+  return c.json(createResponse(res));
+});
+
 export { projectRouter };

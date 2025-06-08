@@ -77,8 +77,8 @@ export class CocoReleaseLoader extends BasicReleaseLoader {
   }
 
   public composeCocoOutputJSON(): CocoOutputJSON {
-    const presetMap = this.presetLabels.reduce((prev, label, index) => {
-      prev.set(label, index + 1);
+    const presetMap = this.presetLabels.reduce((prev, label) => {
+      prev.set(label.name, label.index + 1);
       return prev;
     }, new Map<string, number>());
 

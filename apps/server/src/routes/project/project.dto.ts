@@ -50,6 +50,11 @@ const startPreAnnotateReqSchema = z.object({
   projectId: z.number()
 });
 
+const releaseProjectReqSchema = z.object({
+  projectId: z.number(),
+  releaseType: z.union([z.literal("coco"), z.literal("yolo")])
+});
+
 export const ProjectSchema = {
   findOneByIdReqSchema,
   findAllRequestReqSchema,
@@ -59,7 +64,8 @@ export const ProjectSchema = {
   updateByIdReqSchema,
   assignStaffReqSchema,
   pushStatusHistoryReqSchema,
-  startPreAnnotateReqSchema
+  startPreAnnotateReqSchema,
+  releaseProjectReqSchema
 };
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -73,4 +79,5 @@ export namespace ProjectDto {
   export type AssignStaffReq = z.infer<typeof assignStaffReqSchema>;
   export type PushStatusHistoryReq = z.infer<typeof pushStatusHistoryReqSchema>;
   export type StartPreAnnotateReq = z.infer<typeof startPreAnnotateReqSchema>;
+  export type ReleaseProjectReq = z.infer<typeof releaseProjectReqSchema>;
 }

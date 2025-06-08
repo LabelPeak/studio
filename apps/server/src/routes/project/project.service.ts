@@ -1,13 +1,18 @@
 import { and, eq } from "drizzle-orm";
 import type { ContextVariableMap } from "hono";
+import { mimes } from "hono/utils/mime";
 import { last, omit } from "remeda";
-import { isStatusBefore, PROJECT_STATUS, type ProjectStatusRecord } from "shared";
+import { isStatusBefore, type Label, PROJECT_STATUS, type ProjectStatusRecord } from "shared";
 import { appendProjectStatusHistory, composeProjectStatus } from "shared";
 
 import { db } from "@/db/connection.ts";
 import { projectTable, usersToProjects } from "@/db/schema.ts";
 import { BizException } from "@/utils/exception.ts";
 import { inngest } from "@/utils/inngest.ts";
+import { storeFileFromBuffer } from "@/utils/minio.ts";
+import type { BasicReleaseLoader } from "@/utils/release-loader/basic.ts";
+import { CocoReleaseLoader } from "@/utils/release-loader/coco.ts";
+import { YoloReleaseLoader } from "@/utils/release-loader/yolo.ts";
 
 import { datasetService } from "../dataset/dataset.service.ts";
 import type { ProjectDto } from "./project.dto.ts";
@@ -239,6 +244,70 @@ async function startPreAnnotate(
   return null;
 }
 
+async function releaseProject(
+  dto: ProjectDto.ReleaseProjectReq,
+  authPayload: ContextVariableMap["authPayload"]
+) {
+  const relation = await db.query.usersToProjects.findFirst({
+    where: (_table) =>
+      and(eq(_table.user, authPayload.operatorId), eq(_table.project, dto.projectId)),
+    with: {
+      user: true,
+      project: {
+        with: {
+          dataset: true
+        }
+      }
+    }
+  });
+
+  if (!relation || !relation.user || relation.project === null) {
+    throw new BizException("project_not_found");
+  }
+
+  // TODO: if (relation?.role !== PROJECT_ROLE.ADMIN) {
+  // throw new BizException("permission_denied");
+  // }
+
+  const dataItems = await db.query.dataItemTable.findMany({
+    where: (_table) => eq(_table.dataset, relation.project?.dataset.id ?? 0)
+  });
+
+  let releaseLoader: BasicReleaseLoader | null = null;
+
+  if (dto.releaseType === "coco") {
+    releaseLoader = new CocoReleaseLoader({
+      poc: relation.user.username,
+      releaseName: relation.project.name,
+      dataset: relation.project.dataset,
+      presetLabels: relation.project.presets as Label[],
+      dataItems
+    });
+  } else {
+    releaseLoader = new YoloReleaseLoader({
+      poc: relation.user.username,
+      releaseName: relation.project.name,
+      dataset: relation.project.dataset,
+      presetLabels: relation.project.presets as Label[],
+      dataItems
+    });
+  }
+
+  const zipBuffer = await releaseLoader.releaseToZip();
+
+  const url = await storeFileFromBuffer(zipBuffer, releaseLoader.getArchiveName(), mimes.zip);
+
+  const [project] = await db
+    .update(projectTable)
+    .set({ releaseUrl: url })
+    .where(eq(projectTable.id, dto.projectId))
+    .returning();
+
+  return {
+    project
+  };
+}
+
 export const projectService = {
   findOneById,
   findAll,
@@ -248,5 +317,6 @@ export const projectService = {
   deleteById,
   assignStaff,
   pushStatusHistory,
-  startPreAnnotate
+  startPreAnnotate,
+  releaseProject
 };

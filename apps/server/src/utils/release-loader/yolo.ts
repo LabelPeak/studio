@@ -39,7 +39,7 @@ export class YoloReleaseLoader extends BasicReleaseLoader {
     const yamlContent = this.composeYoloOutputYAML();
     archive.append(yamlContent, { name: "data.yaml" });
 
-    const presetMap = new Map(this.presetLabels.map((label, index) => [label, index]));
+    const presetMap = new Map(this.presetLabels.map((label) => [label.name, label.index]));
 
     for (let i = 0; i < this.dataItems.length; i++) {
       const dataItem = this.dataItems[i];

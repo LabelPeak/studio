@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import type { InferSelectModel } from "drizzle-orm";
 import { nanoid } from "nanoid";
+import type { Label } from "shared";
 
 import type { dataItemTable, datasetTable } from "@/db/schema.ts";
 
@@ -14,7 +15,7 @@ interface BasicReleaseLoaderOptions {
   releaseName: string;
   poc: string;
   dataset: Dataset;
-  presetLabels: string[];
+  presetLabels: Label[];
   dataItems: DataItem[];
 }
 
@@ -22,7 +23,7 @@ export abstract class BasicReleaseLoader {
   releaseName: string;
   poc: string;
   dataset: Dataset;
-  presetLabels: string[];
+  presetLabels: Label[];
   dataItems: DataItem[];
 
   constructor({ releaseName, poc, dataset, presetLabels, dataItems }: BasicReleaseLoaderOptions) {
