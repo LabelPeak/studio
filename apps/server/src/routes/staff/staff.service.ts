@@ -1,5 +1,6 @@
 import { hashSync } from "bcrypt-ts";
 import { count, eq, getTableColumns, ilike, or } from "drizzle-orm";
+import { nanoid } from "nanoid";
 import { pinyin } from "pinyin";
 import { omit } from "remeda";
 
@@ -68,7 +69,7 @@ async function findAllByProject(dto: UserDto.FindAllByProjectReq) {
 }
 
 async function createSingleStaff(dto: UserDto.CreateSingleStaffReq) {
-  const password = crypto.randomUUID();
+  const password = nanoid(12);
   const encryptedPassword = hashSync(password);
 
   const sameNameCnt = await db.$count(userTable, eq(userTable.realname, dto.realname));
