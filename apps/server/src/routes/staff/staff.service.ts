@@ -1,5 +1,6 @@
 import { hashSync } from "bcrypt-ts";
 import { count, eq, getTableColumns, ilike, or } from "drizzle-orm";
+import { pinyin } from "pinyin";
 import { omit } from "remeda";
 
 import { db } from "@/db/connection.ts";
@@ -71,15 +72,23 @@ async function createSingleStaff(dto: UserDto.CreateSingleStaffReq) {
   const encryptedPassword = hashSync(password);
 
   const sameNameCnt = await db.$count(userTable, eq(userTable.realname, dto.realname));
+  const pinyinUsername = pinyin(dto.realname, {
+    style: "NORMAL"
+  })
+    .flat()
+    .join("");
+
+  // wangzimin, wangzimin.002
+  const username =
+    sameNameCnt === 0
+      ? pinyinUsername
+      : `${pinyinUsername}.${(sameNameCnt + 1).toString().padStart(3, "0").split("").join("")}`;
 
   const [newUser] = await db
     .insert(userTable)
     .values([
       {
-        username:
-          sameNameCnt === 0
-            ? dto.realname
-            : `${dto.realname}.${(sameNameCnt + 1).toString().padStart(3, "0").split("").join("")}`,
+        username,
         realname: dto.realname,
         password: encryptedPassword,
         superadmin: false
