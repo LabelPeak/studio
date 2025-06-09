@@ -1,5 +1,5 @@
 import { message } from "antd";
-import { App, DragEvent, ImageEvent, Rect } from "leafer-ui";
+import { App, DragEvent, ImageEvent, Leafer, Rect } from "leafer-ui";
 import {
   forwardRef,
   useContext,
@@ -9,13 +9,14 @@ import {
   useRef,
   useState
 } from "react";
-import { doNothing } from "remeda";
+import { doNothing, last } from "remeda";
 import { ImageClassifyAnnotation, Label } from "shared";
 
 import { LabelTagColors } from "@/components/LabelTag";
 import { DataItem } from "@/interfaces/dataset";
 
 import AnnotateToolContext from "../../context";
+import { useOperationManager } from "../../hooks/use-operation-stack";
 import { AnnotateModuleRef, EditorState, IModuleProps } from "../../types";
 import ImageRectAnnotationShape from "../../utils/image-rect-annotation-shape";
 import { transformShapeToImageAnnotation } from "../../utils/transformer";
@@ -29,7 +30,6 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   const editorRef = useRef<App>();
   const editorState = useRef<EditorState>({
     annotatingEvents: [],
-    annotationShapes: [],
     mode: "annotate",
     size: { height: 320, width: 512 }
   });
@@ -37,6 +37,14 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   const annotatingLabel = useRef<Label | null>(null);
   const originAnnotation = useRef<ImageClassifyAnnotation[] | null>(null);
   const [annotationObjectList, setAnnotationObjectList] = useState<ImageClassifyAnnotation[]>([]);
+  const canvasSize = { height: 320, width: 512 };
+
+  const shapes = useRef<ImageRectAnnotationShape[]>([]);
+
+  const [annotationLayer, setAnnotationLayer] = useState<Leafer>();
+  const [imageLayer, setImageLayer] = useState<Leafer>();
+
+  const operation = useOperationManager(editorRef.current, shapes.current);
 
   useEffect(() => {
     try {
@@ -74,9 +82,12 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
       type: "draw"
     });
     const state = editorState.current;
-    state.imageLayer = editorRef.current.addLeafer();
-    state.imageLayer.draggable = false;
-    state.annotationLayer = editorRef.current.addLeafer();
+
+    const _imageLayer = editorRef.current.addLeafer();
+    _imageLayer.draggable = false;
+    const _annotateLayer = editorRef.current.addLeafer();
+    setImageLayer(_imageLayer);
+    setAnnotationLayer(_annotateLayer);
 
     // FIXME: remove listener when unmount
     state.annotatingEvents.push(
@@ -97,24 +108,22 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
           annotatingLabel.current
         );
         shape.onCreate({ startX: e.x, startY: e.y });
-        state.annotationShapes.push(shape);
-        state.annotationLayer?.add(shape.rect);
+        operation.execute?.("add", shape);
+        // shapes.current.push(shape);
+        // annotationLayer?.add(shape.rect);
       }),
       editorRef.current.on_(DragEvent.DRAG, (e) => {
         if (!annotatingLabel.current) {
           return;
         }
-        const shape = state.annotationShapes.at(state.annotationShapes.length - 1);
-        if (shape === undefined) {
-          return;
-        }
-        shape.shapeTo({ x: e.x, y: e.y });
+        const shape = last(shapes.current);
+        shape?.shapeTo({ x: e.x, y: e.y });
       }),
       editorRef.current.on_(DragEvent.END, () => {
         if (!annotatingLabel.current || !editorState.current.loadedImageMeta) {
           return;
         }
-        const rect = state.annotationShapes.at(state.annotationShapes.length - 1);
+        const rect = last(shapes.current);
         if (rect === undefined) {
           return;
         }
@@ -147,7 +156,7 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
         fill: { type: "image", url, mode: "fit" }
       });
       state.loadedImageRect = image;
-      state.imageLayer?.add(image);
+      imageLayer?.add(image);
 
       image.once(ImageEvent.LOADED, (e) => {
         state.loadedImageMeta = {
@@ -163,21 +172,20 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   }
 
   function initialAnnotation(annotations: ImageClassifyAnnotation[]) {
-    const state = editorState.current;
-    state.annotationShapes.forEach((shape) => shape.rect.destroy());
-    state.annotationShapes = [];
+    shapes.current.forEach((shape) => shape.rect.destroy());
+    shapes.current = [];
     const imageMeta = editorState.current.loadedImageMeta;
     if (!imageMeta) {
       return;
     }
     setAnnotationObjectList(annotations);
-    const isFitHeight = state.size.width / state.size.height > imageMeta.width / imageMeta.height;
+    const isFitHeight = canvasSize.width / canvasSize.height > imageMeta.width / imageMeta.height;
     const scale = isFitHeight
-      ? state.size.height / imageMeta.height
-      : state.size.width / imageMeta.width;
+      ? canvasSize.height / imageMeta.height
+      : canvasSize.width / imageMeta.width;
     const imageScaledSize = {
-      height: isFitHeight ? state.size.height : imageMeta.height * scale,
-      width: isFitHeight ? imageMeta.width * scale : state.size.width
+      height: isFitHeight ? canvasSize.height : imageMeta.height * scale,
+      width: isFitHeight ? imageMeta.width * scale : canvasSize.width
     };
     // 绘制矩形选区
     annotations.forEach((annotation) => {
@@ -191,12 +199,12 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
         {
           x: isFitHeight
             ? (annotation.value.x / 100) * imageScaledSize.width +
-              (state.size.width - imageScaledSize.width) / 2
-            : (state.size.width * annotation.value.x) / 100,
+              (canvasSize.width - imageScaledSize.width) / 2
+            : (canvasSize.width * annotation.value.x) / 100,
           y: isFitHeight
-            ? (state.size.height * annotation.value.y) / 100
+            ? (canvasSize.height * annotation.value.y) / 100
             : (annotation.value.y / 100) * imageScaledSize.height +
-              (state.size.height - imageScaledSize.height) / 2,
+              (canvasSize.height - imageScaledSize.height) / 2,
           height: (imageScaledSize.height * annotation.value.height) / 100,
           width: (imageScaledSize.width * annotation.value.width) / 100,
           fill: `${color}10`,
@@ -204,8 +212,8 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
         },
         label
       );
-      state.annotationShapes.push(shape);
-      state.annotationLayer?.add(shape.rect);
+      shapes.current.push(shape);
+      annotationLayer?.add(shape.rect);
     });
   }
 
@@ -246,7 +254,7 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
     }
 
     const value = transformShapeToImageAnnotation(
-      editorState.current.annotationShapes,
+      shapes.current,
       editorState.current.loadedImageMeta,
       editorState.current.size
     );
