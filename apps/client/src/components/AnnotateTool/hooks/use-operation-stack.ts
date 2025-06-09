@@ -115,7 +115,7 @@ export function useOperationManager(layer: Leafer | undefined, list: ImageRectAn
     }
 
     return null;
-  }, [layer]);
+  }, [layer, list]);
 
   return {
     undo: instance?.undo.bind(instance),

@@ -1,10 +1,10 @@
 import { message } from "antd";
-import { App, DragEvent, ImageEvent, Leafer, Rect } from "leafer-ui";
+import { DragEvent } from "leafer-ui";
 import {
   forwardRef,
+  useCallback,
   useContext,
   useEffect,
-  useId,
   useImperativeHandle,
   useRef,
   useState
@@ -13,85 +13,45 @@ import { doNothing, last } from "remeda";
 import { ImageClassifyAnnotation, Label } from "shared";
 
 import { LabelTagColors } from "@/components/LabelTag";
-import { DataItem } from "@/interfaces/dataset";
 
 import AnnotateToolContext from "../../context";
+import { useAnnotationImage } from "../../hooks/use-annotation-image";
+import { useEditor } from "../../hooks/use-editor";
 import { useOperationManager } from "../../hooks/use-operation-stack";
-import { AnnotateModuleRef, EditorState, IModuleProps } from "../../types";
+import { AnnotateModuleRef, IModuleProps } from "../../types";
 import ImageRectAnnotationShape from "../../utils/image-rect-annotation-shape";
+import { filterAnnotationByLabels } from "../../utils/label";
 import { transformShapeToImageAnnotation } from "../../utils/transformer";
 import AnnotationList from "../annotation-list";
 import LabelSelect from "../label-select";
 
+const CANVAS_SIZE = { height: 320, width: 512 };
+
 const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, ref) => {
   const { dataItem, onUpdate } = props;
   const { presets: labels } = useContext(AnnotateToolContext);
-  const editorId = useId();
-  const editorRef = useRef<App>();
-  const editorState = useRef<EditorState>({
-    annotatingEvents: [],
-    mode: "annotate",
-    size: { height: 320, width: 512 }
-  });
   const [selectedLabels, setSelectedLabels] = useState<Label[]>([]);
   const annotatingLabel = useRef<Label | null>(null);
-  const originAnnotation = useRef<ImageClassifyAnnotation[] | null>(null);
   const [annotationObjectList, setAnnotationObjectList] = useState<ImageClassifyAnnotation[]>([]);
-  const canvasSize = { height: 320, width: 512 };
 
-  const shapes = useRef<ImageRectAnnotationShape[]>([]);
+  const shapesRef = useRef<ImageRectAnnotationShape[]>([]);
+  const { editor, imageLayer, annotationLayer, domId } = useEditor();
 
-  const [annotationLayer, setAnnotationLayer] = useState<Leafer>();
-  const [imageLayer, setImageLayer] = useState<Leafer>();
+  const { imageMeta } = useAnnotationImage({
+    url: dataItem.file,
+    canvasSize: CANVAS_SIZE,
+    imageLayer
+  });
 
-  const operation = useOperationManager(editorRef.current, shapes.current);
+  const operation = useOperationManager(imageLayer, shapesRef.current);
 
   useEffect(() => {
-    try {
-      initialEditor();
-      initialCanvas(dataItem.file, dataItem);
-      // TODO: use zod valid shape
-      originAnnotation.current = filterAnnotationByLabels(
-        dataItem.annotation as ImageClassifyAnnotation[]
-      );
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        message.error("初始化标注工具失败: " + e.message || "未知错误");
-      }
-    }
-  }, [dataItem]);
-
-  useImperativeHandle(
-    ref,
-    () => ({
-      save: handleSave,
-      // TODO: add undo/redo
-      undo: doNothing(),
-      redo: doNothing(),
-      reset: handleReset
-    }),
-    []
-  );
-
-  function initialEditor() {
-    if (editorRef.current !== undefined || annotatingLabel.current !== null) {
+    if (!editor) {
       return;
     }
-    editorRef.current = new App({
-      view: editorId,
-      type: "draw"
-    });
-    const state = editorState.current;
 
-    const _imageLayer = editorRef.current.addLeafer();
-    _imageLayer.draggable = false;
-    const _annotateLayer = editorRef.current.addLeafer();
-    setImageLayer(_imageLayer);
-    setAnnotationLayer(_annotateLayer);
-
-    // FIXME: remove listener when unmount
-    state.annotatingEvents.push(
-      editorRef.current.on_(DragEvent.START, (e: DragEvent) => {
+    const ids = [
+      editor.on_(DragEvent.START, (e: DragEvent) => {
         if (!annotatingLabel.current) {
           return;
         }
@@ -109,83 +69,53 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
         );
         shape.onCreate({ startX: e.x, startY: e.y });
         operation.execute?.("add", shape);
-        // shapes.current.push(shape);
-        // annotationLayer?.add(shape.rect);
       }),
-      editorRef.current.on_(DragEvent.DRAG, (e) => {
+      editor.on_(DragEvent.DRAG, (e) => {
         if (!annotatingLabel.current) {
           return;
         }
-        const shape = last(shapes.current);
+        const shape = last(shapesRef.current);
         shape?.shapeTo({ x: e.x, y: e.y });
       }),
-      editorRef.current.on_(DragEvent.END, () => {
-        if (!annotatingLabel.current || !editorState.current.loadedImageMeta) {
+      editor.on_(DragEvent.END, () => {
+        if (!annotatingLabel.current || !imageMeta) {
           return;
         }
-        const rect = last(shapes.current);
+        const rect = last(shapesRef.current);
         if (rect === undefined) {
           return;
         }
-        const annotations = transformShapeToImageAnnotation(
-          [rect],
-          editorState.current.loadedImageMeta,
-          editorState.current.size
-        );
+        const annotations = transformShapeToImageAnnotation([rect], imageMeta, CANVAS_SIZE);
         setAnnotationObjectList((list) => list.concat(annotations));
         onUpdate(annotations);
-        if (editorState.current.mode === "annotate") {
-          annotatingLabel.current = null;
-          setSelectedLabels([]);
-        }
+        annotatingLabel.current = null;
+        setSelectedLabels([]);
       })
+    ];
+
+    return () => {
+      ids.forEach((id) => editor.off_(id));
+    };
+  }, [editor, onUpdate, operation, imageMeta]);
+
+  const initialAnnotation = useCallback(() => {
+    const annotations = filterAnnotationByLabels(
+      dataItem.annotation as ImageClassifyAnnotation[],
+      labels ?? []
     );
-  }
-
-  function initialCanvas(url: string, _dataItem: DataItem) {
-    const state = editorState.current;
-    if (editorRef.current) {
-      if (state.loadedImageRect) {
-        initialAnnotation([]);
-        state.loadedImageRect.destroy();
-        state.loadedImageMeta = undefined;
-      }
-      const image = new Rect({
-        height: state.size.height,
-        width: state.size.width,
-        fill: { type: "image", url, mode: "fit" }
-      });
-      state.loadedImageRect = image;
-      imageLayer?.add(image);
-
-      image.once(ImageEvent.LOADED, (e) => {
-        state.loadedImageMeta = {
-          width: e.image.width,
-          height: e.image.height
-        };
-        const annotations = filterAnnotationByLabels(
-          _dataItem.annotation as ImageClassifyAnnotation[]
-        );
-        initialAnnotation(annotations);
-      });
-    }
-  }
-
-  function initialAnnotation(annotations: ImageClassifyAnnotation[]) {
-    shapes.current.forEach((shape) => shape.rect.destroy());
-    shapes.current = [];
-    const imageMeta = editorState.current.loadedImageMeta;
+    shapesRef.current.forEach((shape) => shape.rect.destroy());
+    shapesRef.current = [];
     if (!imageMeta) {
       return;
     }
     setAnnotationObjectList(annotations);
-    const isFitHeight = canvasSize.width / canvasSize.height > imageMeta.width / imageMeta.height;
+    const isFitHeight = CANVAS_SIZE.width / CANVAS_SIZE.height > imageMeta.width / imageMeta.height;
     const scale = isFitHeight
-      ? canvasSize.height / imageMeta.height
-      : canvasSize.width / imageMeta.width;
+      ? CANVAS_SIZE.height / imageMeta.height
+      : CANVAS_SIZE.width / imageMeta.width;
     const imageScaledSize = {
-      height: isFitHeight ? canvasSize.height : imageMeta.height * scale,
-      width: isFitHeight ? imageMeta.width * scale : canvasSize.width
+      height: isFitHeight ? CANVAS_SIZE.height : imageMeta.height * scale,
+      width: isFitHeight ? imageMeta.width * scale : CANVAS_SIZE.width
     };
     // 绘制矩形选区
     annotations.forEach((annotation) => {
@@ -199,12 +129,12 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
         {
           x: isFitHeight
             ? (annotation.value.x / 100) * imageScaledSize.width +
-              (canvasSize.width - imageScaledSize.width) / 2
-            : (canvasSize.width * annotation.value.x) / 100,
+              (CANVAS_SIZE.width - imageScaledSize.width) / 2
+            : (CANVAS_SIZE.width * annotation.value.x) / 100,
           y: isFitHeight
-            ? (canvasSize.height * annotation.value.y) / 100
+            ? (CANVAS_SIZE.height * annotation.value.y) / 100
             : (annotation.value.y / 100) * imageScaledSize.height +
-              (canvasSize.height - imageScaledSize.height) / 2,
+              (CANVAS_SIZE.height - imageScaledSize.height) / 2,
           height: (imageScaledSize.height * annotation.value.height) / 100,
           width: (imageScaledSize.width * annotation.value.width) / 100,
           fill: `${color}10`,
@@ -212,10 +142,24 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
         },
         label
       );
-      shapes.current.push(shape);
+      shapesRef.current.push(shape);
       annotationLayer?.add(shape.rect);
     });
-  }
+  }, [dataItem.annotation, labels, imageMeta, annotationLayer]);
+
+  useEffect(() => {
+    if (!imageLayer || !annotationLayer || !imageMeta) {
+      return;
+    }
+
+    try {
+      initialAnnotation();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        message.error("初始化标注工具失败: " + e.message || "未知错误");
+      }
+    }
+  }, [dataItem, imageLayer, annotationLayer, initialAnnotation, labels, imageMeta]);
 
   function handleLabelClick(value: Label) {
     const targetIndex = selectedLabels.findIndex((label) => label.index === value.index);
@@ -227,51 +171,36 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
       annotatingLabel.current = null;
     } else {
       // click new item
-      if (editorState.current.mode === "filter") {
-        annotatingLabel.current = value;
-        setSelectedLabels(selectedLabels.concat([value]));
-      } else {
-        annotatingLabel.current = value;
-        setSelectedLabels([value]);
-      }
+      annotatingLabel.current = value;
+      setSelectedLabels([value]);
     }
   }
 
-  function filterAnnotationByLabels(data: ImageClassifyAnnotation[]): ImageClassifyAnnotation[] {
-    if (!labels?.length) {
-      return [];
-    }
-
-    return data.filter((annotation) => {
-      const label = labels.find((l) => l.name === annotation.value.labels[0]);
-      return Boolean(label);
-    });
-  }
-
-  function handleSave(): string {
-    if (!editorState.current.loadedImageMeta) {
+  const handleSave = useCallback(() => {
+    if (!imageMeta) {
       throw new Error("image not loaded");
     }
 
-    const value = transformShapeToImageAnnotation(
-      shapes.current,
-      editorState.current.loadedImageMeta,
-      editorState.current.size
-    );
+    const value = transformShapeToImageAnnotation(shapesRef.current, imageMeta, CANVAS_SIZE);
     return JSON.stringify(value);
-  }
+  }, [imageMeta]);
 
-  function handleReset() {
-    if (originAnnotation.current) {
-      setAnnotationObjectList(originAnnotation.current);
-      initialAnnotation(originAnnotation.current);
-    }
-  }
+  useImperativeHandle(
+    ref,
+    () => ({
+      save: handleSave,
+      // TODO: add undo/redo
+      undo: doNothing(),
+      redo: doNothing(),
+      reset: doNothing()
+    }),
+    [handleSave]
+  );
 
   return (
     <section id="image-classify-module" className="h-full flex flex-col of-hidden">
       <div className="p-30px b-b-1 b-b-solid b-color-nord-snow-0 flex justify-center">
-        <div id={editorId} style={{ ...editorState.current.size }} />
+        <div id={domId} style={{ ...CANVAS_SIZE }} />
       </div>
       <div className="flex-auto flex of-hidden">
         <LabelSelect
