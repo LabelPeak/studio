@@ -29,7 +29,7 @@ export default function ProjectStepCheckList({ project }: ProjectStepCheckListPr
   return (
     <div className="flex flex-wrap gap-2 mb-2">
       <CheckItem checked={false} label="Need Pre-annotation" />
-      <CheckItem checked label="Need Re-annotation" />
+      <CheckItem checked={false} label="Need Re-annotation" />
     </div>
   );
 }
