@@ -1,7 +1,5 @@
-import { IEventListenerId } from "@leafer/interface";
 import { message } from "antd";
-import { App, DragEvent, ImageEvent, Leafer, Rect } from "leafer-ui";
-import { nanoid } from "nanoid";
+import { App, DragEvent, ImageEvent, Rect } from "leafer-ui";
 import {
   forwardRef,
   useContext,
@@ -11,27 +9,18 @@ import {
   useRef,
   useState
 } from "react";
-import { useIntl } from "react-intl";
 import { doNothing } from "remeda";
 import { ImageClassifyAnnotation, Label } from "shared";
 
-import LabelTag, { LabelTagColors } from "@/components/LabelTag";
+import { LabelTagColors } from "@/components/LabelTag";
 import { DataItem } from "@/interfaces/dataset";
 
-import AnnotateToolContext from "../context";
-import { AnnotateModuleRef, IModuleProps } from "../tool-proto";
-import Shape from "./Shape";
-
-interface EditorState {
-  imageLayer?: Leafer;
-  annotationLayer?: Leafer;
-  loadedImageRect?: Rect;
-  loadedImageMeta?: { width: number; height: number };
-  annotatingEvents: IEventListenerId[];
-  annotationShapes: Shape[];
-  mode: "annotate" | "filter";
-  size: { height: number; width: number };
-}
+import AnnotateToolContext from "../../context";
+import { AnnotateModuleRef, EditorState, IModuleProps } from "../../types";
+import ImageRectAnnotationShape from "../../utils/image-rect-annotation-shape";
+import { transformShapeToImageAnnotation } from "../../utils/transformer";
+import AnnotationList from "../annotation-list";
+import LabelSelect from "../label-select";
 
 const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, ref) => {
   const { dataItem, onUpdate } = props;
@@ -48,7 +37,6 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   const annotatingLabel = useRef<Label | null>(null);
   const originAnnotation = useRef<ImageClassifyAnnotation[] | null>(null);
   const [annotationObjectList, setAnnotationObjectList] = useState<ImageClassifyAnnotation[]>([]);
-  const intl = useIntl();
 
   useEffect(() => {
     try {
@@ -72,7 +60,7 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
       // TODO: add undo/redo
       undo: doNothing(),
       redo: doNothing(),
-      reset: handleRest
+      reset: handleReset
     }),
     []
   );
@@ -97,7 +85,7 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
           return;
         }
         const color = LabelTagColors[annotatingLabel.current.index % LabelTagColors.length];
-        const shape = new Shape(
+        const shape = new ImageRectAnnotationShape(
           {
             x: e.x,
             y: e.y,
@@ -123,14 +111,18 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
         shape.shapeTo({ x: e.x, y: e.y });
       }),
       editorRef.current.on_(DragEvent.END, () => {
-        if (!annotatingLabel.current) {
+        if (!annotatingLabel.current || !editorState.current.loadedImageMeta) {
           return;
         }
         const rect = state.annotationShapes.at(state.annotationShapes.length - 1);
         if (rect === undefined) {
           return;
         }
-        const annotations = transformAnnotationFormShape([rect]);
+        const annotations = transformShapeToImageAnnotation(
+          [rect],
+          editorState.current.loadedImageMeta,
+          editorState.current.size
+        );
         setAnnotationObjectList((list) => list.concat(annotations));
         onUpdate(annotations);
         if (editorState.current.mode === "annotate") {
@@ -154,6 +146,9 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
         width: state.size.width,
         fill: { type: "image", url, mode: "fit" }
       });
+      state.loadedImageRect = image;
+      state.imageLayer?.add(image);
+
       image.once(ImageEvent.LOADED, (e) => {
         state.loadedImageMeta = {
           width: e.image.width,
@@ -164,8 +159,6 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
         );
         initialAnnotation(annotations);
       });
-      state.loadedImageRect = image;
-      state.imageLayer?.add(image);
     }
   }
 
@@ -186,6 +179,7 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
       height: isFitHeight ? state.size.height : imageMeta.height * scale,
       width: isFitHeight ? imageMeta.width * scale : state.size.width
     };
+    // 绘制矩形选区
     annotations.forEach((annotation) => {
       const label = labels?.find((item) => item.name === annotation.value.labels[0]);
       if (!label) {
@@ -193,7 +187,7 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
       }
       const color = LabelTagColors[label.index % LabelTagColors.length];
 
-      const shape = new Shape(
+      const shape = new ImageRectAnnotationShape(
         {
           x: isFitHeight
             ? (annotation.value.x / 100) * imageScaledSize.width +
@@ -235,39 +229,6 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
     }
   }
 
-  function transformAnnotationFormShape(shapes: Shape[]): ImageClassifyAnnotation[] {
-    const state = editorState.current;
-    const image = editorState.current.loadedImageMeta;
-    if (!image) {
-      throw new Error("no image loaded");
-    }
-    const isFitHeight = state.size.width / state.size.height > image.width / image.height;
-    const scale = isFitHeight ? state.size.height / image.height : state.size.width / image.width;
-    const bounds = isFitHeight
-      ? {
-          x: state.size.width / 2 - (image.width * scale) / 2,
-          y: 0,
-          width: image.width * scale,
-          height: state.size.height
-        }
-      : {
-          x: 0,
-          y: state.size.height / 2 - (image.height * scale) / 2,
-          width: image.width * scale,
-          height: state.size.height
-        };
-    const value: Array<ImageClassifyAnnotation> = shapes.map((item) => {
-      return {
-        originHeight: image.height,
-        originWidth: image.width,
-        value: item.exportToValue(bounds),
-        id: nanoid(10),
-        type: "labels"
-      };
-    });
-    return value;
-  }
-
   function filterAnnotationByLabels(data: ImageClassifyAnnotation[]): ImageClassifyAnnotation[] {
     if (!labels?.length) {
       return [];
@@ -280,11 +241,19 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
   }
 
   function handleSave(): string {
-    const value = transformAnnotationFormShape(editorState.current.annotationShapes);
+    if (!editorState.current.loadedImageMeta) {
+      throw new Error("image not loaded");
+    }
+
+    const value = transformShapeToImageAnnotation(
+      editorState.current.annotationShapes,
+      editorState.current.loadedImageMeta,
+      editorState.current.size
+    );
     return JSON.stringify(value);
   }
 
-  function handleRest() {
+  function handleReset() {
     if (originAnnotation.current) {
       setAnnotationObjectList(originAnnotation.current);
       initialAnnotation(originAnnotation.current);
@@ -297,51 +266,12 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
         <div id={editorId} style={{ ...editorState.current.size }} />
       </div>
       <div className="flex-auto flex of-hidden">
-        <section id="presets" className="w-40% px-2 box-border">
-          <h2 className="text-14px my-0 py-3 b-b-1 b-b-dashed b-color-nord-snow-0">
-            {intl.formatMessage({ id: "presets" })}
-          </h2>
-          <div className="flex gap-2 mt-2 flex-wrap">
-            {labels?.map((label) => (
-              <LabelTag
-                key={label.index}
-                index={label.index}
-                name={label.name}
-                onClick={handleLabelClick}
-                selected={Boolean(selectedLabels.find((l) => l.index === label.index))}
-              />
-            ))}
-          </div>
-        </section>
-        <section
-          id="annotations"
-          className="w-60% px-2 box-border b-l-1 b-l-solid b-color-nord-snow-0 flex flex-col"
-        >
-          <h2 className="text-14px my-0 py-3 b-b-1 b-b-dashed b-color-nord-snow-0">
-            {intl.formatMessage({ id: "annotations" })} ({annotationObjectList.length})
-          </h2>
-          <div className="of-auto flex-auto">
-            {annotationObjectList.map((annotation, index) => (
-              <p
-                className="m-0 py-2 cursor-pointer flex hover:bg-nord-snow-1 b-rd-1 items-center"
-                key={annotation.id}
-              >
-                <span className="c-nord-polar-3 w-36px">#{index + 1}</span>
-                <LabelTag
-                  index={
-                    labels?.findIndex((label) => label.name === annotation.value.labels[0]) ?? 0
-                  }
-                  name={annotation.value.labels[0]}
-                />
-                <span className="flex-auto"></span>
-                <span className="font-mono text-14px">
-                  <span> x: {annotation.value.x.toFixed(2)}% </span>
-                  <span> y: {annotation.value.y.toFixed(2)}% </span>
-                </span>
-              </p>
-            ))}
-          </div>
-        </section>
+        <LabelSelect
+          availableLabels={labels}
+          selectedLabels={selectedLabels}
+          onLabelSelect={handleLabelClick}
+        />
+        <AnnotationList annotationObjectList={annotationObjectList} labels={labels} />
       </div>
     </section>
   );

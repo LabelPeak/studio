@@ -9,7 +9,7 @@ import DatasetService from "@/services/dataset";
 
 import AnnotateToolContext from "./context";
 import ModuleMiddleware from "./middleware";
-import { AnnotateModuleRef } from "./tool-proto";
+import { AnnotateModuleRef } from "./types";
 
 interface AnnotateToolProps {
   project: Project;

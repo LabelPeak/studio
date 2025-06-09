@@ -2,7 +2,7 @@ import { IRectInputData } from "@leafer-ui/interface";
 import { Rect } from "leafer-ui";
 import { ImageClassifyAnnotation, Label } from "shared";
 
-class Shape {
+class ImageRectAnnotationShape {
   public rect: Rect;
   public startX = 0;
   public startY = 0;
@@ -52,4 +52,4 @@ class Shape {
   }
 }
 
-export default Shape;
+export default ImageRectAnnotationShape;
