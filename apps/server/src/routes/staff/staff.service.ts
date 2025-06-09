@@ -71,19 +71,19 @@ async function findAllByProject(dto: UserDto.FindAllByProjectReq) {
 async function createSingleStaff(dto: UserDto.CreateSingleStaffReq) {
   const password = nanoid(12);
   const encryptedPassword = hashSync(password);
-
-  const sameNameCnt = await db.$count(userTable, eq(userTable.realname, dto.realname));
   const pinyinUsername = pinyin(dto.realname, {
     style: "NORMAL"
   })
     .flat()
     .join("");
 
+  const sameUsernameCnt = await db.$count(userTable, eq(userTable.username, pinyinUsername));
+
   // wangzimin, wangzimin.002
   const username =
-    sameNameCnt === 0
+    sameUsernameCnt === 0
       ? pinyinUsername
-      : `${pinyinUsername}.${(sameNameCnt + 1).toString().padStart(3, "0").split("").join("")}`;
+      : `${pinyinUsername}.${(sameUsernameCnt + 1).toString().padStart(3, "0").split("").join("")}`;
 
   const [newUser] = await db
     .insert(userTable)
