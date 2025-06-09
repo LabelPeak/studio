@@ -1,6 +1,5 @@
-import { ProjectStatusRecord } from "shared";
+import { Label, ProjectStatusRecord } from "shared";
 
-import { Label } from "./annotation";
 import { Dataset } from "./dataset";
 import { User } from "./user";
 

@@ -15,9 +15,9 @@ interface IProps {
 const acceptTypeMapper: {
   [key in DataType]: string;
 } = {
-  "info-extract": ".doc, .docx, .pdf",
-  "text-classify": ".txt",
-  "image-text": ".png, .jpeg, .jpg, .bmp, .webp",
+  // "info-extract": ".doc, .docx, .pdf",
+  // "text-classify": ".txt",
+  // "image-text": ".png, .jpeg, .jpg, .bmp, .webp",
   "image-classify": ".png, .jpeg, .jpg, .bmp, .webp"
 };
 

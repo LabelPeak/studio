@@ -1,6 +1,6 @@
 import { createContext } from "react";
+import { Label } from "shared";
 
-import { Label } from "@/interfaces/annotation";
 import type { Dataset } from "@/interfaces/dataset";
 
 interface IContext {

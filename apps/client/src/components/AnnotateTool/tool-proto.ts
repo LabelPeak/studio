@@ -1,4 +1,5 @@
-import { Annotation } from "@/interfaces/annotation";
+import { Annotation } from "shared";
+
 import { DataItem } from "@/interfaces/dataset";
 
 export interface IModuleProps {

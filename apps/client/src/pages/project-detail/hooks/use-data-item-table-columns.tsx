@@ -2,10 +2,9 @@ import { Modal, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import classNames from "classnames";
 import { format } from "date-fns";
-import { PROJECT_STATUS, ProjectStatus } from "shared";
+import { Annotation, PROJECT_STATUS, ProjectStatus } from "shared";
 
 import CheckStatusTag from "@/components/CheckStatusTag";
-import { Annotation } from "@/interfaces/annotation";
 import { DataItem } from "@/interfaces/dataset";
 
 interface GenerateColumnsProps {

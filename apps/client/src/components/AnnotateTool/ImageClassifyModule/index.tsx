@@ -13,9 +13,9 @@ import {
 } from "react";
 import { useIntl } from "react-intl";
 import { doNothing } from "remeda";
+import { ImageClassifyAnnotation, Label } from "shared";
 
 import LabelTag, { LabelTagColors } from "@/components/LabelTag";
-import type { Annotation, Label } from "@/interfaces/annotation";
 import { DataItem } from "@/interfaces/dataset";
 
 import AnnotateToolContext from "../context";
@@ -31,21 +31,6 @@ interface EditorState {
   annotationShapes: Shape[];
   mode: "annotate" | "filter";
   size: { height: number; width: number };
-}
-
-/**
- * @deprecated
- */
-export interface ImageClassifyAnnotation
-  extends Annotation<{
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    labels: string[];
-  }> {
-  originWidth: number;
-  originHeight: number;
 }
 
 const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, ref) => {

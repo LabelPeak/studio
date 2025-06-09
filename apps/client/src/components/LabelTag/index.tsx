@@ -1,5 +1,5 @@
-import type { Label } from "@/interfaces/annotation";
 import classNames from "classnames";
+import { Label } from "shared";
 
 interface IProps extends Label {
   selected?: boolean;
@@ -7,8 +7,16 @@ interface IProps extends Label {
 }
 
 export const LabelTagColors = [
-  "#b4317d", "#ce2e2c", "#2657d1", "#c6712b", "#569c30",
-  "#c34524", "#44959a", "#2438bc", "#88b236", "#c98b31",
+  "#b4317d",
+  "#ce2e2c",
+  "#2657d1",
+  "#c6712b",
+  "#569c30",
+  "#c34524",
+  "#44959a",
+  "#2438bc",
+  "#88b236",
+  "#c98b31",
   "#4d20a4"
 ];
 
@@ -17,16 +25,14 @@ export default function LabelTag(props: IProps) {
 
   return (
     <span
-      className={
-        classNames([
-          "py-1 px-2 b-rd-r-1 text-14px cursor-pointer bg-op-70 relative",
-          "b-l-3 b-l-solid b-color-[var(--color)]",
-          "transition-colors transition-1",
-          selected ? "c-white" : "c-[var(--color)]"
-        ])
-      }
-      // @ts-ignore-color
-      style={{ "--color": LabelTagColors[ index % LabelTagColors.length] }}
+      className={classNames([
+        "py-1 px-2 b-rd-r-1 text-14px cursor-pointer bg-op-70 relative",
+        "b-l-3 b-l-solid b-color-[var(--color)]",
+        "transition-colors transition-1",
+        selected ? "c-white" : "c-[var(--color)]"
+      ])}
+      // @ts-expect-error --color is not a valid property
+      style={{ "--color": LabelTagColors[index % LabelTagColors.length] }}
       onClick={() => props.onClick?.({ index, name })}
     >
       <span
@@ -35,7 +41,7 @@ export default function LabelTag(props: IProps) {
           !selected && "op-10"
         ])}
       />
-      <span className="relative z-10">{ name }</span>
+      <span className="relative z-10">{name}</span>
     </span>
   );
 }

@@ -1,10 +1,10 @@
 import { Button, Form, Input, message } from "antd";
 import { useIntl } from "react-intl";
 import { useParams } from "react-router-dom";
+import { Label } from "shared";
 
 import LabelTag from "@/components/LabelTag";
 import { useProject } from "@/hooks/use-project";
-import { Label } from "@/interfaces/annotation";
 import ProjectService from "@/services/project";
 
 export default function ProjectSettingPreset() {

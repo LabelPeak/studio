@@ -1,4 +1,4 @@
-import { Annotation } from "./annotation";
+import { Annotation } from "shared";
 
 export enum DataType {
   // InfoExtract = "info-extract",
