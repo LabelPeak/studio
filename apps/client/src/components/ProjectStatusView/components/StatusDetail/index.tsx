@@ -51,7 +51,7 @@ export default function StatusDetail({ statusRecord, statusHistory }: StatusDeta
           </Descriptions.Item>
         ) : null}
         <Descriptions.Item label="开始时间">
-          {format(statusRecord.startAt, "yyyy-MM-dd HH:mm:ss")}
+          {statusRecord.startAt ? format(statusRecord.startAt, "yyyy-MM-dd HH:mm:ss") : "未开始"}
         </Descriptions.Item>
         {statusRecord.endAt ? (
           <Descriptions.Item label="结束时间">

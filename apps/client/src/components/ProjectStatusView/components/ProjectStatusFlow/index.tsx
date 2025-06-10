@@ -10,9 +10,10 @@ import {
   useReactFlow
 } from "@xyflow/react";
 import { useEffect } from "react";
-import { ProjectStatusRecord } from "shared";
+import { ProjectStatus, ProjectStatusRecord } from "shared";
 
 import useLayoutNodes from "../../hooks/useLayoutNodes";
+import { getInitialEdges, getInitialNodes } from "../../hooks/usePipelineNodes";
 import { FlowChartContext } from "../FlowChartContext";
 import StatusNode from "../FlowStatusNode";
 
@@ -32,24 +33,24 @@ function ProjectStatusFlowImpl({ statusHistory, onStatusNodeClick }: ProjectStat
   const [edges, setEdges, onEdgesChange] = useEdgesState([] as any);
 
   useEffect(() => {
-    const _nodes = statusHistory.map((item) => {
-      return {
-        id: item.status,
-        data: item,
-        position: { x: 0, y: 0 },
-        type: "status"
-      };
+    const initialNodes = getInitialNodes();
+
+    const map = new Map(statusHistory.map((item) => [item.status, item]));
+
+    // Merge
+    const _nodes = initialNodes.map((node) => {
+      if (map.get(node.id as ProjectStatus)) {
+        return {
+          id: node.id,
+          data: map.get(node.id as ProjectStatus),
+          position: { x: 0, y: 0 },
+          type: "status"
+        };
+      }
+      return node;
     });
 
-    const _edges = statusHistory.slice(0, -1).map((_, index) => {
-      const source = statusHistory[index].status;
-      const target = statusHistory[index + 1].status;
-      return {
-        id: `${source}-to-${target}`,
-        source,
-        target
-      };
-    });
+    const _edges = getInitialEdges();
 
     setNodes(_nodes as any[]);
     setEdges(_edges);
@@ -80,7 +81,8 @@ function ProjectStatusFlowImpl({ statusHistory, onStatusNodeClick }: ProjectStat
           nodesDraggable={false}
           nodesConnectable={false}
           panOnDrag={false}
-          panOnScrollMode={PanOnScrollMode.Vertical}
+          panOnScrollMode={PanOnScrollMode.Horizontal}
+          panOnScroll
           proOptions={{
             hideAttribution: true
           }}
