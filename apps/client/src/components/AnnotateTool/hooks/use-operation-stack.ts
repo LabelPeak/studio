@@ -39,16 +39,29 @@ class RemoveOperation extends AnnotateOperation<ImageRectAnnotationShape> {
 }
 
 class ResetOperation extends AnnotateOperation<ImageRectAnnotationShape[]> {
+  private clonePayload: ImageRectAnnotationShape[];
+
+  constructor(
+    layer: Leafer,
+    list: ImageRectAnnotationShape[],
+    payload: ImageRectAnnotationShape[]
+  ) {
+    super(layer, list, payload);
+    this.clonePayload = payload.slice();
+  }
+
   undo() {
-    this.payload.forEach((item) => {
+    this.clonePayload.forEach((item) => {
       this.layer.add(item.rect);
       this.list.push(item);
     });
   }
 
   execute() {
-    this.payload.forEach((item) => {
+    this.clonePayload.forEach((item) => {
       this.layer.remove(item.rect);
+    });
+    this.clonePayload.forEach(() => {
       this.list.pop();
     });
   }

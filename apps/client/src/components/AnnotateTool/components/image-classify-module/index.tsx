@@ -9,7 +9,7 @@ import {
   useRef,
   useState
 } from "react";
-import { doNothing, last } from "remeda";
+import { last } from "remeda";
 import { ImageClassifyAnnotation, Label } from "shared";
 
 import { LabelTagColors } from "@/components/LabelTag";
@@ -43,7 +43,7 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
     imageLayer
   });
 
-  const operation = useOperationManager(imageLayer, shapesRef.current);
+  const operation = useOperationManager(annotationLayer, shapesRef.current);
 
   useEffect(() => {
     if (!editor) {
@@ -185,16 +185,28 @@ const ImageClassifyModule = forwardRef<AnnotateModuleRef, IModuleProps>((props, 
     return JSON.stringify(value);
   }, [imageMeta]);
 
+  const handleRedo = useCallback(() => {
+    operation.redo?.();
+  }, [operation]);
+
+  const handleUndo = useCallback(() => {
+    operation.undo?.();
+  }, [operation]);
+
+  const handleReset = useCallback(() => {
+    operation.execute?.("reset", shapesRef.current);
+    setAnnotationObjectList([]);
+  }, [operation]);
+
   useImperativeHandle(
     ref,
     () => ({
       save: handleSave,
-      // TODO: add undo/redo
-      undo: doNothing(),
-      redo: doNothing(),
-      reset: doNothing()
+      undo: handleUndo,
+      redo: handleRedo,
+      reset: handleReset
     }),
-    [handleSave]
+    [handleRedo, handleSave, handleUndo, handleReset]
   );
 
   return (
