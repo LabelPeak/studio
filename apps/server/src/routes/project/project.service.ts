@@ -303,6 +303,11 @@ async function releaseProject(
     .where(eq(projectTable.id, dto.projectId))
     .returning();
 
+  await pushStatusHistory({
+    projectId: relation.project.id,
+    record: composeProjectStatus(PROJECT_STATUS.RELEASED, relation.user.username)
+  });
+
   return {
     project
   };
