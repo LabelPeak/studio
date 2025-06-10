@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Button, message, Space } from "antd";
+import { Button, Dropdown, message, Space } from "antd";
 import { useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { Link, useParams } from "react-router-dom";
@@ -89,6 +89,32 @@ export function ProjectDetailPage() {
     }
   }
 
+  async function handleStartPreAnnotate() {
+    try {
+      await ProjectService.startPreAnnotate({
+        projectId: project.id
+      });
+    } catch (e) {
+      if (e instanceof Error) {
+        message.error(e.message);
+      }
+    }
+  }
+
+  async function handleRelease() {
+    try {
+      const { project: newProject } = await ProjectService.releaseProject({
+        projectId: project.id,
+        releaseType: "yolo"
+      });
+      window.open(newProject.releaseUrl);
+    } catch (e) {
+      if (e instanceof Error) {
+        message.error(e.message);
+      }
+    }
+  }
+
   return (
     <section className="bg-white h-full flex flex-col" id="project-detail-page">
       <ProjectHeader
@@ -114,7 +140,20 @@ export function ProjectDetailPage() {
               </Button>
             </Access>
             <Access accessible={access.canSeeAdmin && currentStatus === PROJECT_STATUS.PENDING}>
-              <Button onClick={handleStartAnnotate}>下发标注任务</Button>
+              <Dropdown.Button
+                onClick={handleStartAnnotate}
+                menu={{
+                  items: [
+                    {
+                      key: PROJECT_STATUS.PRE_ANNOTATING,
+                      label: "执行预标注任务",
+                      onClick: handleStartPreAnnotate
+                    }
+                  ]
+                }}
+              >
+                执行标注任务
+              </Dropdown.Button>
             </Access>
             <Access accessible={access.canSeeAdmin}>
               <Button onClick={() => setIsOpenStatusDrawer(true)}>项目进展</Button>
@@ -123,6 +162,11 @@ export function ProjectDetailPage() {
               <Link to="settings">
                 <Button>{intl.formatMessage({ id: "settings" })}</Button>
               </Link>
+            </Access>
+            <Access accessible={access.canSeeAdmin}>
+              <Button type="primary" onClick={handleRelease}>
+                发布
+              </Button>
             </Access>
           </Space>
         }

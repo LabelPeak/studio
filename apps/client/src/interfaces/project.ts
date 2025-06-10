@@ -18,4 +18,5 @@ export interface Project {
   presets: Label[];
   dataset: Dataset;
   statusHistory: ProjectStatusRecord[];
+  releaseUrl: string;
 }

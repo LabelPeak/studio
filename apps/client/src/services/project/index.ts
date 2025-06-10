@@ -66,6 +66,20 @@ function pushStatusHistory(props: { projectId: number; record: Partial<ProjectSt
   });
 }
 
+function startPreAnnotate(props: { projectId: number }) {
+  return requestWithAuth<null>("/api/project/pre-annotate/start", {
+    method: "POST",
+    body: JSON.stringify(props)
+  });
+}
+
+function releaseProject(props: { projectId: number; releaseType: string }) {
+  return requestWithAuth<{ project: Project }>("/api/project/release", {
+    method: "POST",
+    body: JSON.stringify(props)
+  });
+}
+
 const ProjectService = {
   getMyParticipateProjects,
   getProjectDetail,
@@ -74,7 +88,9 @@ const ProjectService = {
   remove,
   update,
   assignStaff,
-  pushStatusHistory
+  pushStatusHistory,
+  startPreAnnotate,
+  releaseProject
 };
 
 export default ProjectService;
