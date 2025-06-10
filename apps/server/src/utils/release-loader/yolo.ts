@@ -104,7 +104,7 @@ export class YoloReleaseLoader extends BasicReleaseLoader {
       train: `/images/${this.trainDir}/`,
       val: `/images/${this.valDir}/`,
       nc: this.presetLabels.length,
-      names: this.presetLabels
+      names: this.presetLabels.map(({ name }) => name)
     });
   }
 
