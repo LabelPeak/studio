@@ -28,7 +28,7 @@ export function ProjectDetailPage() {
 
   const [isOpenStatusDrawer, setIsOpenStatusDrawer] = useState(false);
 
-  const { project, role } = useProject(parseInt(projectId));
+  const { project, role, refreshProject } = useProject(parseInt(projectId));
   const access = useAccess({ role });
   const currentStatus = last(project.statusHistory)?.status;
 
@@ -107,7 +107,40 @@ export function ProjectDetailPage() {
         projectId: project.id,
         releaseType: "yolo"
       });
+      refreshProject();
       window.open(newProject.releaseUrl);
+    } catch (e) {
+      if (e instanceof Error) {
+        message.error(e.message);
+      }
+    }
+  }
+
+  async function handleFinishAnnotate() {
+    try {
+      await ProjectService.pushStatusHistory({
+        projectId: project.id,
+        record: {
+          status: PROJECT_STATUS.CHECKING
+        }
+      });
+      refreshProject();
+    } catch (e) {
+      if (e instanceof Error) {
+        message.error(e.message);
+      }
+    }
+  }
+
+  async function handleCheckApproved() {
+    try {
+      await ProjectService.pushStatusHistory({
+        projectId: project.id,
+        record: {
+          status: PROJECT_STATUS.APPROVED
+        }
+      });
+      refreshProject();
     } catch (e) {
       if (e instanceof Error) {
         message.error(e.message);
@@ -163,9 +196,45 @@ export function ProjectDetailPage() {
                 <Button>{intl.formatMessage({ id: "settings" })}</Button>
               </Link>
             </Access>
-            <Access accessible={access.canSeeAdmin}>
+            <Access
+              accessible={
+                access.canSeeAdmin &&
+                currentStatus === PROJECT_STATUS.APPROVED &&
+                !project.releaseUrl
+              }
+            >
               <Button type="primary" onClick={handleRelease}>
                 发布
+              </Button>
+            </Access>
+            <Access
+              accessible={
+                (access.canSeeAnnotator || access.canSeeAdmin) &&
+                currentStatus === PROJECT_STATUS.RELEASED
+              }
+            >
+              <Button type="primary" onClick={() => window.open(project.releaseUrl)}>
+                下载标注结果
+              </Button>
+            </Access>
+            <Access
+              accessible={
+                (access.canSeeAnnotator || access.canSeeAdmin) &&
+                currentStatus === PROJECT_STATUS.ANNOTATING
+              }
+            >
+              <Button type="primary" onClick={handleFinishAnnotate}>
+                确认标注完成
+              </Button>
+            </Access>
+            <Access
+              accessible={
+                (access.canSeeChecker || access.canSeeAdmin) &&
+                currentStatus === PROJECT_STATUS.CHECKING
+              }
+            >
+              <Button type="primary" onClick={handleCheckApproved}>
+                完成审核
               </Button>
             </Access>
           </Space>
