@@ -2,6 +2,7 @@ import zjutjh from "@zjutjh/eslint-config";
 
 export default zjutjh(
   {
+    react: true,
     ts: {
       parserOptions: {
         projectService: {
