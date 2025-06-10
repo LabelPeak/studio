@@ -12,7 +12,7 @@ import { LoginPage } from "@/pages/login";
 import { ProjectDetailPage } from "@/pages/project-detail/index";
 import { ProjectListPage } from "@/pages/project-list";
 import StaffPage from "@/pages/staff";
-import { UserPage } from "@/pages/user";
+import { UserProfilePage } from "@/pages/user-profile";
 
 const router = createBrowserRouter([
   {
@@ -71,7 +71,7 @@ const router = createBrowserRouter([
       },
       {
         path: "user",
-        element: <UserPage />
+        element: <UserProfilePage />
       }
     ]
   }
