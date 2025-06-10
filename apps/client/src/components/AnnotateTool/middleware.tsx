@@ -2,8 +2,8 @@ import { RefObject } from "react";
 
 import { DataItem, Dataset } from "@/interfaces/dataset";
 
-import ImageClassifyModule from "./ImageClassifyModule";
-import { AnnotateModuleRef } from "./tool-proto";
+import ImageClassifyModule from "./components/image-classify-module";
+import { AnnotateModuleRef } from "./types";
 
 interface IProps {
   annotatingType: Dataset["type"];

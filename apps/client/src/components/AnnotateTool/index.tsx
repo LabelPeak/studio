@@ -9,7 +9,7 @@ import DatasetService from "@/services/dataset";
 
 import AnnotateToolContext from "./context";
 import ModuleMiddleware from "./middleware";
-import { AnnotateModuleRef } from "./tool-proto";
+import { AnnotateModuleRef } from "./types";
 
 interface AnnotateToolProps {
   project: Project;
@@ -44,9 +44,19 @@ const AnnotateTool = forwardRef<AnnotateToolRef, AnnotateToolProps>((props, ref)
     setIsSaveSaved(false);
   }
 
+  function handleRedo() {
+    setIsSaveSaved(false);
+    annotateModuleRef.current?.redo();
+  }
+
+  function handleUndo() {
+    setIsSaveSaved(false);
+    annotateModuleRef.current?.undo();
+  }
+
   function handleClickReset() {
+    setIsSaveSaved(false);
     annotateModuleRef.current?.reset();
-    setIsSaveSaved(true);
   }
 
   async function handleClickSave() {
@@ -85,10 +95,12 @@ const AnnotateTool = forwardRef<AnnotateToolRef, AnnotateToolProps>((props, ref)
           <div
             title={intl.formatMessage({ id: "operation-undo" })}
             className="cursor-pointer i-mdi-undo-variant c-nord-polar-3"
+            onClick={handleUndo}
           />
           <div
             title={intl.formatMessage({ id: "operation-redo" })}
             className="cursor-pointer i-mdi-redo-variant c-nord-polar-3"
+            onClick={handleRedo}
           />
           <div
             title={intl.formatMessage({ id: "operation-reset" })}
